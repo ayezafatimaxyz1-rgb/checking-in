@@ -1,0 +1,24 @@
+{
+  "name": "checking-in",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ayezafatimaxyz1-rgb/checking-in.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ayezafatimaxyz1-rgb/checking-in/issues"
+  },
+  "homepage": "https://github.com/ayezafatimaxyz1-rgb/checking-in#readme",
+  "type": "module",
+  "dependencies": {
+    "puppeteer": "^25.12.0"
+  }
+}

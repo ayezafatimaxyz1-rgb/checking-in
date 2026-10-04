@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Title Cards</title>
+<style>
+  @font-face {
+    font-family: 'Space Grotesk';
+    src: url('fonts/SpaceGrotesk-700.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: block;
+  }
+  html, body { margin: 0; height: 100%; background: #0b0b0f; overflow: hidden; }
+  canvas { display: block; width: 100vw; height: 100vh; object-fit: contain; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script type="module">
+import { W, H, FPS, COLORS, FONT, MARGIN, LINES, MOTION, holdFor } from './tokens.js';
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+// Parse "Same *pixels*" into words, flagging the accent word.
+const parse = (line) => line.split(/\s+/).map((w) => {
+  const accent = /^\*.+\*$/.test(w);
+  return { text: accent ? w.slice(1, -1) : w, accent };
+});
+
+// Build the timeline once, from constants only.
+const cards = [];
+let cursor = MOTION.lead;
+for (const line of LINES) {
+  const words = parse(line);
+  const accents = words.filter((w) => w.accent).length;
+  if (accents !== 1) throw new Error(`"${line}" needs exactly one *accent* word, has ${accents}`);
+  const hold = holdFor(words.length);
+  const start = cursor;
+  const end = start + MOTION.fadeIn + hold + MOTION.fadeOut;
+  cards.push({ words, start, hold, end });
+  cursor = end + MOTION.gap;
+}
+const DURATION = cursor - MOTION.gap + MOTION.tail;
+
+const clamp01 = (x) => Math.min(1, Math.max(0, x));
+const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
+const easeInQuad = (x) => x * x;
+
+const setFont = (px) => {
+  ctx.font = `${FONT.weight} ${px}px "${FONT.family}"`;
+  ctx.letterSpacing = `${FONT.letterSpacing * px / FONT.size}px`;
+};
+
+// Fit size and word positions are pure functions of the text, so cache them
+// after fonts are ready. The cache only stores layout, never time state.
+const layouts = new Map();
+function layout(card) {
+  if (layouts.has(card)) return layouts.get(card);
+  const maxW = W - 2 * MARGIN;
+  let px = FONT.size;
+  let widths, space, total;
+  const measure = () => {
+    setFont(px);
+    widths = card.words.map((w) => ctx.measureText(w.text).width);
+    space = ctx.measureText(' ').width;
+    total = widths.reduce((a, b) => a + b, 0) + space * (card.words.length - 1);
+  };
+  measure();
+  if (total > maxW) { px = Math.floor(px * maxW / total); measure(); }
+  setFont(px);
+  const m = ctx.measureText('H');
+  const capH = m.actualBoundingBoxAscent;
+  const xs = [];
+  let x = (W - total) / 2;
+  for (const w of widths) { xs.push(x); x += w + space; }
+  const out = { px, xs, baseline: H / 2 + capH / 2 };
+  layouts.set(card, out);
+  return out;
+}
+
+function renderFrame(t) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = COLORS.bg;
+  ctx.fillRect(0, 0, W, H);
+
+  for (const card of cards) {
+    if (t < card.start || t >= card.end) continue;
+    const local = t - card.start;
+    const inP = easeOutCubic(clamp01(local / MOTION.fadeIn));
+    const outP = easeInQuad(clamp01((local - MOTION.fadeIn - card.hold) / MOTION.fadeOut));
+    const alpha = inP * (1 - outP);
+    const dy = (1 - inP) * MOTION.rise;
+
+    const L = layout(card);
+    setFont(L.px);
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'left';
+    ctx.globalAlpha = alpha;
+    card.words.forEach((w, i) => {
+      ctx.fillStyle = w.accent ? COLORS.accent : COLORS.ink;
+      ctx.fillText(w.text, L.xs[i], L.baseline + dy);
+    });
+    ctx.globalAlpha = 1;
+  }
+}
+
+window.renderFrame = renderFrame;
+window.DURATION = DURATION;
+window.FPS = FPS;
+// Mid hold of each card, used by the stills pass.
+window.CARD_STILLS = cards.map((c) => c.start + MOTION.fadeIn + c.hold / 2);
+
+await document.fonts.load(`${FONT.weight} ${FONT.size}px "${FONT.family}"`);
+await document.fonts.ready;
+if (!document.fonts.check(`${FONT.weight} ${FONT.size}px "${FONT.family}"`)) {
+  throw new Error('Space Grotesk failed to load');
+}
+renderFrame(0);
+window.READY = true;
+</script>
+</body>
+</html>

@@ -1,0 +1,447 @@
+<title>Speak Up Daily</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap">
+<style>
+/* Layout: one column phone app, sticky top bar, bottom tab bar; content cards stack */
+:root{
+  --bg:#f3f6fb; --surface:#ffffff; --ink:#14213d; --muted:#5b6782; --line:#dbe2ee;
+  --accent:#ff6b4a; --accent-ink:#ffffff; --sky:#2f6fed; --sky-soft:#e4ecfd;
+  --good:#1f9d63; --good-soft:#dff4ea; --warn:#c77a00; --bad:#d23b3b; --bad-soft:#fbe3e3;
+  --f-display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --f-body:"Nunito Sans", "Segoe UI", system-ui, sans-serif;
+  --r:16px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1424; --surface:#172036; --ink:#eaf0fb; --muted:#9aa7c2; --line:#26324d;
+  --accent:#ff7d5f; --accent-ink:#1a0d08; --sky:#7aa6ff; --sky-soft:#1d2b4d;
+  --good:#45c98a; --good-soft:#12301f; --warn:#f0b040; --bad:#ff7272; --bad-soft:#3a1a1d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1424; --surface:#172036; --ink:#eaf0fb; --muted:#9aa7c2; --line:#26324d;
+  --accent:#ff7d5f; --accent-ink:#1a0d08; --sky:#7aa6ff; --sky-soft:#1d2b4d;
+  --good:#45c98a; --good-soft:#12301f; --warn:#f0b040; --bad:#ff7272; --bad-soft:#3a1a1d; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--f-body);margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 110px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:14px 10px}
+.brand{font:800 22px/1 var(--f-display);letter-spacing:-.02em}
+.brand span{color:var(--accent)}
+.streak{display:flex;align-items:center;gap:6px;font:700 14px var(--f-body);background:var(--surface);border:1px solid var(--line);padding:6px 12px;border-radius:999px;font-variant-numeric:tabular-nums}
+.streak b{color:var(--accent)}
+h1,h2,h3{font-family:var(--f-display);letter-spacing:-.015em;text-wrap:balance;margin:0}
+h1{font-size:30px;line-height:1.1;font-weight:800}
+h2{font-size:21px;font-weight:700}
+h3{font-size:17px;font-weight:700}
+.eyebrow{font:700 12px var(--f-body);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.muted{color:var(--muted)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button{font:700 15px var(--f-body);border:0;border-radius:12px;padding:11px 16px;cursor:pointer;background:var(--sky-soft);color:var(--sky);transition:transform .08s}
+button:active{transform:scale(.97)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+button.primary{background:var(--accent);color:var(--accent-ink)}
+button.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+button.rec{background:var(--accent);color:var(--accent-ink)}
+button.rec.on{animation:pulse 1s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 8px color-mix(in srgb,var(--accent) 25%,transparent)}}
+@media (prefers-reduced-motion:reduce){button.rec.on{animation:none}}
+button:disabled{opacity:.5;cursor:default}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.chip{white-space:nowrap;background:var(--surface);border:1px solid var(--line);color:var(--ink);font-weight:600;padding:8px 14px;border-radius:999px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+/* Say this not that */
+.swap{display:grid;gap:8px}
+.swap .no{background:var(--bad-soft);color:var(--bad);border-radius:12px;padding:10px 14px;font-weight:600;text-decoration:line-through;text-decoration-thickness:2px}
+.swap .yes{background:var(--good-soft);color:var(--good);border-radius:12px;padding:10px 14px;font-weight:700}
+.tag{display:inline-block;font:700 11px var(--f-body);letter-spacing:.06em;text-transform:uppercase;margin-right:6px;opacity:.85}
+/* Goals */
+.goal{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.goal:first-of-type{border-top:0}
+.tick{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-size:14px;color:transparent}
+.goal.done .tick{background:var(--good);border-color:var(--good);color:#fff}
+.goal .g-text{flex:1;min-width:0}
+.bar{height:10px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .4s}
+/* Phrase */
+.phrase{font:700 22px/1.3 var(--f-display)}
+.ipa{font-family:ui-monospace,Menlo,monospace;color:var(--muted);font-size:14px}
+.heard{min-height:24px;font-size:15px}
+.heard .w-ok{color:var(--good);font-weight:700}
+.heard .w-miss{color:var(--bad);text-decoration:underline wavy;text-underline-offset:3px}
+.score{font:800 34px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.note{font-size:14px;background:var(--sky-soft);color:var(--ink);border-radius:12px;padding:10px 12px}
+/* Pairs */
+.pair-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pair-btn{background:var(--surface);color:var(--ink);border:2px solid var(--line);padding:18px 10px;font:800 22px var(--f-display);border-radius:14px}
+.pair-btn.right{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.pair-btn.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+/* Timer */
+.timer{font:800 64px/1 var(--f-display);font-variant-numeric:tabular-nums;text-align:center}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center}
+.stats div{background:var(--bg);border-radius:12px;padding:10px 4px}
+.stats b{display:block;font:800 22px var(--f-display);font-variant-numeric:tabular-nums}
+.stats span{font-size:12px;color:var(--muted)}
+textarea,input,select{width:100%;font:16px var(--f-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px}
+textarea{min-height:90px;resize:vertical}
+.bubbles{display:flex;flex-direction:column;gap:10px}
+.bub{max-width:88%;padding:10px 14px;border-radius:16px;white-space:pre-wrap;min-width:0;overflow-wrap:anywhere}
+.bub.me{align-self:flex-end;background:var(--sky);color:var(--bg)}
+.bub.ai{align-self:flex-start;background:var(--bg);border:1px solid var(--line)}
+/* Tabs */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
+nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+nav.tabs button{background:none;color:var(--muted);border-radius:0;padding:10px 2px 12px;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:3px}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button[aria-current="page"]{color:var(--accent)}
+.banner{font-size:14px;border:1px dashed var(--line);border-radius:12px;padding:10px 12px;color:var(--muted)}
+.hidden{display:none}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">Speak<span>Up</span> Daily</div>
+    <div class="streak" title="Days in a row you practised"><svg width="16" height="16" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2.5 1.2-4 2.5-5 .2 1.8 1 3 2.2 3.4C11 8.5 11.3 5 12 2z"/></svg><b id="streakNum">0</b> day streak</div>
+  </header>
+
+  <!-- TODAY -->
+  <section id="v-today" class="stack" data-view>
+    <div>
+      <div class="eyebrow" id="todayDate">Today</div>
+      <h1>Ten minutes of speaking a day beats one long class a week.</h1>
+    </div>
+    <div class="card stack">
+      <div class="row" style="justify-content:space-between"><h2>Today's goals</h2><span class="muted" id="goalCount">0 / 4</span></div>
+      <div class="bar"><i id="goalBar" style="width:0%"></i></div>
+      <div id="goals"></div>
+    </div>
+    <div class="card stack">
+      <div class="eyebrow">Say this, not that</div>
+      <div class="swap" id="swapDay"></div>
+      <div class="muted" id="swapWhy"></div>
+      <div class="row"><button id="swapListen">Listen</button><button class="ghost" id="swapNext">Show another</button></div>
+    </div>
+    <div class="card stack">
+      <div class="eyebrow">Word of the day</div>
+      <h2 id="wotdWord"></h2>
+      <div class="muted" id="wotdMean"></div>
+      <div id="wotdEx" style="font-style:italic"></div>
+      <div class="row"><button id="wotdListen">Listen</button></div>
+    </div>
+  </section>
+
+  <!-- PHRASES -->
+  <section id="v-phrases" class="stack hidden" data-view>
+    <div><div class="eyebrow">Shadowing</div><h1>Listen, then say it out loud</h1></div>
+    <div class="chips" id="phraseCats" role="group" aria-label="Topic"></div>
+    <div class="card stack">
+      <div class="row" style="justify-content:space-between"><span class="eyebrow" id="phPos">1 / 8</span><span class="muted" id="phUse"></span></div>
+      <div class="phrase" id="phText"></div>
+      <div class="note" id="phTip"></div>
+      <div class="row">
+        <button id="phListen">Listen</button>
+        <button id="phSlow" class="ghost">Slow</button>
+        <button id="phRec" class="rec">Speak</button>
+      </div>
+      <div class="row" style="justify-content:space-between;align-items:flex-end">
+        <div class="heard" id="phHeard" style="flex:1;min-width:0"><span class="muted">Tap Speak and read the sentence aloud.</span></div>
+        <div class="score" id="phScore"></div>
+      </div>
+      <div class="row" style="justify-content:space-between"><button class="ghost" id="phPrev">Back</button><button class="primary" id="phNext">Next phrase</button></div>
+    </div>
+  </section>
+
+  <!-- SOUNDS -->
+  <section id="v-sounds" class="stack hidden" data-view>
+    <div><div class="eyebrow">Pronunciation</div><h1>Hear the difference</h1></div>
+    <div class="chips" id="pairCats" role="group" aria-label="Sound"></div>
+    <div class="card stack">
+      <div class="note" id="pairHow"></div>
+      <div class="row"><button class="primary" id="pairPlay">Play a word</button><span class="muted" id="pairScore">0 correct</span></div>
+      <div class="pair-grid" id="pairGrid"></div>
+      <div class="muted" id="pairMsg">Press play, then tap the word you heard.</div>
+    </div>
+    <div class="card stack">
+      <h3>Now say both words</h3>
+      <div class="row" id="pairSay"></div>
+      <div class="heard" id="pairHeard"></div>
+    </div>
+  </section>
+
+  <!-- SPEAK -->
+  <section id="v-speak" class="stack hidden" data-view>
+    <div><div class="eyebrow">One minute talk</div><h1>Talk for 60 seconds without stopping</h1></div>
+    <div class="card stack">
+      <div class="eyebrow">Your topic</div>
+      <h2 id="topic"></h2>
+      <div class="muted" id="topicHelp"></div>
+      <div class="row"><button class="ghost" id="topicNew">New topic</button></div>
+    </div>
+    <div class="card stack">
+      <div class="timer" id="timer">1:00</div>
+      <div class="row" style="justify-content:center"><button class="rec" id="talkBtn">Start talking</button></div>
+      <div class="stats"><div><b id="stWords">0</b><span>words</span></div><div><b id="stWpm">0</b><span>words / min</span></div><div><b id="stFill">0</b><span>filler words</span></div></div>
+      <div class="heard muted" id="talkText"></div>
+      <div class="note" id="talkTip">Fluent speakers pause instead of saying "um". A short silence sounds confident.</div>
+    </div>
+  </section>
+
+  <!-- COACH -->
+  <section id="v-coach" class="stack hidden" data-view>
+    <div><div class="eyebrow">AI coach</div><h1>Practise a real conversation</h1></div>
+    <div class="card stack">
+      <label class="eyebrow" for="scene">Scene</label>
+      <select id="scene">
+        <option value="cafe">Ordering at a cafe</option>
+        <option value="interview">Job interview</option>
+        <option value="smalltalk">Small talk with a new colleague</option>
+        <option value="doctor">Visiting the doctor</option>
+        <option value="free">Free chat about anything</option>
+      </select>
+      <div class="bubbles" id="chat"></div>
+      <textarea id="msg" placeholder="Type your reply, or tap Speak and say it"></textarea>
+      <div class="row"><button class="rec" id="msgRec">Speak</button><button class="primary" id="msgSend">Send</button><button class="ghost" id="chatReset">Start over</button></div>
+      <div class="banner hidden" id="coachOff"></div>
+    </div>
+  </section>
+</div>
+
+<nav class="tabs" aria-label="Sections"><div class="in">
+  <button data-tab="today" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Today</button>
+  <button data-tab="phrases"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v11H8l-4 4z"/></svg>Phrases</button>
+  <button data-tab="sounds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>Sounds</button>
+  <button data-tab="speak"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak</button>
+  <button data-tab="coach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Coach</button>
+</div></nav>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const store={get(k,d){try{const v=localStorage.getItem("su_"+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem("su_"+k,JSON.stringify(v))}catch(e){}}};
+const todayKey=new Date().toISOString().slice(0,10);
+
+/* ---------- content ---------- */
+const SWAPS=[
+ {no:"I am agree with you.",yes:"I agree with you.",why:"\"Agree\" is already a verb, so it never needs \"am\"."},
+ {no:"Please do the needful.",yes:"Could you take care of this, please?",why:"\"Do the needful\" sounds old fashioned to most native speakers."},
+ {no:"I am having two brothers.",yes:"I have two brothers.",why:"\"Have\" for owning or family is not used in the -ing form."},
+ {no:"What is your good name?",yes:"What's your name?",why:"\"Good name\" is a direct translation. Keep it simple."},
+ {no:"He is very much intelligent.",yes:"He's really smart.",why:"Drop \"much\" before adjectives. \"Really smart\" sounds natural."},
+ {no:"I will discuss about it.",yes:"I'll discuss it.",why:"\"Discuss\" takes no \"about\". You can say \"talk about it\" instead."},
+ {no:"Revert me back soon.",yes:"Please get back to me soon.",why:"\"Revert\" means go back to an old state. Use \"get back to me\" or \"reply\"."},
+ {no:"I am coming from Lahore.",yes:"I'm from Lahore.",why:"\"I'm coming from\" means you are travelling right now."},
+ {no:"Since three years I work here.",yes:"I've worked here for three years.",why:"Use \"for\" with a length of time and the present perfect."},
+ {no:"Very good, very good.",yes:"That sounds great.",why:"Swap repeated \"very good\" for a phrase that shows real interest."},
+ {no:"Can you borrow me your pen?",yes:"Can I borrow your pen?",why:"You borrow from someone. They lend to you."},
+ {no:"I didn't went there.",yes:"I didn't go there.",why:"After \"didn't\" always use the base verb."}
+];
+const WORDS=[
+ {w:"Hesitate",m:"to pause before doing or saying something because you are unsure",e:"Don't hesitate to ask if you have questions."},
+ {w:"Reluctant",m:"not wanting to do something",e:"She was reluctant to speak in the meeting at first."},
+ {w:"Figure out",m:"to understand or solve something",e:"I need to figure out how this app works."},
+ {w:"Eventually",m:"in the end, after some time",e:"Eventually, speaking English felt natural."},
+ {w:"Confident",m:"sure of yourself and your abilities",e:"Practise daily and you'll feel more confident."},
+ {w:"Look forward to",m:"to feel happy about something that will happen",e:"I'm looking forward to meeting you."},
+ {w:"Exhausted",m:"extremely tired",e:"I was exhausted after the long trip."},
+ {w:"Keen on",m:"very interested in something",e:"He's keen on learning new languages."}
+];
+const PHRASES={
+ "Daily life":[
+  ["Could I get a coffee to go, please?","At a cafe","Link \"get a\" so it sounds like \"geh-tuh\"."],
+  ["I'm running a bit late, sorry.","Messaging a friend","\"Running late\" is the natural way to say you'll arrive late."],
+  ["What do you usually do on weekends?","Starting a chat","Stress \"usually\" and \"weekends\"."],
+  ["I'm not really in the mood today.","Saying no politely","\"Not really\" softens it."],
+  ["That makes sense.","Showing you understand","Say it with falling tone at the end."],
+  ["Let me think about it for a second.","Buying time","A great phrase instead of \"umm\"."],
+  ["It depends on the weather.","Giving a soft answer","\"Depends on\" sounds like one word: \"dependson\"."],
+  ["I'll be there in ten minutes.","Telling your arrival","\"I'll\" is one sound, not \"I will\"."]
+ ],
+ "Work":[
+  ["Could you walk me through the process?","Asking for explanation","\"Walk me through\" means explain step by step."],
+  ["I'll get back to you by the end of the day.","Promising a reply","Use this instead of \"revert\"."],
+  ["Let's touch base next week.","Planning a follow up","\"Touch base\" means talk again briefly."],
+  ["I'm afraid I can't make it to the meeting.","Declining politely","\"I'm afraid\" makes bad news polite."],
+  ["That's a great point, and I'd add one thing.","Joining a discussion","Agree first, then add your idea."],
+  ["Could you clarify what you mean by that?","Asking to explain","Rise slightly at the end."],
+  ["I've been working on this project since March.","Talking about experience","\"Since\" plus a start point."],
+  ["Let me share my screen.","Online meetings","\"Share my\" links into \"sharemy\"."]
+ ],
+ "Small talk":[
+  ["How's your week going so far?","Friendly opener","More natural than \"How are you?\" every time."],
+  ["Have you been here before?","At an event","Stress \"been\" lightly, \"here\" strongly."],
+  ["What do you do for work?","Asking about jobs","Never \"What is your profession?\" in casual talk."],
+  ["Oh really? That sounds interesting.","Showing interest","Raise your voice on \"really\"."],
+  ["I know what you mean.","Agreeing warmly","Sounds friendly and natural."],
+  ["Anyway, it was nice talking to you.","Ending a chat","\"Anyway\" signals you are wrapping up."],
+  ["Are you from around here?","Getting to know someone","\"From around\" links: \"fromaround\"."],
+  ["Same here!","Saying you feel the same","Short and natural."]
+ ],
+ "Opinions":[
+  ["In my opinion, it's worth trying.","Sharing a view","Pause slightly after \"opinion\"."],
+  ["I see your point, but I'm not sure.","Polite disagreement","Better than \"You are wrong\"."],
+  ["To be honest, I prefer the first one.","Being direct","\"To be honest\" softens a strong view."],
+  ["I couldn't agree more.","Strong agreement","Means you agree completely."],
+  ["It's not my cup of tea.","Saying you don't like it","A friendly idiom for \"I don't like it\"."],
+  ["On the other hand, it's quite expensive.","Comparing ideas","Use after giving one side."],
+  ["I used to think so, but I changed my mind.","Showing growth","\"Used to\" sounds like \"yoos-tuh\"."],
+  ["That's a tough question.","Buying time","Then give your answer."]
+ ]
+};
+const PAIRS={
+ "v / w":{how:"For V, touch your top teeth to your bottom lip. For W, round your lips like a kiss and keep teeth away.",sets:[["vest","west"],["vine","wine"],["very","wary"],["vet","wet"],["veil","whale"]]},
+ "ee / i":{how:"\"ee\" in sheep is long with a smile. \"i\" in ship is short and relaxed.",sets:[["sheep","ship"],["leave","live"],["feet","fit"],["seat","sit"],["heel","hill"]]},
+ "th / t":{how:"For TH, put your tongue lightly between your teeth and blow air. T uses the tongue behind the teeth.",sets:[["three","tree"],["thin","tin"],["thought","taught"],["thank","tank"],["bath","bat"]]},
+ "p / f":{how:"P is a pop from closed lips. F is air through teeth on the lip, no pop.",sets:[["pan","fan"],["pool","fool"],["pine","fine"],["copy","coffee"],["pair","fair"]]},
+ "s / sh":{how:"S has a thin hiss with lips spread. SH pushes the lips forward and the sound is softer.",sets:[["sip","ship"],["sea","she"],["sort","short"],["save","shave"],["sell","shell"]]}
+};
+const TOPICS=[
+ ["Describe your favourite place in your city.","Where is it, what does it look like, why do you like it?"],
+ ["Talk about a skill you want to learn this year.","What is it, why, and how will you learn it?"],
+ ["Describe your perfect weekend.","Morning, afternoon, evening. Who are you with?"],
+ ["Tell me about a person who inspires you.","Who are they and what did they do?"],
+ ["Is social media good or bad for young people?","Give one good point, one bad point and your opinion."],
+ ["Talk about your favourite food and how to make it.","Ingredients, steps, and when you eat it."],
+ ["Describe a memorable trip you took.","Where, when, who with, and what happened?"],
+ ["What would you do with a free day and no phone?","Walk me through your day."],
+ ["Talk about your job or studies.","What do you do every day and what do you enjoy?"],
+ ["Describe a film or series you love.","Story, characters, and why you recommend it."]
+];
+
+/* ---------- progress ---------- */
+let prog=store.get("prog",{days:[],today:{}});
+if(prog.todayKey!==todayKey){prog.today={};prog.todayKey=todayKey}
+const GOALS=[["phrases","Shadow 5 phrases",5],["sounds","Get 5 sound pairs right",5],["talk","Do one 60 second talk",1],["coach","Send 3 messages to the coach",3]];
+function bump(k){prog.today[k]=(prog.today[k]||0)+1;
+  if(!prog.days.includes(todayKey)){prog.days.push(todayKey)}
+  store.set("prog",prog);renderGoals()}
+function streak(){const set=new Set(prog.days);let n=0;const d=new Date();
+  if(!set.has(d.toISOString().slice(0,10)))d.setDate(d.getDate()-1);
+  while(set.has(d.toISOString().slice(0,10))){n++;d.setDate(d.getDate()-1)}return n}
+function renderGoals(){let done=0;
+  $("#goals").innerHTML=GOALS.map(([k,t,n])=>{const v=Math.min(prog.today[k]||0,n),ok=v>=n;if(ok)done++;
+    return `<div class="goal ${ok?"done":""}"><div class="tick">✓</div><div class="g-text"><b>${t}</b><div class="muted" style="font-size:13px">${v} of ${n}</div></div><button class="ghost" data-go="${k==="talk"?"speak":k}">Go</button></div>`}).join("");
+  $("#goalCount").textContent=done+" / 4";$("#goalBar").style.width=(done/4*100)+"%";$("#streakNum").textContent=streak()}
+$("#goals").addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b)show(b.dataset.go)});
+
+/* ---------- speech ---------- */
+let voice=null;
+function pickVoice(){const vs=speechSynthesis.getVoices();voice=vs.find(v=>/en[-_](US|GB)/i.test(v.lang)&&/natural|google|samantha|daniel/i.test(v.name))||vs.find(v=>/^en/i.test(v.lang))||null}
+if("speechSynthesis" in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
+function say(t,rate=0.95){if(!("speechSynthesis" in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="en-US";if(voice)u.voice=voice;u.rate=rate;speechSynthesis.speak(u)}
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let micBlocked=false;
+function listen({btn,continuous=false,onText,onEnd,label="Speak"}){
+  if(!SR||micBlocked){onText(null,"nomic");return null}
+  const r=new SR();r.lang="en-US";r.interimResults=true;r.continuous=continuous;
+  let finalT="";
+  r.onresult=e=>{let interim="";for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)finalT+=t+" ";else interim+=t}onText((finalT+interim).trim(),"ok")};
+  r.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed"||e.error==="audio-capture"){micBlocked=true;onText(null,"nomic")}};
+  r.onend=()=>{btn.classList.remove("on");btn.textContent=label;onEnd&&onEnd(finalT.trim())};
+  try{r.start();btn.classList.add("on");btn.textContent="Listening… tap to stop"}catch(e){onText(null,"nomic");return null}
+  return r}
+const NOMIC="Your microphone isn't available here. Open the app in Chrome on your phone or computer to get speech scoring. For now, say it aloud anyway and listen back to the model.";
+const norm=s=>s.toLowerCase().replace(/[’']/g,"'").replace(/[^a-z0-9' ]/g," ").split(/\s+/).filter(Boolean);
+function compare(target,heard){const t=norm(target),h=norm(heard);const hs=h.slice();let ok=0;
+  const html=target.split(/\s+/).map(w=>{const n=norm(w)[0];if(!n)return w;const i=hs.indexOf(n);if(i>-1){hs.splice(i,1);ok++;return `<span class="w-ok">${w}</span>`}return `<span class="w-miss">${w}</span>`}).join(" ");
+  const total=t.length||1;return{html,score:Math.round(ok/total*100)}}
+
+/* ---------- today ---------- */
+const dayN=Math.floor(Date.now()/864e5);let swapI=dayN%SWAPS.length;
+function renderSwap(){const s=SWAPS[swapI];$("#swapDay").innerHTML=`<div class="no"><span class="tag">Not</span>${s.no}</div><div class="yes"><span class="tag">Say</span>${s.yes}</div>`;$("#swapWhy").textContent=s.why}
+$("#swapNext").onclick=()=>{swapI=(swapI+1)%SWAPS.length;renderSwap()};
+$("#swapListen").onclick=()=>say(SWAPS[swapI].yes);
+const wd=WORDS[dayN%WORDS.length];$("#wotdWord").textContent=wd.w;$("#wotdMean").textContent=wd.m;$("#wotdEx").textContent="“"+wd.e+"”";
+$("#wotdListen").onclick=()=>say(wd.w+". "+wd.e);
+$("#todayDate").textContent=new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
+
+/* ---------- phrases ---------- */
+let cat=Object.keys(PHRASES)[0],pi=0,rec=null;
+$("#phraseCats").innerHTML=Object.keys(PHRASES).map(c=>`<button class="chip" data-c="${c}" aria-pressed="${c===cat}">${c}</button>`).join("");
+$("#phraseCats").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;cat=b.dataset.c;pi=0;document.querySelectorAll("#phraseCats .chip").forEach(x=>x.setAttribute("aria-pressed",x===b));renderPhrase()};
+function renderPhrase(){const [t,u,tip]=PHRASES[cat][pi];$("#phText").textContent=t;$("#phUse").textContent=u;$("#phTip").textContent="Tip: "+tip;$("#phPos").textContent=(pi+1)+" / "+PHRASES[cat].length;$("#phScore").textContent="";$("#phHeard").innerHTML='<span class="muted">Tap Speak and read the sentence aloud.</span>'}
+$("#phListen").onclick=()=>say(PHRASES[cat][pi][0]);
+$("#phSlow").onclick=()=>say(PHRASES[cat][pi][0],0.6);
+$("#phNext").onclick=()=>{pi=(pi+1)%PHRASES[cat].length;renderPhrase()};
+$("#phPrev").onclick=()=>{pi=(pi-1+PHRASES[cat].length)%PHRASES[cat].length;renderPhrase()};
+let phCounted=-1;
+$("#phRec").onclick=()=>{const btn=$("#phRec");if(rec){rec.stop();rec=null;return}
+  const target=PHRASES[cat][pi][0];
+  rec=listen({btn,onText:(t,st)=>{if(st==="nomic"){$("#phHeard").innerHTML=`<span class="muted">${NOMIC}</span>`;$("#phScore").textContent="";if(phCounted!==cat+pi){phCounted=cat+pi;bump("phrases")}return}
+    const c=compare(target,t);$("#phHeard").innerHTML=c.html;$("#phScore").textContent=c.score+"%";$("#phScore").style.color=c.score>=80?"var(--good)":c.score>=50?"var(--warn)":"var(--bad)"},
+    onEnd:t=>{rec=null;if(t&&phCounted!==cat+pi){phCounted=cat+pi;bump("phrases")}}})};
+
+/* ---------- sounds ---------- */
+let pcat=Object.keys(PAIRS)[0],cur=null,pScore=0,answered=true;
+$("#pairCats").innerHTML=Object.keys(PAIRS).map(c=>`<button class="chip" data-c="${c}" aria-pressed="${c===pcat}">${c}</button>`).join("");
+$("#pairCats").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;pcat=b.dataset.c;document.querySelectorAll("#pairCats .chip").forEach(x=>x.setAttribute("aria-pressed",x===b));newPair()};
+function newPair(){const P=PAIRS[pcat];const set=P.sets[Math.floor(Math.random()*P.sets.length)];cur={set,ans:set[Math.floor(Math.random()*2)]};answered=false;
+  $("#pairHow").textContent=P.how;$("#pairGrid").innerHTML=set.map(w=>`<button class="pair-btn" data-w="${w}">${w}</button>`).join("");
+  $("#pairMsg").textContent="Press play, then tap the word you heard.";
+  $("#pairSay").innerHTML=set.map(w=>`<button data-say="${w}">Hear "${w}"</button>`).join("")+`<button class="rec" id="pairRec">Speak both</button>`;$("#pairHeard").textContent=""}
+$("#pairPlay").onclick=()=>{if(answered)newPair();say(cur.ans,0.8)};
+$("#pairGrid").onclick=e=>{const b=e.target.closest("[data-w]");if(!b||answered)return;answered=true;
+  const right=b.dataset.w===cur.ans;b.classList.add(right?"right":"wrong");
+  if(!right)document.querySelector(`#pairGrid [data-w="${cur.ans}"]`).classList.add("right");
+  if(right){pScore++;bump("sounds")}$("#pairScore").textContent=pScore+" correct";
+  $("#pairMsg").textContent=right?"Correct. Press play for the next one.":`It was "${cur.ans}". Listen again and press play for a new one.`};
+let prec=null;
+$("#pairSay").onclick=e=>{const s=e.target.closest("[data-say]");if(s){say(s.dataset.say,0.8);return}
+  if(e.target.id!=="pairRec")return;const btn=e.target;if(prec){prec.stop();prec=null;return}
+  prec=listen({btn,label:"Speak both",onText:(t,st)=>{if(st==="nomic"){$("#pairHeard").innerHTML=`<span class="muted">${NOMIC}</span>`;return}
+    const c=compare(cur.set.join(" "),t);$("#pairHeard").innerHTML="I heard: "+c.html},onEnd:()=>{prec=null}})};
+
+/* ---------- speak 60s ---------- */
+let ti=Math.floor(Math.random()*TOPICS.length),talkRec=null,tInt=null,left=60,talkStart=0,talkTxt="";
+function renderTopic(){$("#topic").textContent=TOPICS[ti][0];$("#topicHelp").textContent=TOPICS[ti][1]}
+$("#topicNew").onclick=()=>{ti=(ti+1)%TOPICS.length;renderTopic()};
+const FILLERS=["um","uh","umm","er","like","basically","actually","literally"];
+function talkStats(t){const w=norm(t);const f=w.filter(x=>FILLERS.includes(x)).length+((t.toLowerCase().match(/you know/g)||[]).length);
+  const mins=Math.max((Date.now()-talkStart)/6e4,1/60);$("#stWords").textContent=w.length;$("#stWpm").textContent=Math.round(w.length/mins);$("#stFill").textContent=f}
+function stopTalk(done){clearInterval(tInt);tInt=null;if(talkRec){talkRec.stop();talkRec=null}$("#talkBtn").textContent="Start talking";$("#talkBtn").classList.remove("on");
+  if(done){bump("talk");const wpm=+$("#stWpm").textContent;$("#talkTip").textContent=wpm===0?"Well done for speaking for a full minute. Try the next topic tomorrow.":wpm<90?"Good start. Aim for 110 to 150 words a minute. Use linking words like \"so\", \"because\" and \"after that\".":wpm>170?"Fast. Slow down a little and add pauses so people can follow.":"Nice pace. Natural speakers talk at about 120 to 150 words a minute."}}
+$("#talkBtn").onclick=()=>{if(tInt){stopTalk(false);return}
+  left=60;talkStart=Date.now();talkTxt="";$("#timer").textContent="1:00";["#stWords","#stWpm","#stFill"].forEach(s=>$(s).textContent="0");$("#talkText").textContent="";
+  const btn=$("#talkBtn");
+  talkRec=listen({btn,continuous:true,label:"Start talking",onText:(t,st)=>{if(st==="nomic"){$("#talkText").textContent="Mic not available here, so just speak to yourself while the timer runs. Open the app in Chrome to see your words and pace.";return}
+    talkTxt=t;$("#talkText").textContent=t;talkStats(t)},onEnd:()=>{if(tInt&&talkRec){try{talkRec.start()}catch(e){}}}});
+  btn.textContent="Stop";btn.classList.add("on");
+  tInt=setInterval(()=>{left--;$("#timer").textContent="0:"+String(left).padStart(2,"0");if(talkTxt)talkStats(talkTxt);if(left<=0){$("#timer").textContent="Done!";stopTalk(true)}},1000)};
+
+/* ---------- coach ---------- */
+const SCENES={cafe:"You are a friendly barista at a cafe. The learner is a customer.",interview:"You are a kind interviewer for an office job. Ask one interview question at a time.",smalltalk:"You are a new friendly colleague making small talk in the office kitchen.",doctor:"You are a calm doctor. The learner is a patient describing how they feel.",free:"You are a friendly English speaking partner. Chat about anything the learner likes."};
+const OPEN={cafe:"Hi there! What can I get for you today?",interview:"Thanks for coming in. Could you start by telling me a little about yourself?",smalltalk:"Hey, I don't think we've met. I'm Sam. Which team are you on?",doctor:"Hello, please have a seat. What seems to be the problem today?",free:"Hi! What would you like to talk about today?"};
+let chat=[],sample=null,busy=false;
+function bubble(role,text){const d=document.createElement("div");d.className="bub "+(role==="user"?"me":"ai");d.textContent=text;$("#chat").appendChild(d);return d}
+function resetChat(){chat=[{role:"assistant",content:OPEN[$("#scene").value]}];$("#chat").innerHTML="";bubble("assistant",chat[0].content)}
+$("#scene").onchange=resetChat;$("#chatReset").onclick=resetChat;resetChat();
+async function send(){const text=$("#msg").value.trim();if(!text||busy)return;
+  bubble("user",text);$("#msg").value="";chat.push({role:"user",content:text});bump("coach");
+  if(!sample){const b=bubble("assistant","The AI coach works when this app is opened on claude.ai. Here you can still practise: read your reply aloud three times, slowly, then faster.");return}
+  busy=true;$("#msgSend").disabled=true;const b=bubble("assistant","Thinking…");
+  const sys=SCENES[$("#scene").value]+" You are also an English speaking coach for a learner whose first language is Urdu or Hindi. Reply in this exact format:\nReply: <your natural reply in the role, 1 to 2 short sentences, ending with a question to keep the conversation going>\nBetter way to say it: <the learner's last message rewritten in natural, correct spoken English, or 'Perfect, no changes needed!'>\nTip: <one short tip about grammar, word choice or pronunciation from their message>\nUse simple words. Never use dashes.";
+  const msgs=[{role:"user",content:sys+"\n\nThe conversation so far follows. Start in role."},{role:"assistant",content:"Understood."},...chat];
+  try{const r=await sample(msgs,{cache:false,modelTier:"quick",onText:({text})=>{b.textContent=text}});
+    b.textContent=r.text;chat.push({role:"assistant",content:r.text});
+    const m=r.text.match(/Reply:\s*(.+)/);if(m)say(m[1]);
+  }catch(e){b.textContent=e&&e.code==="not_granted"?"The coach needs your permission to ask Claude. Allow it from the page's permissions menu to use it.":e&&e.code==="rate_limited"?"Too many messages at once. Wait a minute and try again.":"Something went wrong reaching the coach. Try sending again.";chat.pop()}
+  busy=false;$("#msgSend").disabled=false}
+$("#msgSend").onclick=send;
+$("#msg").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send()}});
+let mrec=null;
+$("#msgRec").onclick=()=>{const btn=$("#msgRec");if(mrec){mrec.stop();mrec=null;return}
+  mrec=listen({btn,onText:(t,st)=>{if(st==="nomic"){$("#coachOff").classList.remove("hidden");$("#coachOff").textContent=NOMIC.replace("For now, say it aloud anyway and listen back to the model.","For now, type your reply.");return}$("#msg").value=t},onEnd:()=>{mrec=null}})};
+if(window.claude&&window.claude.use){window.claude.use("sample").then(s=>{sample=s}).catch(()=>{})}
+
+/* ---------- tabs ---------- */
+const VIEWS=["today","phrases","sounds","speak","coach"];
+function show(v){if(!VIEWS.includes(v))v="today";document.querySelectorAll("[data-view]").forEach(s=>s.classList.toggle("hidden",s.id!=="v-"+v));
+  document.querySelectorAll("[data-tab]").forEach(b=>{if(b.dataset.tab===v)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
+  if(location.hash!=="#"+v)history.replaceState(null,"","#"+v);window.scrollTo(0,0)}
+document.querySelector("nav.tabs").onclick=e=>{const b=e.target.closest("[data-tab]");if(b)show(b.dataset.tab)};
+window.addEventListener("hashchange",()=>show(location.hash.slice(1)));
+
+renderSwap();renderPhrase();newPair();renderTopic();renderGoals();show(location.hash.slice(1)||"today");
+})();
+</script>

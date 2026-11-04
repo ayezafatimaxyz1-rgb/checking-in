@@ -4,10 +4,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap">
 <style>
-/* Layout: one column phone app, sticky top bar, bottom tab bar; content cards stack */
+/* Layout: one column phone app, sticky top bar, bottom tab bar; a winding course path of week nodes; lesson player as its own view */
 :root{
   --bg:#f3f6fb; --surface:#ffffff; --ink:#14213d; --muted:#5b6782; --line:#dbe2ee;
   --accent:#ff6b4a; --accent-ink:#ffffff; --sky:#2f6fed; --sky-soft:#e4ecfd;
+  --c1:#ff6b4a; --c2:#2f6fed; --c3:#7a4cc2; --on-c:#ffffff;
+  --gold:#e8a200; --gold-soft:#fff3d6;
   --good:#1f9d63; --good-soft:#dff4ea; --warn:#c77a00; --bad:#d23b3b; --bad-soft:#fbe3e3;
   --f-display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
   --f-body:"Nunito Sans", "Segoe UI", system-ui, sans-serif;
@@ -16,43 +18,64 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0e1424; --surface:#172036; --ink:#eaf0fb; --muted:#9aa7c2; --line:#26324d;
   --accent:#ff7d5f; --accent-ink:#1a0d08; --sky:#7aa6ff; --sky-soft:#1d2b4d;
+  --c1:#e8573a; --c2:#3d6fe0; --c3:#8a5ad6; --on-c:#ffffff;
+  --gold:#f5c04a; --gold-soft:#3a2e10;
   --good:#45c98a; --good-soft:#12301f; --warn:#f0b040; --bad:#ff7272; --bad-soft:#3a1a1d; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0e1424; --surface:#172036; --ink:#eaf0fb; --muted:#9aa7c2; --line:#26324d;
   --accent:#ff7d5f; --accent-ink:#1a0d08; --sky:#7aa6ff; --sky-soft:#1d2b4d;
+  --c1:#e8573a; --c2:#3d6fe0; --c3:#8a5ad6; --on-c:#ffffff;
+  --gold:#f5c04a; --gold-soft:#3a2e10;
   --good:#45c98a; --good-soft:#12301f; --warn:#f0b040; --bad:#ff7272; --bad-soft:#3a1a1d; color-scheme:dark}
 *{box-sizing:border-box}
 html,body{height:100%}
 body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--f-body);margin:0}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 .wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 110px}
-header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:14px 10px}
-.brand{font:800 22px/1 var(--f-display);letter-spacing:-.02em}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;align-items:center;justify-content:space-between;gap:10px;padding-block:14px 10px}
+.brand{font:800 21px/1 var(--f-display);letter-spacing:-.02em;white-space:nowrap}
 .brand span{color:var(--accent)}
-.streak{display:flex;align-items:center;gap:6px;font:700 14px var(--f-body);background:var(--surface);border:1px solid var(--line);padding:6px 12px;border-radius:999px;font-variant-numeric:tabular-nums}
-.streak b{color:var(--accent)}
+.pills{display:flex;gap:6px}
+.pill{display:flex;align-items:center;gap:5px;font:700 13px var(--f-body);background:var(--surface);border:1px solid var(--line);padding:5px 10px;border-radius:999px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill b{color:var(--accent)}
+.pill.xp b{color:var(--gold)}
 h1,h2,h3{font-family:var(--f-display);letter-spacing:-.015em;text-wrap:balance;margin:0}
-h1{font-size:30px;line-height:1.1;font-weight:800}
-h2{font-size:21px;font-weight:700}
+h1{font-size:29px;line-height:1.1;font-weight:800}
+h2{font-size:21px;font-weight:700;line-height:1.2}
 h3{font-size:17px;font-weight:700}
+p{margin:0}
 .eyebrow{font:700 12px var(--f-body);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
 .stack{display:flex;flex-direction:column;gap:14px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0}
 .muted{color:var(--muted)}
+.small{font-size:13px}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.between{justify-content:space-between}
 button{font:700 15px var(--f-body);border:0;border-radius:12px;padding:11px 16px;cursor:pointer;background:var(--sky-soft);color:var(--sky);transition:transform .08s}
 button:active{transform:scale(.97)}
 button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
 button.primary{background:var(--accent);color:var(--accent-ink)}
 button.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+button.block{width:100%}
 button.rec{background:var(--accent);color:var(--accent-ink)}
 button.rec.on{animation:pulse 1s infinite}
 @keyframes pulse{50%{box-shadow:0 0 0 8px color-mix(in srgb,var(--accent) 25%,transparent)}}
 @media (prefers-reduced-motion:reduce){button.rec.on{animation:none}}
-button:disabled{opacity:.5;cursor:default}
+button:disabled{opacity:.45;cursor:default}
 .chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
 .chip{white-space:nowrap;background:var(--surface);border:1px solid var(--line);color:var(--ink);font-weight:600;padding:8px 14px;border-radius:999px}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px}
+.seg button{background:transparent;color:var(--muted);padding:9px 4px;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+/* continue card */
+.hero{border-radius:20px;padding:20px;color:var(--on-c);display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+.hero.c1{background:var(--c1)}.hero.c2{background:var(--c2)}.hero.c3{background:var(--c3)}
+.hero .eyebrow{color:var(--on-c);opacity:.85}
+.hero button{background:var(--on-c);color:var(--ink)}
+.hero .bar{background:rgba(255,255,255,.3)}
+.hero .bar i{background:var(--on-c)}
+.hero svg.deco{position:absolute;right:-20px;top:-20px;width:140px;height:140px;opacity:.16}
 /* Say this not that */
 .swap{display:grid;gap:8px}
 .swap .no{background:var(--bad-soft);color:var(--bad);border-radius:12px;padding:10px 14px;font-weight:600;text-decoration:line-through;text-decoration-thickness:2px}
@@ -66,21 +89,52 @@ button:disabled{opacity:.5;cursor:default}
 .goal .g-text{flex:1;min-width:0}
 .bar{height:10px;border-radius:99px;background:var(--line);overflow:hidden}
 .bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .4s}
+/* Course path */
+.course-head{border-radius:20px;padding:18px 20px;color:var(--on-c);display:flex;flex-direction:column;gap:8px}
+.course-head.c1{background:var(--c1)}.course-head.c2{background:var(--c2)}.course-head.c3{background:var(--c3)}
+.course-head .eyebrow{color:var(--on-c);opacity:.85}
+.course-head .bar{background:rgba(255,255,255,.3)}.course-head .bar i{background:var(--on-c)}
+.course-head ul{margin:4px 0 0;padding-left:18px;font-size:14px;opacity:.95}
+.path{position:relative;display:flex;flex-direction:column;gap:12px;padding:6px 0 10px}
+.wk{display:flex;gap:14px;align-items:flex-start}
+.wk:nth-child(4n+2){padding-left:28px}.wk:nth-child(4n+3){padding-left:56px}.wk:nth-child(4n+4){padding-left:28px}
+.node{width:54px;height:54px;border-radius:50%;flex:none;display:grid;place-items:center;font:800 18px var(--f-display);border:3px solid var(--line);background:var(--surface);color:var(--muted)}
+.node svg{width:20px;height:20px}
+.wk.done .node{background:var(--good);border-color:var(--good);color:#fff}
+.wk.current .node{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 22%,transparent)}
+.wk .wk-card{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 14px;text-align:left;color:var(--ink);font-weight:400;display:block}
+.wk.locked .wk-card{opacity:.6}
+.wk-card .t{font:700 16px var(--f-display);display:block}
+.wk-card .s{font-size:13px;color:var(--muted)}
+.items{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.item{display:flex;align-items:center;gap:10px;font-size:14px;padding:8px 10px;border-radius:10px;background:var(--bg);color:var(--ink);text-align:left;font-weight:600;width:100%}
+.item .st{width:22px;height:22px;border-radius:50%;flex:none;display:grid;place-items:center;border:2px solid var(--line);font-size:12px}
+.item.done .st{background:var(--good);border-color:var(--good);color:#fff}
+.item.next{outline:2px solid var(--accent)}
+.item .xpv{margin-left:auto;font-size:12px;color:var(--gold);font-weight:700}
+.item:disabled{opacity:.5}
 /* Phrase */
 .phrase{font:700 22px/1.3 var(--f-display)}
-.ipa{font-family:ui-monospace,Menlo,monospace;color:var(--muted);font-size:14px}
-.heard{min-height:24px;font-size:15px}
+.heard{min-height:24px;font-size:15px;overflow-wrap:anywhere}
 .heard .w-ok{color:var(--good);font-weight:700}
 .heard .w-miss{color:var(--bad);text-decoration:underline wavy;text-underline-offset:3px}
-.score{font:800 34px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.score{font:800 30px/1 var(--f-display);font-variant-numeric:tabular-nums}
 .note{font-size:14px;background:var(--sky-soft);color:var(--ink);border-radius:12px;padding:10px 12px}
+.line{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}
+.line:first-child{border-top:0}
+.line .txt{flex:1;min-width:0}
+.line .txt b{font-family:var(--f-display);font-size:17px}
+.mini{padding:7px 11px;font-size:13px;border-radius:10px}
 /* Pairs */
 .pair-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .pair-btn{background:var(--surface);color:var(--ink);border:2px solid var(--line);padding:18px 10px;font:800 22px var(--f-display);border-radius:14px}
 .pair-btn.right{border-color:var(--good);background:var(--good-soft);color:var(--good)}
 .pair-btn.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.opt{background:var(--surface);color:var(--ink);border:2px solid var(--line);text-align:left;font-weight:600;width:100%}
+.opt.right{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
 /* Timer */
-.timer{font:800 64px/1 var(--f-display);font-variant-numeric:tabular-nums;text-align:center}
+.timer{font:800 60px/1 var(--f-display);font-variant-numeric:tabular-nums;text-align:center}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center}
 .stats div{background:var(--bg);border-radius:12px;padding:10px 4px}
 .stats b{display:block;font:800 22px var(--f-display);font-variant-numeric:tabular-nums}
@@ -91,6 +145,23 @@ textarea{min-height:90px;resize:vertical}
 .bub{max-width:88%;padding:10px 14px;border-radius:16px;white-space:pre-wrap;min-width:0;overflow-wrap:anywhere}
 .bub.me{align-self:flex-end;background:var(--sky);color:var(--bg)}
 .bub.ai{align-self:flex-start;background:var(--bg);border:1px solid var(--line)}
+/* tests */
+.test-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.test-row:first-child{border-top:0}
+.badge{font:700 12px var(--f-body);padding:4px 10px;border-radius:999px;white-space:nowrap}
+.badge.pass{background:var(--good-soft);color:var(--good)}
+.badge.open{background:var(--gold-soft);color:var(--warn)}
+.badge.lock{background:var(--bg);color:var(--muted)}
+.rubric{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.rubric div{background:var(--bg);border-radius:12px;padding:10px 4px}
+.rubric b{display:block;font:800 22px var(--f-display)}
+.rubric span{font-size:12px;color:var(--muted)}
+.chart{display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:8px;border-bottom:1px solid var(--line)}
+.chart .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%;min-width:0}
+.chart .col i{display:block;width:100%;max-width:28px;background:var(--sky);border-radius:6px 6px 0 0}
+.chart .col span{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.check{display:flex;gap:10px;align-items:flex-start;padding:6px 0}
+.check input{width:20px;height:20px;flex:none;margin-top:2px}
 /* Tabs */
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
 nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
@@ -98,23 +169,33 @@ nav.tabs button{background:none;color:var(--muted);border-radius:0;padding:10px 
 nav.tabs button svg{width:22px;height:22px}
 nav.tabs button[aria-current="page"]{color:var(--accent)}
 .banner{font-size:14px;border:1px dashed var(--line);border-radius:12px;padding:10px 12px;color:var(--muted)}
-.hidden{display:none}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:700;z-index:20;max-width:calc(100% - 32px);text-align:center}
+.hidden{display:none !important}
 </style>
 
 <div class="wrap">
   <header class="top">
     <div class="brand">Speak<span>Up</span> Daily</div>
-    <div class="streak" title="Days in a row you practised"><svg width="16" height="16" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2.5 1.2-4 2.5-5 .2 1.8 1 3 2.2 3.4C11 8.5 11.3 5 12 2z"/></svg><b id="streakNum">0</b> day streak</div>
+    <div class="pills">
+      <div class="pill xp" title="Experience points"><b id="xpNum">0</b> XP</div>
+      <div class="pill" title="Days in a row you practised"><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true"><path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2.5 1.2-4 2.5-5 .2 1.8 1 3 2.2 3.4C11 8.5 11.3 5 12 2z"/></svg><b id="streakNum">0</b></div>
+    </div>
   </header>
 
   <!-- TODAY -->
   <section id="v-today" class="stack" data-view>
     <div>
       <div class="eyebrow" id="todayDate">Today</div>
-      <h1>Ten minutes of speaking a day beats one long class a week.</h1>
+      <h1>Fluent in 24 weeks, 15 minutes a day.</h1>
+    </div>
+    <div id="continueCard"></div>
+    <div class="card stack hidden" id="placeCard">
+      <h2>Not sure where to start?</h2>
+      <p class="muted">Take the free 3 minute level test. It tells you which course fits you, and unlocks it.</p>
+      <div class="row"><button class="primary" data-act="placement">Find my level</button><button class="ghost" data-act="begin">Start from Week 1</button></div>
     </div>
     <div class="card stack">
-      <div class="row" style="justify-content:space-between"><h2>Today's goals</h2><span class="muted" id="goalCount">0 / 4</span></div>
+      <div class="row between"><h2>Today's goals</h2><span class="muted" id="goalCount">0 / 4</span></div>
       <div class="bar"><i id="goalBar" style="width:0%"></i></div>
       <div id="goals"></div>
     </div>
@@ -133,59 +214,46 @@ nav.tabs button[aria-current="page"]{color:var(--accent)}
     </div>
   </section>
 
-  <!-- PHRASES -->
-  <section id="v-phrases" class="stack hidden" data-view>
-    <div><div class="eyebrow">Shadowing</div><h1>Listen, then say it out loud</h1></div>
-    <div class="chips" id="phraseCats" role="group" aria-label="Topic"></div>
-    <div class="card stack">
-      <div class="row" style="justify-content:space-between"><span class="eyebrow" id="phPos">1 / 8</span><span class="muted" id="phUse"></span></div>
-      <div class="phrase" id="phText"></div>
-      <div class="note" id="phTip"></div>
-      <div class="row">
-        <button id="phListen">Listen</button>
-        <button id="phSlow" class="ghost">Slow</button>
-        <button id="phRec" class="rec">Speak</button>
-      </div>
-      <div class="row" style="justify-content:space-between;align-items:flex-end">
-        <div class="heard" id="phHeard" style="flex:1;min-width:0"><span class="muted">Tap Speak and read the sentence aloud.</span></div>
-        <div class="score" id="phScore"></div>
-      </div>
-      <div class="row" style="justify-content:space-between"><button class="ghost" id="phPrev">Back</button><button class="primary" id="phNext">Next phrase</button></div>
-    </div>
+  <!-- COURSE -->
+  <section id="v-course" class="stack hidden" data-view>
+    <div><div class="eyebrow">Your 6 month plan</div><h1>Three courses, one goal</h1></div>
+    <p class="muted">Each week has 5 short lessons and a speaking test. Pass the test with 60% to unlock the next week.</p>
+    <div id="coursePath" class="stack"></div>
   </section>
 
-  <!-- SOUNDS -->
-  <section id="v-sounds" class="stack hidden" data-view>
-    <div><div class="eyebrow">Pronunciation</div><h1>Hear the difference</h1></div>
-    <div class="chips" id="pairCats" role="group" aria-label="Sound"></div>
-    <div class="card stack">
-      <div class="note" id="pairHow"></div>
-      <div class="row"><button class="primary" id="pairPlay">Play a word</button><span class="muted" id="pairScore">0 correct</span></div>
-      <div class="pair-grid" id="pairGrid"></div>
-      <div class="muted" id="pairMsg">Press play, then tap the word you heard.</div>
-    </div>
-    <div class="card stack">
-      <h3>Now say both words</h3>
-      <div class="row" id="pairSay"></div>
-      <div class="heard" id="pairHeard"></div>
-    </div>
+  <!-- LESSON -->
+  <section id="v-lesson" class="stack hidden" data-view>
+    <div class="row between"><button class="ghost mini" id="lessonBack">← Back to course</button><span class="eyebrow" id="lessonWhere"></span></div>
+    <div id="lessonBody" class="stack"></div>
   </section>
 
-  <!-- SPEAK -->
-  <section id="v-speak" class="stack hidden" data-view>
-    <div><div class="eyebrow">One minute talk</div><h1>Talk for 60 seconds without stopping</h1></div>
-    <div class="card stack">
-      <div class="eyebrow">Your topic</div>
-      <h2 id="topic"></h2>
-      <div class="muted" id="topicHelp"></div>
-      <div class="row"><button class="ghost" id="topicNew">New topic</button></div>
+  <!-- PRACTICE -->
+  <section id="v-practice" class="stack hidden" data-view>
+    <div><div class="eyebrow">Free practice</div><h1>Practise anything, anytime</h1></div>
+    <div class="seg" role="group" aria-label="Practice type"><button data-seg="phrases" aria-pressed="true">Phrases</button><button data-seg="sounds">Sounds</button><button data-seg="talk">1 min talk</button></div>
+    <div id="p-phrases" class="stack">
+      <div class="chips" id="phraseCats" role="group" aria-label="Topic"></div>
+      <div class="card stack">
+        <div class="row between"><span class="eyebrow" id="phPos">1 / 8</span><span class="muted small" id="phUse"></span></div>
+        <div class="phrase" id="phText"></div>
+        <div class="note" id="phTip"></div>
+        <div class="row"><button id="phListen">Listen</button><button id="phSlow" class="ghost">Slow</button><button id="phRec" class="rec">Speak</button></div>
+        <div class="row between" style="align-items:flex-end"><div class="heard" id="phHeard" style="flex:1;min-width:0"><span class="muted">Tap Speak and read the sentence aloud.</span></div><div class="score" id="phScore"></div></div>
+        <div class="row between"><button class="ghost" id="phPrev">Back</button><button class="primary" id="phNext">Next phrase</button></div>
+      </div>
     </div>
-    <div class="card stack">
-      <div class="timer" id="timer">1:00</div>
-      <div class="row" style="justify-content:center"><button class="rec" id="talkBtn">Start talking</button></div>
-      <div class="stats"><div><b id="stWords">0</b><span>words</span></div><div><b id="stWpm">0</b><span>words / min</span></div><div><b id="stFill">0</b><span>filler words</span></div></div>
-      <div class="heard muted" id="talkText"></div>
-      <div class="note" id="talkTip">Fluent speakers pause instead of saying "um". A short silence sounds confident.</div>
+    <div id="p-sounds" class="stack hidden">
+      <div class="chips" id="pairCats" role="group" aria-label="Sound"></div>
+      <div id="pairBox"></div>
+    </div>
+    <div id="p-talk" class="stack hidden">
+      <div class="card stack">
+        <div class="eyebrow">Your topic</div>
+        <h2 id="topic"></h2>
+        <div class="muted" id="topicHelp"></div>
+        <div class="row"><button class="ghost" id="topicNew">New topic</button></div>
+      </div>
+      <div id="freeTalk"></div>
     </div>
   </section>
 
@@ -201,29 +269,214 @@ nav.tabs button[aria-current="page"]{color:var(--accent)}
         <option value="doctor">Visiting the doctor</option>
         <option value="free">Free chat about anything</option>
       </select>
-      <div class="bubbles" id="chat"></div>
-      <textarea id="msg" placeholder="Type your reply, or tap Speak and say it"></textarea>
-      <div class="row"><button class="rec" id="msgRec">Speak</button><button class="primary" id="msgSend">Send</button><button class="ghost" id="chatReset">Start over</button></div>
-      <div class="banner hidden" id="coachOff"></div>
+      <div id="freeChat"></div>
     </div>
+  </section>
+
+  <!-- TESTS -->
+  <section id="v-tests" class="stack hidden" data-view>
+    <div><div class="eyebrow">Tests and progress</div><h1>See how far you've come</h1></div>
+    <div class="card stack">
+      <div class="row between"><h2>Weekly speaking tests</h2><span class="muted" id="testCount">0 of 24 passed</span></div>
+      <div class="bar"><i id="testBar" style="width:0%"></i></div>
+      <div id="testList"></div>
+    </div>
+    <div class="card stack">
+      <h2>Your speaking pace</h2>
+      <p class="muted small">Words per minute from your speaking lessons and 1 minute talks. Natural speakers talk at about 120 to 150.</p>
+      <div id="paceChart"></div>
+    </div>
+    <div class="card stack">
+      <h2>Level test</h2>
+      <p class="muted">8 quick questions to place you in the right course. You can take it again anytime.</p>
+      <div class="row"><button class="primary" data-act="placement">Take the level test</button></div>
+      <div class="muted small" id="placeResult"></div>
+    </div>
+    <div class="card stack">
+      <h3>Reset progress</h3>
+      <p class="muted small">Clears XP, streak and all lessons on this device.</p>
+      <div class="row"><button class="ghost" id="resetBtn">Reset</button><button class="ghost hidden" id="resetYes" style="color:var(--bad);border-color:var(--bad)">Yes, clear everything</button></div>
+    </div>
+  </section>
+
+  <!-- PLACEMENT -->
+  <section id="v-placement" class="stack hidden" data-view>
+    <div class="row between"><button class="ghost mini" data-go="today">← Back</button><span class="eyebrow" id="plPos"></span></div>
+    <div id="plBody" class="stack"></div>
   </section>
 </div>
 
 <nav class="tabs" aria-label="Sections"><div class="in">
   <button data-tab="today" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Today</button>
-  <button data-tab="phrases"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v11H8l-4 4z"/></svg>Phrases</button>
-  <button data-tab="sounds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>Sounds</button>
-  <button data-tab="speak"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Speak</button>
-  <button data-tab="coach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Coach</button>
+  <button data-tab="course"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H15a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.5"/></svg>Course</button>
+  <button data-tab="practice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Practice</button>
+  <button data-tab="coach"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v11H8l-4 4z"/></svg>Coach</button>
+  <button data-tab="tests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></svg>Tests</button>
 </div></nav>
 
 <script>
-(function(){
-const $=s=>document.querySelector(s);
-const store={get(k,d){try{const v=localStorage.getItem("su_"+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem("su_"+k,JSON.stringify(v))}catch(e){}}};
-const todayKey=new Date().toISOString().slice(0,10);
+/* ================= COURSE CONTENT ================= */
+const COURSES=[
+ {id:1,cls:"c1",name:"Confident Speaker",sub:"Beginner · Weeks 1 to 8",goal:"Speak simple, correct English without fear, and introduce yourself in front of people.",
+  skills:["Everyday sentences and basic grammar","Talking about yourself, family and routine","Asking and answering questions","Speaking in front of a group for 1 minute"]},
+ {id:2,cls:"c2",name:"Natural Fluency",sub:"Intermediate · Weeks 9 to 16",goal:"Hold smooth conversations, tell stories and share opinions with richer vocabulary.",
+  skills:["Storytelling and past tenses","Opinions, agreeing and disagreeing","Phrasal verbs and idioms people really use","Describing pictures, places and experiences"]},
+ {id:3,cls:"c3",name:"Professional and Academic",sub:"Advanced · Weeks 17 to 24",goal:"Speak with impact in interviews, meetings, presentations and academic discussions.",
+  skills:["Job interviews with the STAR method","Meetings, presentations and explaining data","Academic discussion and debate","A final 3 minute talk to show your progress"]}
+];
+/* each week: t title, g goal, learn (explanation), ph phrases, v vocab [word, meaning, example], snd sound key, sp speaking prompt, help, secs, sc roleplay scene, op opening line, test prompt */
+const WEEKS=[
+ {t:"Introduce yourself",g:"Say who you are with confidence.",learn:"Use I'm for your name, city and job: I'm Sara. I'm from Multan. I'm a teacher. Use I + verb for what you do: I live in Lahore. I work at a bank. I like cooking.",
+  ph:["Hi, I'm Sara. Nice to meet you.","I'm from Multan, but I live in Lahore now.","I'm a student. I'm studying business.","In my free time, I like reading and cooking.","I'm learning English because I want to feel confident."],
+  v:[["hometown","the city or town where you grew up","My hometown is small but beautiful."],["currently","at this time, now","I'm currently looking for a job."],["hobby","something you enjoy doing in your free time","My favourite hobby is painting."],["introduce","to tell people your name and who you are","Let me introduce myself."],["nervous","a little afraid or worried","I feel nervous when I speak in public."]],
+  snd:"v / w",sp:"Introduce yourself: your name, where you live, what you do and your hobbies.",help:"Start with: Hi, my name is...",secs:30,
+  sc:"You are a friendly person meeting the learner for the first time at a community event. Ask simple questions about them.",op:"Hi! I don't think we've met. I'm Alex. What's your name?",
+  test:"Introduce yourself to a new class. Say your name, where you live, what you do, and one interesting fact about you."},
+ {t:"Your daily routine",g:"Describe your day using the present simple.",learn:"For habits use the present simple. Add s for he, she and it: I wake up at seven. She wakes up at six. Use time words: usually, always, sometimes, after that, then.",
+  ph:["I usually wake up at seven o'clock.","After breakfast, I get ready for work.","I take the bus to the office.","In the evening, I spend time with my family.","I go to bed at around eleven."],
+  v:[["usually","most of the time","I usually drink tea in the morning."],["get ready","prepare yourself to go out","It takes me twenty minutes to get ready."],["commute","the journey to work or school","My commute is about thirty minutes."],["chores","small jobs at home like cleaning","I do my chores on Saturday."],["relax","to rest and feel calm","I relax by watching a drama."]],
+  snd:"ee / i",sp:"Describe your typical weekday from morning to night.",help:"Use: first, then, after that, in the evening.",secs:30,
+  sc:"You are a friendly neighbour asking the learner about their daily routine and weekend habits.",op:"Good morning! You always look so busy. What does a normal day look like for you?",
+  test:"Describe your daily routine on a weekday and on a weekend. Say what is different."},
+ {t:"Family and friends",g:"Talk about the people in your life.",learn:"Use have for family: I have two sisters. Use he's or she's to describe: She's kind. He's tall. Use like to describe personality: What is she like? She's funny and helpful.",
+  ph:["I have two sisters and one brother.","My mother is the kindest person I know.","My best friend and I have known each other since school.","He's tall, with short black hair.","We usually meet up on weekends."],
+  v:[["siblings","brothers and sisters","How many siblings do you have?"],["get along","to have a friendly relationship","I get along well with my cousins."],["caring","kind and helpful to others","My grandmother is very caring."],["close","having a strong relationship","We're very close."],["look like","to be similar in appearance","I look like my father."]],
+  snd:"th / t",sp:"Describe one person in your family. What do they look like and what are they like?",help:"Use: He's / She's... and I love that they...",secs:30,
+  sc:"You are a new friend at a tea stall asking the learner about their family and friends.",op:"So tell me about your family. Do you have any brothers or sisters?",
+  test:"Talk about your family and your best friend. Describe what they look like and why they are important to you."},
+ {t:"Asking questions",g:"Ask clear questions and keep a conversation going.",learn:"Question words go first: What, Where, When, Why, How. Then do or does: Where do you live? What does she do? For yes or no questions: Do you like tea? Are you free today?",
+  ph:["Where do you work?","What do you like to do on weekends?","How long have you lived here?","Do you have any plans for tonight?","Sorry, could you say that again, please?"],
+  v:[["actually","used to add a surprising fact","Actually, I'm from Quetta."],["by the way","used to change the topic","By the way, how is your mother?"],["pardon","polite way to ask someone to repeat","Pardon? I didn't hear you."],["curious","wanting to know something","I'm curious about your job."],["follow up","to ask more about something","Good speakers follow up with another question."]],
+  snd:"p / f",sp:"Imagine you meet a new classmate. Ask them 6 different questions, then answer them yourself.",help:"Mix: what, where, when, why, how, do you...",secs:45,
+  sc:"You are a new classmate. Answer briefly so the learner must ask follow up questions. Praise good questions.",op:"Hi! I just joined this class today. I'm a bit lost.",
+  test:"You meet someone new at a wedding. Ask them five questions and explain what you would say about yourself."},
+ {t:"Food and shopping",g:"Order, ask prices and make polite requests.",learn:"Be polite with Could I, Can I and I'd like: I'd like a cup of tea, please. Could I have the bill? How much is this? Avoid: Give me tea. It sounds rude in English.",
+  ph:["Could I have a cup of tea, please?","I'd like the chicken biryani, please.","How much is this shirt?","Do you have this in a bigger size?","Could I have the bill, please?"],
+  v:[["menu","the list of food in a restaurant","Could I see the menu, please?"],["spicy","with a hot taste","Is this curry very spicy?"],["discount","a lower price","Is there any discount on this?"],["receipt","paper that shows what you paid","Can I get a receipt?"],["afford","to have enough money for","I can't afford it right now."]],
+  snd:"s / sh",sp:"Describe your favourite food and how to make it.",help:"First you..., then you..., finally...",secs:60,
+  sc:"You are a waiter at a restaurant. Take the learner's order, suggest dishes, and bring the bill at the end.",op:"Good evening! Welcome. Here's the menu. Can I get you something to drink first?",
+  test:"Order a full meal at a restaurant: a drink, a main dish, a question about the food, and asking for the bill."},
+ {t:"Last weekend",g:"Talk about the past with the past simple.",learn:"Regular verbs add ed: walk becomes walked. Many common verbs are irregular: go/went, eat/ate, see/saw, have/had, buy/bought. After did and didn't use the base verb: Did you go? I didn't go.",
+  ph:["Last weekend, I visited my grandparents.","We went to the market and bought some fruit.","I didn't do much on Sunday. I just relaxed.","What did you do last night?","It was one of the best days of my life."],
+  v:[["memorable","easy to remember because it was special","It was a memorable trip."],["exhausted","extremely tired","I was exhausted after the wedding."],["hang out","to spend time together casually","We hung out at the mall."],["for a while","for some time","We talked for a while."],["eventually","in the end, after some time","Eventually, we found the restaurant."]],
+  snd:"v / w",sp:"Tell me about your last weekend. Where did you go, who were you with, what did you do?",help:"Use: On Saturday I..., then we..., in the end...",secs:60,
+  sc:"You are a colleague on Monday morning asking the learner about their weekend. Ask follow up questions in the past tense.",op:"Morning! How was your weekend? Did you do anything fun?",
+  test:"Talk about the best day you had last month. Use the past tense to describe what happened."},
+ {t:"Plans and dreams",g:"Talk about the future with going to and will.",learn:"Use going to for plans: I'm going to visit Murree next month. Use will for quick decisions and promises: I'll call you later. Use I'd like to or I hope to for dreams: I'd like to start my own business.",
+  ph:["I'm going to start a new course next month.","I'll call you when I get home.","In five years, I'd like to work abroad.","I hope to speak English fluently by next year.","What are you going to do this weekend?"],
+  v:[["goal","something you want to achieve","My goal is to speak confidently."],["plan to","to intend to do","I plan to save some money."],["abroad","in another country","She wants to study abroad."],["achieve","to succeed in doing something","You can achieve anything with practice."],["someday","at some time in the future","Someday I'll visit London."]],
+  snd:"ee / i",sp:"Talk about your plans for next year and one big dream you have.",help:"Use: I'm going to..., I'd like to..., I hope...",secs:60,
+  sc:"You are a career counsellor asking the learner about their goals and plans for the future.",op:"Hello! Let's talk about your future. What are you planning to do in the next year?",
+  test:"Talk about your plans for the next year and your dream for the next five years. Explain why."},
+ {t:"Speaking in front of people",g:"Give a 1 minute talk to a group with confidence.",learn:"A simple talk has three parts. Opening: Good morning everyone, today I'd like to talk about... Middle: two or three points with First, Second, Finally. Closing: Thank you for listening. Look up, smile, and pause instead of saying um.",
+  ph:["Good morning, everyone. Thank you for being here.","Today, I'd like to talk about something important to me.","First of all, let me tell you a little about myself.","Finally, I want to share one thing I've learned.","Thank you for listening. Do you have any questions?"],
+  v:[["audience","the people listening to a talk","The audience was very friendly."],["confident","sure of yourself","She looked confident on stage."],["pause","a short stop when speaking","A pause helps people follow you."],["eye contact","looking at people's eyes","Make eye contact with the audience."],["share","to tell others about something","I'd like to share my story."]],
+  snd:"th / t",sp:"Give a short speech to a group: introduce yourself and talk about one thing you are proud of.",help:"Opening, 2 points, thank you.",secs:60,
+  sc:"You are the host of a small community meeting. Invite the learner to introduce themselves to the group, then ask one friendly question.",op:"Welcome, everyone! We have a new member today. Would you like to introduce yourself to the group?",
+  test:"Give a 1 minute talk to a group: introduce yourself, share something you are proud of, and close politely."},
+ /* COURSE 2 */
+ {t:"Telling stories",g:"Tell a story with a clear beginning, middle and end.",learn:"Use the past continuous for the background and the past simple for actions: I was walking home when it started to rain. Story linkers: One day, Suddenly, Then, After that, In the end.",
+  ph:["One day, I was walking home from work.","Suddenly, I heard someone calling my name.","I couldn't believe my eyes.","After that, we went for a cup of tea and laughed about it.","In the end, it turned out to be a great day."],
+  v:[["suddenly","quickly and unexpectedly","Suddenly, the lights went out."],["turn out","to happen in a way you didn't expect","It turned out to be my old friend."],["realise","to suddenly understand","I realised I had left my phone."],["embarrassing","making you feel shy or silly","It was so embarrassing."],["luckily","fortunately","Luckily, nobody was hurt."]],
+  snd:"s / sh",sp:"Tell a funny or surprising story that happened to you.",help:"One day... Suddenly... In the end...",secs:60,
+  sc:"You are a friend who loves stories. Listen to the learner's story and react naturally: Oh no! Really? What happened next?",op:"You look like you have a story to tell. What happened?",
+  test:"Tell a story about a time something unexpected happened to you. Use past tenses and story linkers."},
+ {t:"Opinions",g:"Share your view and agree or disagree politely.",learn:"Give opinions: In my opinion, I think, I feel that. Agree: Exactly. I couldn't agree more. Disagree politely: I see your point, but... I'm not so sure about that. Always give a reason with because.",
+  ph:["In my opinion, online classes are very useful.","I see your point, but I don't fully agree.","That's true, and I'd add that it saves time.","I'm not so sure about that.","I couldn't agree more."],
+  v:[["point of view","the way you think about something","From my point of view, it's fair."],["convince","to make someone believe something","You've convinced me."],["on the other hand","used to give the opposite side","On the other hand, it's expensive."],["fair enough","I accept your point","Fair enough, that makes sense."],["depend on","to be decided by","It depends on the situation."]],
+  snd:"p / f",sp:"Is it better to live in a big city or a small town? Give your opinion and two reasons.",help:"In my opinion... because... On the other hand...",secs:60,
+  sc:"You are a friendly debate partner. Take the opposite opinion from the learner and politely challenge them to give reasons.",op:"Here's a question for you: should students be allowed to use phones in class? What do you think?",
+  test:"Should everyone learn English? Give your opinion, two reasons, and one point from the other side."},
+ {t:"Phrasal verbs you need",g:"Use the phrasal verbs native speakers use every day.",learn:"Phrasal verbs are a verb plus a small word. They sound natural in speech: find out (discover), give up (stop trying), look forward to (be excited about), come up with (think of an idea), put off (delay).",
+  ph:["I found out about this app on Instagram.","Don't give up. You're getting better every day.","I'm looking forward to the weekend.","She came up with a great idea.","I keep putting it off, but I'll do it today."],
+  v:[["find out","to discover information","I found out the shop was closed."],["give up","to stop trying","Never give up on your dreams."],["come up with","to think of an idea","We came up with a plan."],["put off","to delay something","Stop putting off your homework."],["run out of","to have no more of something","We ran out of milk."]],
+  snd:"v / w",sp:"Talk about a goal you almost gave up on. Use at least 4 phrasal verbs.",help:"give up, keep on, figure out, look forward to",secs:60,
+  sc:"You are a friend planning a weekend trip with the learner. Use phrasal verbs naturally and encourage the learner to use them too.",op:"So, we need to figure out our plan for the weekend trip. Any ideas?",
+  test:"Describe a challenge you faced and how you dealt with it. Use at least four phrasal verbs."},
+ {t:"Life experiences",g:"Talk about experiences with the present perfect.",learn:"Use have + past participle for life experience without a time: I've been to Karachi. Have you ever tried sushi? Use the past simple when you say when: I went there in 2022. Use for and since: I've lived here for five years, since 2020.",
+  ph:["Have you ever been on a plane?","I've never tried Japanese food.","I've lived in this city for five years.","I've just finished my exams.","It's the best book I've ever read."],
+  v:[["ever","at any time","Have you ever met a celebrity?"],["experience","something that happens to you","It was a great experience."],["recently","not long ago","I've recently started running."],["so far","until now","So far, so good."],["once in a lifetime","very special and rare","It was a once in a lifetime trip."]],
+  snd:"th / t",sp:"Talk about three things you have done in your life and one thing you have never done but want to.",help:"I've been... I've never... I'd love to...",secs:60,
+  sc:"You are playing a friendly game of Have you ever with the learner. Ask Have you ever questions and share your own answers.",op:"Let's play a game. Have you ever done something really brave?",
+  test:"Talk about the most interesting experience of your life so far, and something you've never done but would like to."},
+ {t:"Describing pictures and places",g:"Describe what you see in clear detail.",learn:"Describe from big to small. In the picture, I can see... In the background... In the foreground... On the left or right... It looks like... They seem to be... Use there is and there are.",
+  ph:["In this picture, I can see a busy market.","In the background, there are some tall buildings.","On the left, a man is selling fruit.","It looks like a hot summer afternoon.","The people seem to be in a hurry."],
+  v:[["background","the part at the back of a picture","There are mountains in the background."],["crowded","full of people","The street is very crowded."],["peaceful","quiet and calm","It looks like a peaceful village."],["seem","to appear to be","They seem happy."],["in the distance","far away","In the distance, you can see the sea."]],
+  snd:"ee / i",sp:"Close your eyes and picture your favourite place. Describe it so someone else can see it.",help:"In the background... on the left... it looks like...",secs:60,
+  sc:"You are a friend who has never been to the learner's city. Ask them to describe places so you can imagine them.",op:"I've never been to your city. If I visited, what would I see? Describe your favourite place for me.",
+  test:"Image task: imagine a photo of a busy railway station at rush hour. Describe everything you can see in detail."},
+ {t:"Comparing and choosing",g:"Compare things and explain your choices.",learn:"Short words add er or est: cheap, cheaper, the cheapest. Long words use more and most: more comfortable, the most beautiful. Irregular: good, better, best and bad, worse, worst. Use I'd rather... than... for preferences.",
+  ph:["Trains are cheaper than planes, but slower.","This is the most beautiful place I've ever seen.","I'd rather stay home than go out tonight.","Both options are good, but I prefer the first one.","It's not as expensive as I thought."],
+  v:[["prefer","to like one thing more","I prefer tea to coffee."],["option","a choice","We have two options."],["worth it","good enough to justify the cost or effort","It's expensive, but it's worth it."],["compared to","when you compare","Compared to last year, prices are high."],["pros and cons","good and bad points","Let's think about the pros and cons."]],
+  snd:"p / f",sp:"Compare two cities you know. Which one would you rather live in, and why?",help:"bigger than, more ... than, I'd rather...",secs:60,
+  sc:"You are a friend trying to decide between buying an iPhone or an Android phone. Ask the learner to compare them and help you choose.",op:"I can't decide which phone to buy. Can you help me compare?",
+  test:"Compare studying at home with studying in a classroom. Give the pros and cons and say which you prefer."},
+ {t:"Sounding natural",g:"Use natural fillers, idioms and reactions instead of um.",learn:"Replace um with natural fillers: Well..., Let me think..., The thing is..., To be honest... React like a native speaker: No way! That's amazing! Oh, I see. Idioms: a piece of cake (easy), under the weather (a little sick), break the ice (start a conversation).",
+  ph:["Well, let me think about that for a second.","To be honest, it was a piece of cake.","I'm feeling a bit under the weather today.","No way! That's amazing.","The thing is, I don't have much time."],
+  v:[["a piece of cake","very easy","The test was a piece of cake."],["under the weather","a little sick","I'm feeling under the weather."],["break the ice","to start a friendly conversation","He told a joke to break the ice."],["hit the books","to study hard","I need to hit the books tonight."],["on the same page","agreeing or understanding the same way","Are we on the same page?"]],
+  snd:"s / sh",sp:"Talk about your favourite season. Use at least two idioms and no um.",help:"Pause and say Well... or Let me think... instead of um.",secs:90,
+  sc:"You are a chatty, natural English speaker at a party. Use idioms and natural reactions, and gently explain any idiom the learner doesn't know.",op:"Hey! Great party, isn't it? So how do you know the host?",
+  test:"Talk about how your week has been. Use natural fillers, at least two idioms, and avoid um and uh."},
+ {t:"Phone calls and problems",g:"Handle phone calls, complaints and problems politely.",learn:"On the phone: Hello, this is... speaking. Could I speak to...? Could you hold on a moment? For problems: I'm calling about... I'm afraid there's a problem with... Would it be possible to...? Stay polite and clear.",
+  ph:["Hello, this is Sara speaking. How can I help you?","I'm calling about my order from last week.","I'm afraid there's a problem with my internet connection.","Would it be possible to get a refund?","Could you hold on a moment, please?"],
+  v:[["complaint","saying you are not happy about something","I'd like to make a complaint."],["refund","money given back","Can I get a refund?"],["hold on","to wait for a moment","Hold on, I'll check."],["sort out","to solve a problem","We'll sort it out today."],["inconvenience","trouble or a problem","Sorry for the inconvenience."]],
+  snd:"v / w",sp:"Call a shop to complain about a broken product and ask for a solution.",help:"I'm calling about... I'm afraid... Would it be possible...",secs:90,
+  sc:"You are a customer service agent for an internet company. The learner calls with a problem. Be polite but ask for details.",op:"Thank you for calling Skyline Internet. My name is Jordan. How can I help you today?",
+  test:"Leave a voice message for a hotel: explain a problem with your booking and ask politely for a solution."},
+ /* COURSE 3 */
+ {t:"Job interviews",g:"Answer interview questions with structure and confidence.",learn:"Use the STAR method: Situation (where and when), Task (your responsibility), Action (what you did), Result (what happened, with numbers if you can). For Tell me about yourself: present job, past experience, why this role.",
+  ph:["I'm currently working as a marketing assistant.","One of my main strengths is solving problems under pressure.","In my previous role, I led a team of five people.","As a result, sales increased by twenty percent.","I'm really excited about this opportunity because it matches my skills."],
+  v:[["strength","something you are good at","My biggest strength is communication."],["responsible for","having the duty to do","I was responsible for training new staff."],["handle","to deal with","I can handle difficult customers."],["achievement","something good you did through effort","My proudest achievement was winning the award."],["opportunity","a chance to do something","Thank you for this opportunity."]],
+  snd:"th / t",sp:"Answer: Tell me about yourself. Then: Tell me about a time you solved a difficult problem.",help:"Use STAR: Situation, Task, Action, Result.",secs:120,
+  sc:"You are a professional HR interviewer for an office job. Ask common interview questions one at a time, including one behavioural question.",op:"Good morning, and thank you for coming in. Let's start. Could you tell me a little about yourself?",
+  test:"Answer this interview question using STAR: Tell me about a time you worked under pressure."},
+ {t:"Meetings",g:"Take part in meetings: give updates, interrupt politely, agree on actions.",learn:"Give updates: Just a quick update on... Interrupt politely: Sorry to interrupt, but... Can I just add something? Clarify: Just to clarify, do you mean...? Close: So, to sum up, the next steps are...",
+  ph:["Just a quick update on the project.","Sorry to interrupt, but could I add something?","Just to clarify, do you mean next Monday?","I'd like to suggest a different approach.","So, to sum up, here are the next steps."],
+  v:[["agenda","list of topics for a meeting","What's on the agenda today?"],["deadline","the last day to finish something","The deadline is Friday."],["on track","going as planned","We're on track to finish."],["follow up","to continue or check later","I'll follow up by email."],["action points","tasks agreed in a meeting","Let's go over the action points."]],
+  snd:"p / f",sp:"Give a 1 minute project update in a team meeting: progress, a problem, and next steps.",help:"Quick update... One challenge is... Next steps...",secs:90,
+  sc:"You are a team manager running a weekly meeting. Ask the learner for an update, raise a concern, and agree on next steps.",op:"Okay, let's get started. Could you give us a quick update on your part of the project?",
+  test:"In a meeting, your manager suggests a deadline that is too short. Politely disagree, explain why, and suggest a solution."},
+ {t:"Presentations",g:"Structure and deliver a clear presentation.",learn:"Signposting guides your listeners: Today I'm going to talk about three things. Let's start with... Moving on to... This brings me to... To conclude... Slow down, pause after key points, and stress the important words.",
+  ph:["Today, I'm going to talk about three main points.","Let's start with the background.","Moving on to my second point.","This brings me to the most important part.","To conclude, I'd like to thank you all for your time."],
+  v:[["outline","a short plan of the main points","Here's an outline of my talk."],["highlight","to point out something important","I'd like to highlight one result."],["in conclusion","used to start the ending","In conclusion, the plan works."],["key takeaway","the main thing to remember","The key takeaway is simple."],["elaborate","to explain in more detail","Could you elaborate on that?"]],
+  snd:"s / sh",sp:"Give a short presentation about a product or idea you love: introduction, 3 points, conclusion.",help:"Today I'm going to... Firstly... Moving on... To conclude...",secs:120,
+  sc:"You are an audience member at the learner's presentation. After they present, ask one or two thoughtful questions.",op:"The floor is yours. Please go ahead with your presentation, and I'll ask questions at the end.",
+  test:"Give a short presentation about how technology has changed education. Use clear signposting."},
+ {t:"Explaining data and processes",g:"Explain numbers, trends and step by step processes clearly.",learn:"Trends: rise, increase, grow, fall, drop, decline, stay the same. Add how much: sharply, slightly, steadily. Processes: The first step is... Once that's done... Finally... Use the passive for processes: The data is collected, then analysed.",
+  ph:["Sales rose sharply in the first quarter.","The number of users has doubled since last year.","Costs dropped slightly in March.","The first step is to collect the data.","Once that's done, the results are analysed."],
+  v:[["increase","to become bigger","Prices increased by ten percent."],["decline","to become smaller","Profits declined last year."],["steadily","slowly and regularly","The numbers grew steadily."],["approximately","about, not exact","Approximately half of the students agreed."],["significant","large or important","There was a significant change."]],
+  snd:"ee / i",sp:"Explain a process you know well, step by step, like making tea or applying for a passport.",help:"The first step... Once that's done... Finally...",secs:120,
+  sc:"You are a new manager who wants the learner to explain their team's monthly results and how their work process runs. Ask about numbers and reasons.",op:"I'm new here. Could you walk me through last month's results and how your team works?",
+  test:"Explain a trend you have noticed in your city or field, with numbers or examples, and give reasons for it."},
+ {t:"Academic discussion",g:"Discuss ideas formally, give evidence and hedge your claims.",learn:"Academic speakers hedge: It seems that... This may suggest... There is some evidence that... Give evidence: According to research... For example... Build on others: Building on what you said... That raises an interesting question...",
+  ph:["According to recent research, sleep affects memory.","This may suggest that the method is effective.","Building on what you said, I'd argue that...","That raises an interesting question.","There is some evidence to support this view."],
+  v:[["evidence","facts that show something is true","There's strong evidence for this."],["argue","to give reasons for an idea","I would argue that it's necessary."],["perspective","a point of view","From an economic perspective..."],["furthermore","in addition","Furthermore, it saves money."],["whereas","used to compare differences","Some agree, whereas others don't."]],
+  snd:"th / t",sp:"Discuss: Should university education be free? Use hedging and give evidence.",help:"It could be argued that... According to... However...",secs:120,
+  sc:"You are a university tutor leading a seminar discussion. Ask the learner for their argument and evidence, and push them to consider other perspectives.",op:"Welcome to today's seminar. Our question is: does social media do more harm than good? What's your position?",
+  test:"In a seminar, give your position on whether artificial intelligence will create more jobs than it replaces. Support it with reasons and evidence."},
+ {t:"Debate and persuasion",g:"Persuade people and respond to counter arguments.",learn:"Persuade with a clear claim, reasons and examples. Use strong phrases: The main reason is... Consider this... Imagine if... Respond to the other side: Some people say..., however... While I understand..., I believe...",
+  ph:["The main reason I believe this is simple.","Some people say it's too expensive. However, it saves money in the long run.","While I understand your concern, I believe the benefits are greater.","Imagine if every student had this opportunity.","That's exactly why we need to act now."],
+  v:[["persuade","to make someone agree","I tried to persuade my manager."],["counterargument","a reason against an idea","Let's look at the counterargument."],["benefit","a good result","The benefits are clear."],["in the long run","over a long period","It's cheaper in the long run."],["compelling","very convincing","That's a compelling argument."]],
+  snd:"p / f",sp:"Persuade your audience that everyone should learn a second language.",help:"Claim, 2 reasons, example, answer the other side, strong ending.",secs:120,
+  sc:"You are a debate opponent. Argue the opposite side of the learner's opinion respectfully, then let them respond.",op:"Today's debate topic: working from home is better than working in an office. Which side are you on?",
+  test:"Persuade a city council to build more public parks. Answer one counterargument in your talk."},
+ {t:"Networking and negotiation",g:"Make professional connections and negotiate politely.",learn:"Networking: What brings you here? What do you do exactly? It was great connecting with you. Negotiating: Would you consider...? What if we...? That works for me if... I'm afraid that's a bit higher than we expected.",
+  ph:["What brings you to this event?","It was great connecting with you. Let's stay in touch.","Would you consider a lower price if we order more?","That works for me, as long as delivery is on time.","I'm afraid that's a bit higher than we expected."],
+  v:[["connect","to make a professional relationship","It's great to connect with you."],["proposal","a formal suggestion","I'll send you a proposal."],["compromise","an agreement where both give a little","Let's find a compromise."],["terms","the conditions of a deal","We agreed on the terms."],["mutually beneficial","good for both sides","It's a mutually beneficial deal."]],
+  snd:"v / w",sp:"Introduce yourself professionally at an event, then explain what you do and what you are looking for.",help:"Elevator pitch: who you are, what you do, what you want.",secs:90,
+  sc:"You are a supplier negotiating a price with the learner, who is a business buyer. Start with a high price and be willing to compromise.",op:"Thanks for meeting with me. For 500 units, our price is 2,000 rupees per unit. What do you think?",
+  test:"Negotiate a salary increase with your manager. Explain your value and propose a fair compromise."},
+ {t:"Your final talk",g:"Give a polished 3 minute talk to show how far you've come.",learn:"Bring everything together. Hook (a question, story or surprising fact), three clear points with signposting, examples, natural fillers instead of um, and a memorable ending. Practise it three times: once slow, once normal, once with full energy.",
+  ph:["Have you ever felt afraid to speak in front of people?","Six months ago, I couldn't say a full sentence without stopping.","Here's what changed everything for me.","If I can do it, you can do it too.","Thank you. I'm happy to answer any questions."],
+  v:[["journey","a long process of change","My English journey started six months ago."],["breakthrough","an important step forward","Week eight was my breakthrough."],["consistent","doing something regularly","Being consistent is the secret."],["overcome","to succeed in dealing with a problem","I overcame my fear of speaking."],["inspire","to give someone the desire to do something","I hope my story inspires you."]],
+  snd:"th / t",sp:"Your final talk: your English journey, what you learned, and your advice for new learners.",help:"Hook, 3 points, a story, a strong ending.",secs:180,
+  sc:"You are an audience member at a public speaking event. After the learner's talk, give warm feedback and ask one question.",op:"We're ready when you are. Please begin your talk!",
+  test:"Final exam: give a 3 minute talk about your English learning journey, what helped you most, and advice for beginners."}
+];
+const DAYS=[["learn","Learn and shadow","Learn the key idea and repeat 5 phrases"],["words","Words","5 new words with a quick quiz"],["sounds","Sounds","Pronunciation and listening drill"],["speak","Speak","Timed speaking on your own"],["talk","Real talk","Role play with the AI coach"],["test","Weekly test","Speaking test, pass with 60%"]];
+const XP={lesson:20,test:50};
 
-/* ---------- content ---------- */
+/* ================= PRACTICE CONTENT ================= */
 const SWAPS=[
  {no:"I am agree with you.",yes:"I agree with you.",why:"\"Agree\" is already a verb, so it never needs \"am\"."},
  {no:"Please do the needful.",yes:"Could you take care of this, please?",why:"\"Do the needful\" sounds old fashioned to most native speakers."},
@@ -249,46 +502,10 @@ const WORDS=[
  {w:"Keen on",m:"very interested in something",e:"He's keen on learning new languages."}
 ];
 const PHRASES={
- "Daily life":[
-  ["Could I get a coffee to go, please?","At a cafe","Link \"get a\" so it sounds like \"geh-tuh\"."],
-  ["I'm running a bit late, sorry.","Messaging a friend","\"Running late\" is the natural way to say you'll arrive late."],
-  ["What do you usually do on weekends?","Starting a chat","Stress \"usually\" and \"weekends\"."],
-  ["I'm not really in the mood today.","Saying no politely","\"Not really\" softens it."],
-  ["That makes sense.","Showing you understand","Say it with falling tone at the end."],
-  ["Let me think about it for a second.","Buying time","A great phrase instead of \"umm\"."],
-  ["It depends on the weather.","Giving a soft answer","\"Depends on\" sounds like one word: \"dependson\"."],
-  ["I'll be there in ten minutes.","Telling your arrival","\"I'll\" is one sound, not \"I will\"."]
- ],
- "Work":[
-  ["Could you walk me through the process?","Asking for explanation","\"Walk me through\" means explain step by step."],
-  ["I'll get back to you by the end of the day.","Promising a reply","Use this instead of \"revert\"."],
-  ["Let's touch base next week.","Planning a follow up","\"Touch base\" means talk again briefly."],
-  ["I'm afraid I can't make it to the meeting.","Declining politely","\"I'm afraid\" makes bad news polite."],
-  ["That's a great point, and I'd add one thing.","Joining a discussion","Agree first, then add your idea."],
-  ["Could you clarify what you mean by that?","Asking to explain","Rise slightly at the end."],
-  ["I've been working on this project since March.","Talking about experience","\"Since\" plus a start point."],
-  ["Let me share my screen.","Online meetings","\"Share my\" links into \"sharemy\"."]
- ],
- "Small talk":[
-  ["How's your week going so far?","Friendly opener","More natural than \"How are you?\" every time."],
-  ["Have you been here before?","At an event","Stress \"been\" lightly, \"here\" strongly."],
-  ["What do you do for work?","Asking about jobs","Never \"What is your profession?\" in casual talk."],
-  ["Oh really? That sounds interesting.","Showing interest","Raise your voice on \"really\"."],
-  ["I know what you mean.","Agreeing warmly","Sounds friendly and natural."],
-  ["Anyway, it was nice talking to you.","Ending a chat","\"Anyway\" signals you are wrapping up."],
-  ["Are you from around here?","Getting to know someone","\"From around\" links: \"fromaround\"."],
-  ["Same here!","Saying you feel the same","Short and natural."]
- ],
- "Opinions":[
-  ["In my opinion, it's worth trying.","Sharing a view","Pause slightly after \"opinion\"."],
-  ["I see your point, but I'm not sure.","Polite disagreement","Better than \"You are wrong\"."],
-  ["To be honest, I prefer the first one.","Being direct","\"To be honest\" softens a strong view."],
-  ["I couldn't agree more.","Strong agreement","Means you agree completely."],
-  ["It's not my cup of tea.","Saying you don't like it","A friendly idiom for \"I don't like it\"."],
-  ["On the other hand, it's quite expensive.","Comparing ideas","Use after giving one side."],
-  ["I used to think so, but I changed my mind.","Showing growth","\"Used to\" sounds like \"yoos-tuh\"."],
-  ["That's a tough question.","Buying time","Then give your answer."]
- ]
+ "Daily life":[["Could I get a coffee to go, please?","At a cafe","Link \"get a\" so it sounds like \"geh-tuh\"."],["I'm running a bit late, sorry.","Messaging a friend","\"Running late\" is the natural way to say you'll arrive late."],["What do you usually do on weekends?","Starting a chat","Stress \"usually\" and \"weekends\"."],["I'm not really in the mood today.","Saying no politely","\"Not really\" softens it."],["That makes sense.","Showing you understand","Say it with falling tone at the end."],["Let me think about it for a second.","Buying time","A great phrase instead of \"umm\"."],["It depends on the weather.","Giving a soft answer","\"Depends on\" sounds like one word."],["I'll be there in ten minutes.","Telling your arrival","\"I'll\" is one sound, not \"I will\"."]],
+ "Work":[["Could you walk me through the process?","Asking for explanation","\"Walk me through\" means explain step by step."],["I'll get back to you by the end of the day.","Promising a reply","Use this instead of \"revert\"."],["Let's touch base next week.","Planning a follow up","\"Touch base\" means talk again briefly."],["I'm afraid I can't make it to the meeting.","Declining politely","\"I'm afraid\" makes bad news polite."],["That's a great point, and I'd add one thing.","Joining a discussion","Agree first, then add your idea."],["Could you clarify what you mean by that?","Asking to explain","Rise slightly at the end."],["I've been working on this project since March.","Talking about experience","\"Since\" plus a start point."],["Let me share my screen.","Online meetings","\"Share my\" links together."]],
+ "Small talk":[["How's your week going so far?","Friendly opener","More natural than \"How are you?\" every time."],["Have you been here before?","At an event","Stress \"here\" strongly."],["What do you do for work?","Asking about jobs","Never \"What is your profession?\" in casual talk."],["Oh really? That sounds interesting.","Showing interest","Raise your voice on \"really\"."],["I know what you mean.","Agreeing warmly","Sounds friendly and natural."],["Anyway, it was nice talking to you.","Ending a chat","\"Anyway\" signals you are wrapping up."],["Are you from around here?","Getting to know someone","\"From around\" links together."],["Same here!","Saying you feel the same","Short and natural."]],
+ "Opinions":[["In my opinion, it's worth trying.","Sharing a view","Pause slightly after \"opinion\"."],["I see your point, but I'm not sure.","Polite disagreement","Better than \"You are wrong\"."],["To be honest, I prefer the first one.","Being direct","\"To be honest\" softens a strong view."],["I couldn't agree more.","Strong agreement","Means you agree completely."],["It's not my cup of tea.","Saying you don't like it","A friendly idiom for \"I don't like it\"."],["On the other hand, it's quite expensive.","Comparing ideas","Use after giving one side."],["I used to think so, but I changed my mind.","Showing growth","\"Used to\" sounds like \"yoos-tuh\"."],["That's a tough question.","Buying time","Then give your answer."]]
 };
 const PAIRS={
  "v / w":{how:"For V, touch your top teeth to your bottom lip. For W, round your lips like a kiss and keep teeth away.",sets:[["vest","west"],["vine","wine"],["very","wary"],["vet","wet"],["veil","whale"]]},
@@ -297,36 +514,46 @@ const PAIRS={
  "p / f":{how:"P is a pop from closed lips. F is air through teeth on the lip, no pop.",sets:[["pan","fan"],["pool","fool"],["pine","fine"],["copy","coffee"],["pair","fair"]]},
  "s / sh":{how:"S has a thin hiss with lips spread. SH pushes the lips forward and the sound is softer.",sets:[["sip","ship"],["sea","she"],["sort","short"],["save","shave"],["sell","shell"]]}
 };
-const TOPICS=[
- ["Describe your favourite place in your city.","Where is it, what does it look like, why do you like it?"],
- ["Talk about a skill you want to learn this year.","What is it, why, and how will you learn it?"],
- ["Describe your perfect weekend.","Morning, afternoon, evening. Who are you with?"],
- ["Tell me about a person who inspires you.","Who are they and what did they do?"],
- ["Is social media good or bad for young people?","Give one good point, one bad point and your opinion."],
- ["Talk about your favourite food and how to make it.","Ingredients, steps, and when you eat it."],
- ["Describe a memorable trip you took.","Where, when, who with, and what happened?"],
- ["What would you do with a free day and no phone?","Walk me through your day."],
- ["Talk about your job or studies.","What do you do every day and what do you enjoy?"],
- ["Describe a film or series you love.","Story, characters, and why you recommend it."]
+const TOPICS=[["Describe your favourite place in your city.","Where is it, what does it look like, why do you like it?"],["Talk about a skill you want to learn this year.","What is it, why, and how will you learn it?"],["Describe your perfect weekend.","Morning, afternoon, evening. Who are you with?"],["Tell me about a person who inspires you.","Who are they and what did they do?"],["Is social media good or bad for young people?","Give one good point, one bad point and your opinion."],["Describe a memorable trip you took.","Where, when, who with, and what happened?"],["Talk about your job or studies.","What do you do every day and what do you enjoy?"],["Describe a film or series you love.","Story, characters, and why you recommend it."]];
+const PLACEMENT=[
+ {q:"___ you like tea?",o:["Do","Are","Is"],a:0},
+ {q:"She ___ to work every day.",o:["go","goes","going"],a:1},
+ {q:"Yesterday I ___ my old friend.",o:["meet","meeted","met"],a:2},
+ {q:"I've lived here ___ 2019.",o:["for","since","from"],a:1},
+ {q:"If it rains tomorrow, we ___ stay home.",o:["will","would","are"],a:0},
+ {q:"Which is the most polite way to say no to an invitation?",o:["I cannot come.","I'm afraid I can't make it.","No, I won't come."],a:1},
+ {q:"___ the delay, we finished the project on time.",o:["Although","However","Despite"],a:2},
+ {q:"Choose the most natural sentence for a meeting.",o:["Could you walk me through the report?","Please explain me the report.","Tell me report details."],a:0}
 ];
 
-/* ---------- progress ---------- */
-let prog=store.get("prog",{days:[],today:{}});
-if(prog.todayKey!==todayKey){prog.today={};prog.todayKey=todayKey}
-const GOALS=[["phrases","Shadow 5 phrases",5],["sounds","Get 5 sound pairs right",5],["talk","Do one 60 second talk",1],["coach","Send 3 messages to the coach",3]];
-function bump(k){prog.today[k]=(prog.today[k]||0)+1;
-  if(!prog.days.includes(todayKey)){prog.days.push(todayKey)}
-  store.set("prog",prog);renderGoals()}
-function streak(){const set=new Set(prog.days);let n=0;const d=new Date();
-  if(!set.has(d.toISOString().slice(0,10)))d.setDate(d.getDate()-1);
-  while(set.has(d.toISOString().slice(0,10))){n++;d.setDate(d.getDate()-1)}return n}
-function renderGoals(){let done=0;
-  $("#goals").innerHTML=GOALS.map(([k,t,n])=>{const v=Math.min(prog.today[k]||0,n),ok=v>=n;if(ok)done++;
-    return `<div class="goal ${ok?"done":""}"><div class="tick">✓</div><div class="g-text"><b>${t}</b><div class="muted" style="font-size:13px">${v} of ${n}</div></div><button class="ghost" data-go="${k==="talk"?"speak":k}">Go</button></div>`}).join("");
-  $("#goalCount").textContent=done+" / 4";$("#goalBar").style.width=(done/4*100)+"%";$("#streakNum").textContent=streak()}
-$("#goals").addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(b)show(b.dataset.go)});
+/* ================= APP ================= */
+(function(){
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem("su_"+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem("su_"+k,JSON.stringify(v))}catch(e){}}};
+const todayKey=new Date().toISOString().slice(0,10);
+function toast(t){const d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
 
-/* ---------- speech ---------- */
+/* ---- progress ---- */
+const blank=()=>({days:[],today:{},todayKey,xp:0,done:{},tests:{},talks:[],start:0,placed:false});
+let prog=Object.assign(blank(),store.get("prog",{}));
+if(prog.todayKey!==todayKey){prog.today={};prog.todayKey=todayKey}
+function save(){store.set("prog",prog)}
+function addXP(n){prog.xp+=n;markDay();save();$("#xpNum").textContent=prog.xp}
+function markDay(){if(!prog.days.includes(todayKey))prog.days.push(todayKey)}
+function bump(k){prog.today[k]=(prog.today[k]||0)+1;markDay();prog.xp+=2;save();renderTop();renderGoals()}
+function streak(){const set=new Set(prog.days);let n=0;const d=new Date();if(!set.has(d.toISOString().slice(0,10)))d.setDate(d.getDate()-1);while(set.has(d.toISOString().slice(0,10))){n++;d.setDate(d.getDate()-1)}return n}
+function renderTop(){$("#xpNum").textContent=prog.xp;$("#streakNum").textContent=streak()}
+
+/* sequence: every week has 6 items */
+const SEQ=[];WEEKS.forEach((w,wi)=>DAYS.forEach((d,di)=>SEQ.push({wi,di,id:"w"+(wi+1)+d[0]})));
+const isDone=i=>!!prog.done[SEQ[i].id];
+const unlocked=i=>i<=prog.start*6||isDone(i-1)||isDone(i);
+function nextIdx(){for(let i=0;i<SEQ.length;i++){if(!isDone(i)&&unlocked(i))return i}return -1}
+function courseOf(wi){return wi<8?0:wi<16?1:2}
+function finish(i,xp){if(!prog.done[SEQ[i].id]){prog.done[SEQ[i].id]=1;prog.today.lesson=(prog.today.lesson||0)+1;addXP(xp)}save();renderAll()}
+
+/* ---- speech ---- */
 let voice=null;
 function pickVoice(){const vs=speechSynthesis.getVoices();voice=vs.find(v=>/en[-_](US|GB)/i.test(v.lang)&&/natural|google|samantha|daniel/i.test(v.name))||vs.find(v=>/^en/i.test(v.lang))||null}
 if("speechSynthesis" in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
@@ -335,115 +562,248 @@ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 let micBlocked=false;
 function listen({btn,continuous=false,onText,onEnd,label="Speak"}){
   if(!SR||micBlocked){onText(null,"nomic");return null}
-  const r=new SR();r.lang="en-US";r.interimResults=true;r.continuous=continuous;
-  let finalT="";
+  const r=new SR();r.lang="en-US";r.interimResults=true;r.continuous=continuous;let finalT="";
   r.onresult=e=>{let interim="";for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)finalT+=t+" ";else interim+=t}onText((finalT+interim).trim(),"ok")};
-  r.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed"||e.error==="audio-capture"){micBlocked=true;onText(null,"nomic")}};
-  r.onend=()=>{btn.classList.remove("on");btn.textContent=label;onEnd&&onEnd(finalT.trim())};
-  try{r.start();btn.classList.add("on");btn.textContent="Listening… tap to stop"}catch(e){onText(null,"nomic");return null}
+  r.onerror=e=>{if(["not-allowed","service-not-allowed","audio-capture"].includes(e.error)){micBlocked=true;onText(null,"nomic")}};
+  r.onend=()=>{if(btn){btn.classList.remove("on");btn.textContent=label}onEnd&&onEnd(finalT.trim())};
+  try{r.start();if(btn){btn.classList.add("on");btn.textContent="Listening… tap to stop"}}catch(e){onText(null,"nomic");return null}
   return r}
-const NOMIC="Your microphone isn't available here. Open the app in Chrome on your phone or computer to get speech scoring. For now, say it aloud anyway and listen back to the model.";
+const NOMIC="Your microphone isn't available here. Open the app in Chrome to get speech scoring. For now, say it aloud anyway and compare with the model voice.";
 const norm=s=>s.toLowerCase().replace(/[’']/g,"'").replace(/[^a-z0-9' ]/g," ").split(/\s+/).filter(Boolean);
-function compare(target,heard){const t=norm(target),h=norm(heard);const hs=h.slice();let ok=0;
-  const html=target.split(/\s+/).map(w=>{const n=norm(w)[0];if(!n)return w;const i=hs.indexOf(n);if(i>-1){hs.splice(i,1);ok++;return `<span class="w-ok">${w}</span>`}return `<span class="w-miss">${w}</span>`}).join(" ");
-  const total=t.length||1;return{html,score:Math.round(ok/total*100)}}
+function compare(target,heard){const hs=norm(heard);let ok=0,total=0;
+  const html=target.split(/\s+/).map(w=>{const n=norm(w)[0];if(!n)return esc(w);total++;const i=hs.indexOf(n);if(i>-1){hs.splice(i,1);ok++;return `<span class="w-ok">${esc(w)}</span>`}return `<span class="w-miss">${esc(w)}</span>`}).join(" ");
+  return{html,score:Math.round(ok/(total||1)*100)}}
 
-/* ---------- today ---------- */
+/* ---- reusable: shadow line ---- */
+function shadowList(el,phrases,onSpoken){
+  el.innerHTML=phrases.map((p,i)=>`<div class="line" data-i="${i}"><div class="txt"><b>${esc(p)}</b><div class="heard small" data-h></div></div><div class="row" style="flex:none;gap:6px"><button class="mini" data-a="play" aria-label="Listen">▶</button><button class="mini ghost" data-a="slow">Slow</button><button class="mini rec" data-a="rec">Speak</button></div></div>`).join("");
+  const spoken=new Set();let r=null;
+  el.onclick=e=>{const b=e.target.closest("[data-a]");if(!b)return;const line=b.closest(".line");const i=+line.dataset.i;const p=phrases[i];const h=line.querySelector("[data-h]");
+    if(b.dataset.a==="play"){say(p);return}
+    if(b.dataset.a==="slow"){say(p,0.6);return}
+    if(r){r.stop();r=null;return}
+    if(!spoken.has(i)){spoken.add(i);onSpoken(spoken.size)}
+    r=listen({btn:b,onText:(t,st)=>{if(st==="nomic"){h.innerHTML=`<span class="muted">${NOMIC}</span>`;return}const c=compare(p,t);h.innerHTML=c.html+` <b style="color:${c.score>=80?"var(--good)":c.score>=50?"var(--warn)":"var(--bad)"}">${c.score}%</b>`},onEnd:()=>{r=null}})};
+}
+/* ---- reusable: sound drill ---- */
+function soundDrill(el,key,need,onRight){
+  const P=PAIRS[key];let cur=null,answered=true,score=0,tries=0;
+  el.innerHTML=`<div class="card stack"><div class="eyebrow">Sound focus: ${esc(key)}</div><div class="note">${esc(P.how)}</div><div class="row"><button class="primary" data-a="play">Play a word</button><span class="muted" data-s>0 correct</span></div><div class="pair-grid" data-g></div><div class="muted" data-m>Press play, then tap the word you heard.</div></div><div class="card stack"><h3>Now say both words</h3><div class="row" data-say></div><div class="heard" data-h></div></div>`;
+  const g=el.querySelector("[data-g]"),m=el.querySelector("[data-m]"),sEl=el.querySelector("[data-s]"),sayEl=el.querySelector("[data-say]"),h=el.querySelector("[data-h]");
+  function np(){const set=P.sets[Math.floor(Math.random()*P.sets.length)];cur={set,ans:set[Math.floor(Math.random()*2)]};answered=false;
+    g.innerHTML=set.map(w=>`<button class="pair-btn" data-w="${w}">${w}</button>`).join("");m.textContent="Press play, then tap the word you heard.";
+    sayEl.innerHTML=set.map(w=>`<button class="mini" data-sw="${w}">Hear "${w}"</button>`).join("")+`<button class="mini rec" data-a="rec">Speak both</button>`;h.textContent=""}
+  np();let r=null;
+  el.onclick=e=>{const b=e.target.closest("button");if(!b)return;
+    if(b.dataset.a==="play"){if(answered)np();say(cur.ans,0.8);return}
+    if(b.dataset.w){if(answered)return;answered=true;tries++;const right=b.dataset.w===cur.ans;b.classList.add(right?"right":"wrong");
+      if(!right)g.querySelector(`[data-w="${cur.ans}"]`).classList.add("right");
+      if(right){score++;onRight&&onRight(score)}sEl.textContent=score+" correct"+(need?` of ${need} needed`:"");
+      m.textContent=right?"Correct. Press play for the next one.":`It was "${cur.ans}". Press play for a new one.`;return}
+    if(b.dataset.sw){say(b.dataset.sw,0.8);return}
+    if(b.dataset.a==="rec"){if(r){r.stop();r=null;return}r=listen({btn:b,label:"Speak both",onText:(t,st)=>{if(st==="nomic"){h.innerHTML=`<span class="muted">${NOMIC}</span>`;return}h.innerHTML="I heard: "+compare(cur.set.join(" "),t).html},onEnd:()=>{r=null}})}};
+}
+/* ---- reusable: timed talk ---- */
+const FILLERS=["um","uh","umm","er","like","basically","actually","literally"];
+function talkBox(el,secs,onDone){
+  const fmt=s=>Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
+  el.innerHTML=`<div class="card stack"><div class="timer" data-t>${fmt(secs)}</div><div class="row" style="justify-content:center"><button class="rec" data-b>Start talking</button></div><div class="stats"><div><b data-w>0</b><span>words</span></div><div><b data-p>0</b><span>words / min</span></div><div><b data-f>0</b><span>filler words</span></div></div><div class="heard muted" data-x></div><div class="note" data-tip>Pause instead of saying "um". A short silence sounds confident.</div></div>`;
+  const q=s=>el.querySelector(s);let rec=null,iv=null,left=secs,start=0,txt="";
+  function stats(t){const w=norm(t);const f=w.filter(x=>FILLERS.includes(x)).length+((t.toLowerCase().match(/you know/g)||[]).length);const mins=Math.max((Date.now()-start)/6e4,1/60);q("[data-w]").textContent=w.length;q("[data-p]").textContent=Math.round(w.length/mins);q("[data-f]").textContent=f;return{words:w.length,wpm:Math.round(w.length/mins),fill:f}}
+  function stop(done){clearInterval(iv);iv=null;const rr=rec;rec=null;if(rr)rr.stop();q("[data-b]").textContent="Start talking";q("[data-b]").classList.remove("on");
+    if(done){const s=txt?stats(txt):{words:0,wpm:0,fill:0};const wpm=s.wpm;
+      q("[data-tip]").textContent=wpm===0?"Well done for speaking the full time. Repeat it once more to get smoother.":wpm<90?"Good start. Aim for 110 to 150 words a minute. Use linking words like so, because and after that.":wpm>170?"Fast! Slow down a little and add pauses so people can follow.":"Nice pace. Natural speakers talk at about 120 to 150 words a minute.";
+      if(s.wpm)prog.talks.push({d:todayKey,wpm:s.wpm,fill:s.fill});save();onDone&&onDone(s)}}
+  q("[data-b]").onclick=()=>{if(iv){stop(false);return}left=secs;start=Date.now();txt="";q("[data-t]").textContent=fmt(secs);["[data-w]","[data-p]","[data-f]"].forEach(s=>q(s).textContent="0");q("[data-x]").textContent="";
+    const btn=q("[data-b]");
+    rec=listen({btn:null,continuous:true,onText:(t,st)=>{if(st==="nomic"){q("[data-x]").textContent="Mic not available here, so speak aloud to yourself while the timer runs. Open the app in Chrome to see your words and pace.";return}txt=t;q("[data-x]").textContent=t;stats(t)},onEnd:()=>{if(iv&&rec){try{rec.start()}catch(e){}}}});
+    btn.textContent="Stop";btn.classList.add("on");
+    iv=setInterval(()=>{left--;q("[data-t]").textContent=fmt(Math.max(left,0));if(txt)stats(txt);if(left<=0){q("[data-t]").textContent="Done!";stop(true)}},1000)};
+}
+/* ---- reusable: AI chat ---- */
+let sample=null;
+function chatBox(el,{system,opening,onCount}){
+  el.innerHTML=`<div class="stack"><div class="bubbles" data-c></div><textarea data-m placeholder="Type your reply, or tap Speak and say it"></textarea><div class="row"><button class="rec" data-r>Speak</button><button class="primary" data-s>Send</button><button class="ghost" data-x>Start over</button></div><div class="banner hidden" data-o></div></div>`;
+  const q=s=>el.querySelector(s);let chat=[],busy=false,count=0,r=null;
+  const bub=(role,t)=>{const d=document.createElement("div");d.className="bub "+(role==="user"?"me":"ai");d.textContent=t;q("[data-c]").appendChild(d);return d};
+  function reset(){chat=[{role:"assistant",content:opening()}];q("[data-c]").innerHTML="";bub("assistant",chat[0].content)}
+  reset();
+  async function send(){const text=q("[data-m]").value.trim();if(!text||busy)return;bub("user",text);q("[data-m]").value="";chat.push({role:"user",content:text});count++;onCount&&onCount(count);
+    if(!sample){bub("assistant","The AI coach works when this app is opened on claude.ai. You can still practise here: read your reply aloud three times, slowly, then faster.");return}
+    busy=true;q("[data-s]").disabled=true;const b=bub("assistant","Thinking…");
+    const sys=system()+" You are also an English speaking coach for a learner whose first language is Urdu or Hindi. Reply in this exact format:\nReply: <your natural reply in the role, 1 to 2 short sentences, ending with a question to keep the conversation going>\nBetter way to say it: <the learner's last message rewritten in natural, correct spoken English, or 'Perfect, no changes needed!'>\nTip: <one short tip about grammar, word choice or pronunciation from their message>\nUse simple words. Never use dashes.";
+    try{const res=await sample([{role:"user",content:sys+"\n\nThe conversation so far follows. Start in role."},{role:"assistant",content:"Understood."},...chat],{cache:false,modelTier:"quick",onText:({text})=>{b.textContent=text}});
+      b.textContent=res.text;chat.push({role:"assistant",content:res.text});const m=res.text.match(/Reply:\s*(.+)/);if(m)say(m[1]);
+    }catch(e){b.textContent=e&&e.code==="not_granted"?"The coach needs your permission to ask Claude. Allow it from the page's permissions menu.":e&&e.code==="rate_limited"?"Too many messages at once. Wait a minute and try again.":"Something went wrong reaching the coach. Try sending again.";chat.pop()}
+    busy=false;q("[data-s]").disabled=false}
+  q("[data-s]").onclick=send;q("[data-x]").onclick=reset;
+  q("[data-m]").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send()}});
+  q("[data-r]").onclick=()=>{const btn=q("[data-r]");if(r){r.stop();r=null;return}r=listen({btn,onText:(t,st)=>{if(st==="nomic"){q("[data-o]").classList.remove("hidden");q("[data-o]").textContent="Your microphone isn't available here, so type your reply. Then read it aloud to practise.";return}q("[data-m]").value=t},onEnd:()=>{r=null}})};
+  return{reset};
+}
+
+/* ================= TODAY ================= */
 const dayN=Math.floor(Date.now()/864e5);let swapI=dayN%SWAPS.length;
-function renderSwap(){const s=SWAPS[swapI];$("#swapDay").innerHTML=`<div class="no"><span class="tag">Not</span>${s.no}</div><div class="yes"><span class="tag">Say</span>${s.yes}</div>`;$("#swapWhy").textContent=s.why}
+function renderSwap(){const s=SWAPS[swapI];$("#swapDay").innerHTML=`<div class="no"><span class="tag">Not</span>${esc(s.no)}</div><div class="yes"><span class="tag">Say</span>${esc(s.yes)}</div>`;$("#swapWhy").textContent=s.why}
 $("#swapNext").onclick=()=>{swapI=(swapI+1)%SWAPS.length;renderSwap()};
 $("#swapListen").onclick=()=>say(SWAPS[swapI].yes);
 const wd=WORDS[dayN%WORDS.length];$("#wotdWord").textContent=wd.w;$("#wotdMean").textContent=wd.m;$("#wotdEx").textContent="“"+wd.e+"”";
 $("#wotdListen").onclick=()=>say(wd.w+". "+wd.e);
 $("#todayDate").textContent=new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
+const GOALS=[["lesson","Finish today's lesson",1,"continue"],["phrases","Shadow 5 phrases",5,"practice"],["sounds","Get 5 sound pairs right",5,"practice-sounds"],["coach","Send 3 messages to the coach",3,"coach"]];
+function renderGoals(){let done=0;
+  $("#goals").innerHTML=GOALS.map(([k,t,n,go])=>{const v=Math.min(prog.today[k]||0,n),ok=v>=n;if(ok)done++;return `<div class="goal ${ok?"done":""}"><div class="tick">✓</div><div class="g-text"><b>${t}</b><div class="muted small">${v} of ${n}</div></div><button class="ghost mini" data-go="${go}">Go</button></div>`}).join("");
+  $("#goalCount").textContent=done+" / 4";$("#goalBar").style.width=(done/4*100)+"%"}
+function renderContinue(){const i=nextIdx();
+  if(i<0){$("#continueCard").innerHTML=`<div class="hero c3"><div class="eyebrow">All 24 weeks complete</div><h2>You did it. You finished all three courses!</h2><p>Keep your streak with free practice and the AI coach.</p></div>`;return}
+  const {wi,di}=SEQ[i];const c=COURSES[courseOf(wi)];const w=WEEKS[wi];const doneC=SEQ.filter((s,j)=>courseOf(s.wi)===courseOf(wi)&&isDone(j)).length;
+  $("#continueCard").innerHTML=`<div class="hero ${c.cls}"><svg class="deco" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="8"/><path d="M40 30l30 20-30 20z" fill="currentColor"/></svg><div class="eyebrow">Course ${c.id} · ${esc(c.name)}</div><h2>Week ${wi+1}: ${esc(w.t)}</h2><p>Next: Day ${di+1}, ${DAYS[di][1]}. ${DAYS[di][2]}.</p><div class="bar"><i style="width:${Math.round(doneC/48*100)}%"></i></div><div class="small">${Math.round(doneC/48*100)}% of this course done</div><div><button data-go="continue">${isDone(0)||i>0?"Continue lesson":"Start your first lesson"}</button></div></div>`}
 
-/* ---------- phrases ---------- */
-let cat=Object.keys(PHRASES)[0],pi=0,rec=null;
+/* ================= COURSE PATH ================= */
+let openWeek=null;
+const LOCK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+function renderCourse(){const nx=nextIdx();const curW=nx<0?-1:SEQ[nx].wi;if(openWeek===null)openWeek=curW;
+  $("#coursePath").innerHTML=COURSES.map((c,ci)=>{const doneC=SEQ.filter((s,j)=>courseOf(s.wi)===ci&&isDone(j)).length;
+    const weeks=WEEKS.slice(ci*8,ci*8+8).map((w,k)=>{const wi=ci*8+k;const base=wi*6;const all=[0,1,2,3,4,5].every(d=>isDone(base+d));const anyU=unlocked(base);
+      const state=all?"done":wi===curW?"current":anyU?"open":"locked";
+      const items=openWeek===wi?`<div class="items">${DAYS.map((d,di)=>{const i=base+di;const dn=isDone(i),u=unlocked(i);return `<button class="item ${dn?"done":""} ${i===nx?"next":""}" data-start="${i}" ${u?"":"disabled"}><span class="st">${dn?"✓":di===5?"★":di+1}</span><span>${d[1]}${dn&&di===5&&prog.tests["w"+(wi+1)]?` · ${prog.tests["w"+(wi+1)]}%`:""}</span><span class="xpv">${u?"+"+(di===5?XP.test:XP.lesson)+" XP":"Locked"}</span></button>`}).join("")}</div>`:"";
+      return `<div class="wk ${state}"><div class="node">${state==="done"?"✓":state==="locked"?LOCK:wi+1}</div><div class="wk-card"><button class="ghost" data-week="${wi}" style="all:unset;cursor:pointer;display:block;width:100%"><span class="eyebrow">Week ${wi+1}</span><span class="t">${esc(w.t)}</span><span class="s">${esc(w.g)}</span></button>${items}</div></div>`}).join("");
+    return `<div class="course-head ${c.cls}"><div class="eyebrow">Course ${c.id} · ${esc(c.sub)}</div><h2>${esc(c.name)}</h2><p>${esc(c.goal)}</p><ul>${c.skills.map(s=>`<li>${esc(s)}</li>`).join("")}</ul><div class="bar"><i style="width:${Math.round(doneC/48*100)}%"></i></div><div class="small">${doneC} of 48 lessons done</div></div><div class="path">${weeks}</div>`}).join("");
+}
+$("#coursePath").addEventListener("click",e=>{const s=e.target.closest("[data-start]");if(s&&!s.disabled){openLesson(+s.dataset.start);return}
+  const w=e.target.closest("[data-week]");if(w){const wi=+w.dataset.week;openWeek=openWeek===wi?-1:wi;renderCourse()}});
+
+/* ================= LESSON PLAYER ================= */
+let curLesson=-1;
+function openLesson(i){curLesson=i;const {wi,di}=SEQ[i];const w=WEEKS[wi];const c=COURSES[courseOf(wi)];
+  $("#lessonWhere").textContent=`Week ${wi+1} · Day ${di+1}`;const body=$("#lessonBody");
+  const head=`<div class="course-head ${c.cls}"><div class="eyebrow">${DAYS[di][1]}</div><h2>${esc(w.t)}</h2><p>${esc(w.g)}</p></div>`;
+  const finBtn=`<button class="primary block" data-fin disabled>Finish lesson +${di===5?XP.test:XP.lesson} XP</button>`;
+  const already=isDone(i);
+  if(di===0){body.innerHTML=head+`<div class="card stack"><div class="eyebrow">Key idea</div><p>${esc(w.learn)}</p><button class="ghost" data-a="readlearn">Listen to this</button></div><div class="card stack"><div class="row between"><h3>Shadow these phrases</h3><span class="muted small" data-cnt>0 of 5</span></div><p class="muted small">Listen, then tap Speak and say it the same way. Copy the rhythm, not just the words.</p><div data-sh></div></div>`+finBtn;
+    shadowList(body.querySelector("[data-sh]"),w.ph,n=>{body.querySelector("[data-cnt]").textContent=Math.min(n,5)+" of 5";bump("phrases");if(n>=3)enableFin()});
+    body.querySelector("[data-a=readlearn]").onclick=()=>say(w.learn,0.9)}
+  if(di===1){body.innerHTML=head+`<div class="card stack"><h3>New words</h3><div data-v></div></div><div class="card stack"><div class="row between"><h3>Quick quiz</h3><span class="muted small" data-qs></span></div><div data-q></div></div>`+finBtn;
+    body.querySelector("[data-v]").innerHTML=w.v.map(([x,m,e])=>`<div class="line"><div class="txt"><b>${esc(x)}</b><div class="muted small">${esc(m)}</div><div class="small" style="font-style:italic">${esc(e)}</div></div><button class="mini" data-say="${esc(x+". "+e)}">▶</button></div>`).join("");
+    body.querySelector("[data-v]").onclick=e=>{const b=e.target.closest("[data-say]");if(b)say(b.dataset.say)};
+    let qi=0,right=0;const order=w.v.map((_,k)=>k).sort(()=>Math.random()-.5);
+    function q(){const qEl=body.querySelector("[data-q]");if(qi>=order.length){qEl.innerHTML=`<p><b>${right} of ${order.length} correct.</b> ${right>=4?"Great work!":"Review the words above and say each example aloud."}</p>`;enableFin();return}
+      const k=order[qi];const opts=[k,...w.v.map((_,j)=>j).filter(j=>j!==k).sort(()=>Math.random()-.5).slice(0,2)].sort(()=>Math.random()-.5);
+      body.querySelector("[data-qs]").textContent=`${qi+1} of ${order.length}`;
+      qEl.innerHTML=`<p>Which word means: <b>${esc(w.v[k][1])}</b>?</p><div class="stack" style="gap:8px">${opts.map(o=>`<button class="opt" data-o="${o}">${esc(w.v[o][0])}</button>`).join("")}</div>`;
+      qEl.onclick=e=>{const b=e.target.closest("[data-o]");if(!b||qEl.dataset.lock)return;qEl.dataset.lock=1;const ok=+b.dataset.o===k;b.classList.add(ok?"right":"wrong");if(!ok)qEl.querySelector(`[data-o="${k}"]`).classList.add("right");if(ok)right++;say(w.v[k][0]);setTimeout(()=>{delete qEl.dataset.lock;qi++;q()},1100)}}
+    q()}
+  if(di===2){body.innerHTML=head+`<div data-sd class="stack"></div><div class="card stack"><h3>Use the sound in sentences</h3><div data-sh></div></div>`+finBtn;
+    soundDrill(body.querySelector("[data-sd]"),w.snd,5,n=>{bump("sounds");if(n>=5)enableFin()});
+    shadowList(body.querySelector("[data-sh]"),w.ph.slice(0,2),()=>{});
+    body.querySelector("[data-sd] .eyebrow").insertAdjacentHTML("afterend",`<p class="muted small">Get 5 right to finish this lesson.</p>`)}
+  if(di===3){body.innerHTML=head+`<div class="card stack"><div class="eyebrow">Your task</div><h3>${esc(w.sp)}</h3><div class="note">Tip: ${esc(w.help)}</div><details><summary class="muted small" style="cursor:pointer">Words you can use</summary><p class="small">${w.v.map(v=>esc(v[0])).join(", ")}</p></details></div><div data-tb></div>`+finBtn;
+    talkBox(body.querySelector("[data-tb]"),w.secs,()=>{bump("talk");enableFin()})}
+  if(di===4){body.innerHTML=head+`<div class="card stack"><div class="eyebrow">Role play</div><p class="muted small">Have a conversation of at least 3 replies. Try to use this week's phrases and words.</p><div data-ch></div></div>`+finBtn;
+    chatBox(body.querySelector("[data-ch]"),{system:()=>w.sc+" This week the learner is practising: "+w.t+".",opening:()=>w.op,onCount:n=>{bump("coach");if(n>=3)enableFin()}})}
+  if(di===5){renderTest(body,head,i,w)}
+  function enableFin(){const b=body.querySelector("[data-fin]");if(b)b.disabled=false}
+  if(already)enableFin();
+  const fb=body.querySelector("[data-fin]");if(fb)fb.onclick=()=>{finish(i,XP.lesson);toast(already?"Lesson reviewed":"+"+XP.lesson+" XP. Lesson complete!");const n=nextIdx();if(n>=0&&n!==i)openLesson(n);else show("course")};
+  show("lesson",true);
+}
+$("#lessonBack").onclick=()=>show("course");
+
+/* ---- weekly test ---- */
+function renderTest(body,head,i,w){const key="w"+(SEQ[i].wi+1);const prev=prog.tests[key];
+  body.innerHTML=head+`<div class="card stack"><div class="eyebrow">Speaking test · pass with 60%</div><h3>${esc(w.test)}</h3><p class="muted small">Speak your answer, or type exactly what you would say. Aim for at least ${Math.round(w.secs*1.6)} words. You'll get scores for fluency, grammar and vocabulary.</p>${prev?`<div class="note">Your best score so far: ${prev}%</div>`:""}<textarea data-ans placeholder="Your answer…" style="min-height:160px"></textarea><div class="row"><button class="rec" data-r>Speak answer</button><button class="primary" data-g>Submit for grading</button></div><div class="muted small" data-wc>0 words</div></div><div data-res></div>`;
+  const q=s=>body.querySelector(s);let r=null;
+  q("[data-ans]").oninput=()=>{q("[data-wc]").textContent=norm(q("[data-ans]").value).length+" words"};
+  q("[data-r]").onclick=()=>{const btn=q("[data-r]");if(r){r.stop();r=null;return}const startVal=q("[data-ans]").value;r=listen({btn,continuous:true,label:"Speak answer",onText:(t,st)=>{if(st==="nomic"){q("[data-wc]").textContent="Mic not available here. Type your answer, then read it aloud once before you submit.";return}q("[data-ans]").value=(startVal?startVal+" ":"")+t;q("[data-ans]").oninput()},onEnd:()=>{r=null}})};
+  q("[data-g]").onclick=async()=>{const ans=q("[data-ans]").value.trim();const res=q("[data-res]");if(norm(ans).length<15){res.innerHTML=`<div class="banner">Your answer is a bit short. Write or say at least 15 words so it can be graded.</div>`;return}
+    if(!sample){selfGrade(res,i,key);return}
+    q("[data-g]").disabled=true;res.innerHTML=`<div class="card"><p class="muted">Grading your answer…</p></div>`;
+    try{const g=await sample.json(`You are a fair, encouraging English speaking examiner. The learner is at "${COURSES[courseOf(SEQ[i].wi)].sub}" level, week ${SEQ[i].wi+1}: ${w.t}. The task was: "${w.test}". Their answer (spoken or typed) is below. Score each 0 to 10 for this level: fluency (length, flow, linking words), grammar (accuracy), vocabulary (range, use of words like: ${w.v.map(v=>v[0]).join(", ")}), and task (did they answer everything). Return JSON only: {"fluency":n,"grammar":n,"vocabulary":n,"task":n,"good":"one sentence on what they did well","fix":"the 2 most important corrections, each as wrong → right","better":"a short improved version of 2 or 3 of their sentences","next":"one tip for next time"}. Use simple English and never use dashes in sentences.\n\nAnswer:\n${ans}`,{modelTier:"default",cache:false});
+      const total=Math.round(((+g.fluency||0)+(+g.grammar||0)+(+g.vocabulary||0)+(+g.task||0))/40*100);
+      showResult(res,i,key,total,`<div class="rubric"><div><b>${g.fluency}</b><span>Fluency</span></div><div><b>${g.grammar}</b><span>Grammar</span></div><div><b>${g.vocabulary}</b><span>Vocabulary</span></div></div><p><b>Well done:</b> ${esc(g.good||"")}</p><p><b>Fix:</b> ${esc(g.fix||"")}</p><div class="note"><b>Better version:</b> ${esc(g.better||"")}</div><p class="muted small"><b>Next time:</b> ${esc(g.next||"")}</p>`);
+    }catch(e){res.innerHTML="";selfGrade(res,i,key,e&&e.code==="not_granted"?"The AI examiner needs your permission. Grade yourself honestly for now:":"The AI examiner isn't reachable right now. Grade yourself honestly:")}
+    q("[data-g]").disabled=false};
+}
+function selfGrade(res,i,key,msg){const items=["I spoke or wrote for the full task without stopping a lot","I used this week's phrases or words","My sentences were mostly correct","I answered every part of the question","I said it aloud clearly at least once"];
+  res.innerHTML=`<div class="card stack"><h3>Self check</h3><p class="muted small">${esc(msg||"The AI examiner works when the app is opened on claude.ai. Grade yourself honestly:")}</p>${items.map((t,k)=>`<label class="check"><input type="checkbox" id="sg${k}"><span>${t}</span></label>`).join("")}<button class="primary" data-sg>See my score</button></div>`;
+  res.querySelector("[data-sg]").onclick=()=>{const n=res.querySelectorAll("input:checked").length;showResult(res,i,key,n*20,`<p class="muted small">Self graded. When you can, open the app on claude.ai for AI feedback.</p>`)}}
+function showResult(res,i,key,total,detail){const pass=total>=60;prog.tests[key]=Math.max(prog.tests[key]||0,total);save();
+  res.innerHTML=`<div class="card stack"><div class="row between"><h2>${pass?"Passed!":"Almost there"}</h2><span class="badge ${pass?"pass":"open"}">${total}%</span></div>${detail}${pass?`<button class="primary block" data-nx>Unlock next week +${XP.test} XP</button>`:`<p>You need 60% to pass. Read the better version aloud twice, then try again.</p>`}</div>`;
+  if(pass){res.querySelector("[data-nx]").onclick=()=>{finish(i,XP.test+Math.round(total/10));toast("Week passed! Next week unlocked.");openWeek=null;const n=nextIdx();if(n>=0)openLesson(n);else show("course")}}
+  res.scrollIntoView({behavior:"smooth",block:"start"})}
+
+/* ================= PRACTICE ================= */
+let cat=Object.keys(PHRASES)[0],pi=0,rec=null,phCounted="";
 $("#phraseCats").innerHTML=Object.keys(PHRASES).map(c=>`<button class="chip" data-c="${c}" aria-pressed="${c===cat}">${c}</button>`).join("");
 $("#phraseCats").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;cat=b.dataset.c;pi=0;document.querySelectorAll("#phraseCats .chip").forEach(x=>x.setAttribute("aria-pressed",x===b));renderPhrase()};
 function renderPhrase(){const [t,u,tip]=PHRASES[cat][pi];$("#phText").textContent=t;$("#phUse").textContent=u;$("#phTip").textContent="Tip: "+tip;$("#phPos").textContent=(pi+1)+" / "+PHRASES[cat].length;$("#phScore").textContent="";$("#phHeard").innerHTML='<span class="muted">Tap Speak and read the sentence aloud.</span>'}
-$("#phListen").onclick=()=>say(PHRASES[cat][pi][0]);
+$("#phListen").onclick=()=>{say(PHRASES[cat][pi][0]);if((micBlocked||!SR)&&phCounted!==cat+pi){phCounted=cat+pi;bump("phrases")}};
 $("#phSlow").onclick=()=>say(PHRASES[cat][pi][0],0.6);
 $("#phNext").onclick=()=>{pi=(pi+1)%PHRASES[cat].length;renderPhrase()};
 $("#phPrev").onclick=()=>{pi=(pi-1+PHRASES[cat].length)%PHRASES[cat].length;renderPhrase()};
-let phCounted=-1;
-$("#phRec").onclick=()=>{const btn=$("#phRec");if(rec){rec.stop();rec=null;return}
-  const target=PHRASES[cat][pi][0];
-  rec=listen({btn,onText:(t,st)=>{if(st==="nomic"){$("#phHeard").innerHTML=`<span class="muted">${NOMIC}</span>`;$("#phScore").textContent="";if(phCounted!==cat+pi){phCounted=cat+pi;bump("phrases")}return}
+$("#phRec").onclick=()=>{const btn=$("#phRec");if(rec){rec.stop();rec=null;return}const target=PHRASES[cat][pi][0];
+  rec=listen({btn,onText:(t,st)=>{if(st==="nomic"){$("#phHeard").innerHTML=`<span class="muted">${NOMIC}</span>`;if(phCounted!==cat+pi){phCounted=cat+pi;bump("phrases")}return}
     const c=compare(target,t);$("#phHeard").innerHTML=c.html;$("#phScore").textContent=c.score+"%";$("#phScore").style.color=c.score>=80?"var(--good)":c.score>=50?"var(--warn)":"var(--bad)"},
     onEnd:t=>{rec=null;if(t&&phCounted!==cat+pi){phCounted=cat+pi;bump("phrases")}}})};
-
-/* ---------- sounds ---------- */
-let pcat=Object.keys(PAIRS)[0],cur=null,pScore=0,answered=true;
+let pcat=Object.keys(PAIRS)[0];
 $("#pairCats").innerHTML=Object.keys(PAIRS).map(c=>`<button class="chip" data-c="${c}" aria-pressed="${c===pcat}">${c}</button>`).join("");
-$("#pairCats").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;pcat=b.dataset.c;document.querySelectorAll("#pairCats .chip").forEach(x=>x.setAttribute("aria-pressed",x===b));newPair()};
-function newPair(){const P=PAIRS[pcat];const set=P.sets[Math.floor(Math.random()*P.sets.length)];cur={set,ans:set[Math.floor(Math.random()*2)]};answered=false;
-  $("#pairHow").textContent=P.how;$("#pairGrid").innerHTML=set.map(w=>`<button class="pair-btn" data-w="${w}">${w}</button>`).join("");
-  $("#pairMsg").textContent="Press play, then tap the word you heard.";
-  $("#pairSay").innerHTML=set.map(w=>`<button data-say="${w}">Hear "${w}"</button>`).join("")+`<button class="rec" id="pairRec">Speak both</button>`;$("#pairHeard").textContent=""}
-$("#pairPlay").onclick=()=>{if(answered)newPair();say(cur.ans,0.8)};
-$("#pairGrid").onclick=e=>{const b=e.target.closest("[data-w]");if(!b||answered)return;answered=true;
-  const right=b.dataset.w===cur.ans;b.classList.add(right?"right":"wrong");
-  if(!right)document.querySelector(`#pairGrid [data-w="${cur.ans}"]`).classList.add("right");
-  if(right){pScore++;bump("sounds")}$("#pairScore").textContent=pScore+" correct";
-  $("#pairMsg").textContent=right?"Correct. Press play for the next one.":`It was "${cur.ans}". Listen again and press play for a new one.`};
-let prec=null;
-$("#pairSay").onclick=e=>{const s=e.target.closest("[data-say]");if(s){say(s.dataset.say,0.8);return}
-  if(e.target.id!=="pairRec")return;const btn=e.target;if(prec){prec.stop();prec=null;return}
-  prec=listen({btn,label:"Speak both",onText:(t,st)=>{if(st==="nomic"){$("#pairHeard").innerHTML=`<span class="muted">${NOMIC}</span>`;return}
-    const c=compare(cur.set.join(" "),t);$("#pairHeard").innerHTML="I heard: "+c.html},onEnd:()=>{prec=null}})};
-
-/* ---------- speak 60s ---------- */
-let ti=Math.floor(Math.random()*TOPICS.length),talkRec=null,tInt=null,left=60,talkStart=0,talkTxt="";
-function renderTopic(){$("#topic").textContent=TOPICS[ti][0];$("#topicHelp").textContent=TOPICS[ti][1]}
+$("#pairCats").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;pcat=b.dataset.c;document.querySelectorAll("#pairCats .chip").forEach(x=>x.setAttribute("aria-pressed",x===b));soundDrill($("#pairBox"),pcat,0,()=>bump("sounds"))};
+soundDrill($("#pairBox"),pcat,0,()=>bump("sounds"));
+let ti=dayN%TOPICS.length;function renderTopic(){$("#topic").textContent=TOPICS[ti][0];$("#topicHelp").textContent=TOPICS[ti][1]}
 $("#topicNew").onclick=()=>{ti=(ti+1)%TOPICS.length;renderTopic()};
-const FILLERS=["um","uh","umm","er","like","basically","actually","literally"];
-function talkStats(t){const w=norm(t);const f=w.filter(x=>FILLERS.includes(x)).length+((t.toLowerCase().match(/you know/g)||[]).length);
-  const mins=Math.max((Date.now()-talkStart)/6e4,1/60);$("#stWords").textContent=w.length;$("#stWpm").textContent=Math.round(w.length/mins);$("#stFill").textContent=f}
-function stopTalk(done){clearInterval(tInt);tInt=null;if(talkRec){talkRec.stop();talkRec=null}$("#talkBtn").textContent="Start talking";$("#talkBtn").classList.remove("on");
-  if(done){bump("talk");const wpm=+$("#stWpm").textContent;$("#talkTip").textContent=wpm===0?"Well done for speaking for a full minute. Try the next topic tomorrow.":wpm<90?"Good start. Aim for 110 to 150 words a minute. Use linking words like \"so\", \"because\" and \"after that\".":wpm>170?"Fast. Slow down a little and add pauses so people can follow.":"Nice pace. Natural speakers talk at about 120 to 150 words a minute."}}
-$("#talkBtn").onclick=()=>{if(tInt){stopTalk(false);return}
-  left=60;talkStart=Date.now();talkTxt="";$("#timer").textContent="1:00";["#stWords","#stWpm","#stFill"].forEach(s=>$(s).textContent="0");$("#talkText").textContent="";
-  const btn=$("#talkBtn");
-  talkRec=listen({btn,continuous:true,label:"Start talking",onText:(t,st)=>{if(st==="nomic"){$("#talkText").textContent="Mic not available here, so just speak to yourself while the timer runs. Open the app in Chrome to see your words and pace.";return}
-    talkTxt=t;$("#talkText").textContent=t;talkStats(t)},onEnd:()=>{if(tInt&&talkRec){try{talkRec.start()}catch(e){}}}});
-  btn.textContent="Stop";btn.classList.add("on");
-  tInt=setInterval(()=>{left--;$("#timer").textContent="0:"+String(left).padStart(2,"0");if(talkTxt)talkStats(talkTxt);if(left<=0){$("#timer").textContent="Done!";stopTalk(true)}},1000)};
+talkBox($("#freeTalk"),60,()=>{bump("talk");renderTests()});
+function seg(s){document.querySelectorAll("[data-seg]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.seg===s));["phrases","sounds","talk"].forEach(k=>$("#p-"+k).classList.toggle("hidden",k!==s))}
+document.querySelector(".seg").onclick=e=>{const b=e.target.closest("[data-seg]");if(b)seg(b.dataset.seg)};
 
-/* ---------- coach ---------- */
+/* ================= COACH ================= */
 const SCENES={cafe:"You are a friendly barista at a cafe. The learner is a customer.",interview:"You are a kind interviewer for an office job. Ask one interview question at a time.",smalltalk:"You are a new friendly colleague making small talk in the office kitchen.",doctor:"You are a calm doctor. The learner is a patient describing how they feel.",free:"You are a friendly English speaking partner. Chat about anything the learner likes."};
 const OPEN={cafe:"Hi there! What can I get for you today?",interview:"Thanks for coming in. Could you start by telling me a little about yourself?",smalltalk:"Hey, I don't think we've met. I'm Sam. Which team are you on?",doctor:"Hello, please have a seat. What seems to be the problem today?",free:"Hi! What would you like to talk about today?"};
-let chat=[],sample=null,busy=false;
-function bubble(role,text){const d=document.createElement("div");d.className="bub "+(role==="user"?"me":"ai");d.textContent=text;$("#chat").appendChild(d);return d}
-function resetChat(){chat=[{role:"assistant",content:OPEN[$("#scene").value]}];$("#chat").innerHTML="";bubble("assistant",chat[0].content)}
-$("#scene").onchange=resetChat;$("#chatReset").onclick=resetChat;resetChat();
-async function send(){const text=$("#msg").value.trim();if(!text||busy)return;
-  bubble("user",text);$("#msg").value="";chat.push({role:"user",content:text});bump("coach");
-  if(!sample){const b=bubble("assistant","The AI coach works when this app is opened on claude.ai. Here you can still practise: read your reply aloud three times, slowly, then faster.");return}
-  busy=true;$("#msgSend").disabled=true;const b=bubble("assistant","Thinking…");
-  const sys=SCENES[$("#scene").value]+" You are also an English speaking coach for a learner whose first language is Urdu or Hindi. Reply in this exact format:\nReply: <your natural reply in the role, 1 to 2 short sentences, ending with a question to keep the conversation going>\nBetter way to say it: <the learner's last message rewritten in natural, correct spoken English, or 'Perfect, no changes needed!'>\nTip: <one short tip about grammar, word choice or pronunciation from their message>\nUse simple words. Never use dashes.";
-  const msgs=[{role:"user",content:sys+"\n\nThe conversation so far follows. Start in role."},{role:"assistant",content:"Understood."},...chat];
-  try{const r=await sample(msgs,{cache:false,modelTier:"quick",onText:({text})=>{b.textContent=text}});
-    b.textContent=r.text;chat.push({role:"assistant",content:r.text});
-    const m=r.text.match(/Reply:\s*(.+)/);if(m)say(m[1]);
-  }catch(e){b.textContent=e&&e.code==="not_granted"?"The coach needs your permission to ask Claude. Allow it from the page's permissions menu to use it.":e&&e.code==="rate_limited"?"Too many messages at once. Wait a minute and try again.":"Something went wrong reaching the coach. Try sending again.";chat.pop()}
-  busy=false;$("#msgSend").disabled=false}
-$("#msgSend").onclick=send;
-$("#msg").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send()}});
-let mrec=null;
-$("#msgRec").onclick=()=>{const btn=$("#msgRec");if(mrec){mrec.stop();mrec=null;return}
-  mrec=listen({btn,onText:(t,st)=>{if(st==="nomic"){$("#coachOff").classList.remove("hidden");$("#coachOff").textContent=NOMIC.replace("For now, say it aloud anyway and listen back to the model.","For now, type your reply.");return}$("#msg").value=t},onEnd:()=>{mrec=null}})};
-if(window.claude&&window.claude.use){window.claude.use("sample").then(s=>{sample=s}).catch(()=>{})}
+const free=chatBox($("#freeChat"),{system:()=>SCENES[$("#scene").value],opening:()=>OPEN[$("#scene").value],onCount:()=>bump("coach")});
+$("#scene").onchange=()=>free.reset();
 
-/* ---------- tabs ---------- */
-const VIEWS=["today","phrases","sounds","speak","coach"];
-function show(v){if(!VIEWS.includes(v))v="today";document.querySelectorAll("[data-view]").forEach(s=>s.classList.toggle("hidden",s.id!=="v-"+v));
-  document.querySelectorAll("[data-tab]").forEach(b=>{if(b.dataset.tab===v)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
+/* ================= TESTS ================= */
+function renderTests(){const passed=Object.keys(prog.tests).filter(k=>prog.done[k+"test"]).length;
+  $("#testCount").textContent=passed+" of 24 passed";$("#testBar").style.width=(passed/24*100)+"%";
+  $("#testList").innerHTML=WEEKS.map((w,wi)=>{const i=wi*6+5;const k="w"+(wi+1);const dn=isDone(i),u=unlocked(i);
+    return `<div class="test-row"><div style="flex:1;min-width:0"><b>Week ${wi+1}: ${esc(w.t)}</b><div class="muted small">${esc(COURSES[courseOf(wi)].name)}</div></div>${dn?`<span class="badge pass">Passed ${prog.tests[k]||""}%</span>`:u?`<button class="mini" data-start="${i}">Take test</button>`:`<span class="badge lock">Locked</span>`}</div>`}).join("");
+  const t=prog.talks.slice(-12);
+  $("#paceChart").innerHTML=t.length?`<div class="chart">${t.map(x=>`<div class="col"><span>${x.wpm}</span><i style="height:${Math.min(x.wpm,200)/200*85}%"></i></div>`).join("")}</div><p class="muted small">Your last ${t.length} talks. Filler words in the latest: ${t[t.length-1].fill}.</p>`:`<div class="banner">No talks yet. Finish a Speak lesson or a 1 minute talk with the microphone on, and your pace will show here.</div>`;
+  $("#placeResult").textContent=prog.placed?`Your current starting point: Course ${courseOf(prog.start*1)+1}, Week ${prog.start+1}.`:"";
+}
+$("#testList").addEventListener("click",e=>{const s=e.target.closest("[data-start]");if(s)openLesson(+s.dataset.start)});
+$("#resetBtn").onclick=()=>$("#resetYes").classList.remove("hidden");
+$("#resetYes").onclick=()=>{prog=blank();save();$("#resetYes").classList.add("hidden");openWeek=null;renderAll();toast("Progress cleared")};
+
+/* ================= PLACEMENT ================= */
+function placement(){let qi=0,score=0;const body=$("#plBody");
+  function q(){if(qi>=PLACEMENT.length){result();return}const p=PLACEMENT[qi];$("#plPos").textContent=`Question ${qi+1} of ${PLACEMENT.length}`;
+    body.innerHTML=`<div class="card stack"><div class="bar"><i style="width:${qi/PLACEMENT.length*100}%"></i></div><h2>${esc(p.q)}</h2><div class="stack" style="gap:8px">${p.o.map((o,k)=>`<button class="opt" data-k="${k}">${esc(o)}</button>`).join("")}</div></div>`;
+    body.onclick=e=>{const b=e.target.closest("[data-k]");if(!b||body.dataset.lock)return;body.dataset.lock=1;const ok=+b.dataset.k===p.a;b.classList.add(ok?"right":"wrong");if(!ok)body.querySelector(`[data-k="${p.a}"]`).classList.add("right");if(ok)score++;setTimeout(()=>{delete body.dataset.lock;qi++;q()},800)}}
+  function result(){const ci=score<=3?0:score<=6?1:2;const c=COURSES[ci];$("#plPos").textContent="Result";
+    body.onclick=null;body.innerHTML=`<div class="course-head ${c.cls}"><div class="eyebrow">You scored ${score} of 8</div><h2>Start with Course ${c.id}: ${esc(c.name)}</h2><p>${esc(c.goal)}</p></div><div class="card stack"><p>${ci===0?"Great place to begin. You'll build a strong base and lose the fear of speaking.":ci===1?"Your basics are good. Now you'll build fluency and natural vocabulary. Earlier weeks stay open if you want to review.":"Strong grammar! You'll focus on professional and academic speaking. Earlier weeks stay open for review."}</p><button class="primary block" data-pick="${ci}">Start Course ${c.id}</button>${[0,1,2].filter(x=>x!==ci).map(x=>`<button class="ghost block" data-pick="${x}">Start Course ${x+1} instead</button>`).join("")}</div>`;
+    body.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{const x=+b.dataset.pick;prog.start=x*8;prog.placed=true;save();openWeek=null;renderAll();toast("Course "+(x+1)+" unlocked");show("course")})}
+  q();show("placement",true)}
+
+/* ================= NAV ================= */
+const VIEWS=["today","course","practice","coach","tests","lesson","placement"];
+function show(v,keep){if(!VIEWS.includes(v))v="today";if((v==="lesson"&&curLesson<0)||(v==="placement"&&!keep))v=v==="lesson"?"course":"today";
+  document.querySelectorAll("[data-view]").forEach(s=>s.classList.toggle("hidden",s.id!=="v-"+v));
+  const tab=v==="lesson"?"course":v==="placement"?"today":v;
+  document.querySelectorAll("[data-tab]").forEach(b=>{if(b.dataset.tab===tab)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
+  if(v==="course")renderCourse();if(v==="tests")renderTests();if(v==="today"){renderContinue();renderGoals()}
   if(location.hash!=="#"+v)history.replaceState(null,"","#"+v);window.scrollTo(0,0)}
-document.querySelector("nav.tabs").onclick=e=>{const b=e.target.closest("[data-tab]");if(b)show(b.dataset.tab)};
-window.addEventListener("hashchange",()=>show(location.hash.slice(1)));
+document.querySelector("nav.tabs").onclick=e=>{const b=e.target.closest("[data-tab]");if(b){if(b.dataset.tab==="course")openWeek=null;show(b.dataset.tab)}};
+window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(h!=="lesson"&&h!=="placement")show(h)});
+document.addEventListener("click",e=>{const g=e.target.closest("[data-go]");if(g){const v=g.dataset.go;
+    if(v==="continue"){const n=nextIdx();if(n>=0)openLesson(n);else show("course")}
+    else if(v==="practice-sounds"){show("practice");seg("sounds")}
+    else show(v);return}
+  const a=e.target.closest("[data-act]");if(a){if(a.dataset.act==="placement")placement();if(a.dataset.act==="begin"){prog.placed=true;prog.start=0;save();openLesson(0)}}});
 
-renderSwap();renderPhrase();newPair();renderTopic();renderGoals();show(location.hash.slice(1)||"today");
+function renderAll(){renderTop();renderGoals();renderContinue();$("#placeCard").classList.toggle("hidden",prog.placed||isDone(0));if(!$("#v-course").classList.contains("hidden"))renderCourse();renderTests()}
+if(window.claude&&window.claude.use){window.claude.use("sample").then(s=>{sample=s}).catch(()=>{})}
+renderSwap();renderPhrase();renderTopic();renderAll();
+show(["lesson","placement"].includes(location.hash.slice(1))?"today":(location.hash.slice(1)||"today"));
 })();
 </script>
 

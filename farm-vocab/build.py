@@ -18,7 +18,12 @@ import numpy as np
 import soundfile as sf
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-from lesson import CROPS, COVERS, NARRATOR, REP, SCENES
+import importlib
+
+LESSON = os.environ.get('LESSON', 'lesson')   # lesson (11 min) or lesson_short (2 min)
+_L = importlib.import_module(LESSON)
+CROPS, COVERS, NARRATOR, REP, SCENES = _L.CROPS, _L.COVERS, _L.NARRATOR, _L.REP, _L.SCENES
+OUT_NAME = getattr(_L, 'OUT_NAME', 'farm_vocab')
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 W, H, FPS, SR = 1920, 1080, 30, 24000
@@ -543,14 +548,14 @@ def render_list(scene, t, static):
 def render_title(scene, t, static):
     frame = background('title').convert('RGBA')
     frame.alpha_composite(static)
-    paste_card(frame, 'title', (510, 140, 900, 540), t / scene['dur'])
+    paste_card(frame, 'title', (560, 120, 800, 500), t / scene['dur'])
     d = ImageDraw.Draw(frame)
     if scene.get('outro'):
         d.text((W / 2, 720), 'Well done!', font=font(GROTESK, 80), fill=GOLD, anchor='mm')
-        d.text((W / 2, 800), 'Homework: tell someone the journey of wheat.', font=font(SANS, 40), fill=CREAM, anchor='mm')
+        d.text((W / 2, 800), scene.get('sub', 'Homework: tell someone the journey of wheat.'), font=font(SANS, 40), fill=CREAM, anchor='mm')
     else:
         d.text((W / 2, 720), 'Farm Vocabulary & Speaking', font=font(GROTESK, 76), fill=GOLD, anchor='mm')
-        d.text((W / 2, 800), '11 steps  ·  50+ words  ·  role play  ·  quiz', font=font(SANS, 40), fill=CREAM, anchor='mm')
+        d.text((W / 2, 800), scene.get('sub', '11 steps  ·  50+ words  ·  role play  ·  quiz'), font=font(SANS, 40), fill=CREAM, anchor='mm')
     beat = active_beat(scene, t)
     caption_band(frame, beat['t'] if beat else '', 1.0)
     return frame
@@ -591,7 +596,7 @@ def render_frame(scene, static, t):
 def render_scene(i):
     scene = SCENES[i]
     static = make_static(scene)
-    path = os.path.join(CACHE, f'scene_{i:02d}_{scene["frames"]}.mp4')
+    path = os.path.join(CACHE, f'{LESSON}_scene_{i:02d}_{scene["frames"]}.mp4')
     if os.path.exists(path):
         return path
     tmp = path + '.part.mp4'
@@ -614,14 +619,14 @@ def main():
     total = build_timeline()
     print(f'{len(SCENES)} scenes, {total:.1f}s ({total / 60:.1f} min)')
     if '--stills' in sys.argv:
-        os.makedirs(os.path.join(ROOT, 'stills'), exist_ok=True)
+        os.makedirs(os.path.join(ROOT, 'stills', LESSON), exist_ok=True)
         for i, s in enumerate(SCENES):
             static = make_static(s)
             pick = next((b for b in s['beats'] if 'rep' in b or 'item' in b or b.get('chime')), s['beats'][-1])
             t = pick['speak_end'] + (0.6 if 'rep' in pick or pick.get('chime') else 0.3)
             if s['kind'] in ('list', 'review'):
                 t = s['beats'][-1]['start'] + 0.5
-            render_frame(s, static, t).save(os.path.join(ROOT, 'stills', f'scene_{i:02d}.png'))
+            render_frame(s, static, t).save(os.path.join(ROOT, 'stills', LESSON, f'scene_{i:02d}.png'))
         return
     out = os.path.join(ROOT, 'out')
     os.makedirs(out, exist_ok=True)
@@ -632,7 +637,7 @@ def main():
     lst = os.path.join(CACHE, 'list.txt')
     with open(lst, 'w') as fh:
         fh.writelines(f"file '{p}'\n" for p in paths)
-    final = os.path.join(out, 'farm_vocab.mp4')
+    final = os.path.join(out, OUT_NAME + '.mp4')
     subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', lst, '-i', wav,
                     '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k', '-shortest', '-movflags', '+faststart', final],
                    check=True)

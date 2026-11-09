@@ -1,2 +1,5 @@
 node_modules/
 frames/
+farm-vocab/.cache/
+farm-vocab/kokoro/
+__pycache__/

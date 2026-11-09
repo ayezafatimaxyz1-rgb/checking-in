@@ -591,14 +591,18 @@ def render_frame(scene, static, t):
 def render_scene(i):
     scene = SCENES[i]
     static = make_static(scene)
-    path = os.path.join(CACHE, f'scene_{i:02d}.mp4')
+    path = os.path.join(CACHE, f'scene_{i:02d}_{scene["frames"]}.mp4')
+    if os.path.exists(path):
+        return path
+    tmp = path + '.part.mp4'
     p = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24',
                           '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-', '-c:v', 'libx264', '-preset', 'medium',
-                          '-crf', '20', '-pix_fmt', 'yuv420p', path], stdin=subprocess.PIPE)
+                          '-crf', '20', '-pix_fmt', 'yuv420p', tmp], stdin=subprocess.PIPE)
     for f in range(scene['frames']):
         p.stdin.write(render_frame(scene, static, f / FPS).tobytes())
     p.stdin.close()
     p.wait()
+    os.replace(tmp, path)
     return path
 
 

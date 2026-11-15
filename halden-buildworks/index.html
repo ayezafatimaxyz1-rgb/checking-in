@@ -1,0 +1,1510 @@
+<title>Halden Buildworks</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a site signboard on poured concrete. Left aligned, hard edged blocks on a ruled grid.
+   The hero's live build drawing is the one loud element; everything around it stays quiet. */
+:root{
+  /* colour: concrete neutrals biased toward chalk line blue, one hi-vis yellow */
+  --bg:#E3E7EB; --surface:#F2F4F6; --sunk:#D3D9DF; --grid:#D6DCE2;
+  --ink:#0F1A2B; --muted:#475569; --line:#B1BBC7;
+  --accent:#1C44C2; --on-accent:#FFFFFF;
+  --hivis:#F2C200; --on-hivis:#131A26;
+  --focus:#1C44C2; --bad:#B3261E;
+  --inv-bg:#0F1A2B; --inv-ink:#E9EDF2; --inv-muted:#A9B5C5; --inv-line:#2C394C; --inv-accent:#8FA8FF;
+  /* drawing materials (canvas reads these) */
+  --m-ground:#D0D6DC; --m-pave:#BCC5CD; --m-pit:#9A8B7A; --m-concrete:#AEB6BE; --m-steel:#B5482F;
+  --m-panel:#EEF1F4; --m-glass:#4C78E0; --m-lit:#FFE08A; --m-crane:#F2C200; --m-tree:#3E8E5E;
+  --m-brick:#B9694C; --m-timber:#C89B62; --m-roof:#4A5564; --m-shed:#8FA3B5; --m-door:#2E3A4A;
+  --m-edge:rgba(15,26,43,.34);
+  /* type */
+  --f-display:"Big Shoulders Display","Arial Narrow","Helvetica Neue",Impact,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C121C; --surface:#141C29; --sunk:#080D15; --grid:#121A27;
+    --ink:#E7ECF2; --muted:#9BA8B9; --line:#2A3647;
+    --accent:#86A2FF; --on-accent:#0B1220;
+    --hivis:#F2C200; --on-hivis:#131A26;
+    --focus:#F2C200; --bad:#FF8A7A;
+    --inv-bg:#05080D; --inv-ink:#E7ECF2; --inv-muted:#9BA8B9; --inv-line:#232E3D; --inv-accent:#86A2FF;
+    --m-ground:#1A2433; --m-pave:#243042; --m-pit:#3F362D; --m-concrete:#5D6875; --m-steel:#C95A3E;
+    --m-panel:#33435A; --m-glass:#274690; --m-lit:#FFD45A; --m-crane:#F2C200; --m-tree:#2F6B49;
+    --m-brick:#8C4E3A; --m-timber:#9A7446; --m-roof:#232C3A; --m-shed:#4F6073; --m-door:#121923;
+    --m-edge:rgba(231,236,242,.24);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C121C; --surface:#141C29; --sunk:#080D15; --grid:#121A27;
+  --ink:#E7ECF2; --muted:#9BA8B9; --line:#2A3647;
+  --accent:#86A2FF; --on-accent:#0B1220;
+  --hivis:#F2C200; --on-hivis:#131A26;
+  --focus:#F2C200; --bad:#FF8A7A;
+  --inv-bg:#05080D; --inv-ink:#E7ECF2; --inv-muted:#9BA8B9; --inv-line:#232E3D; --inv-accent:#86A2FF;
+  --m-ground:#1A2433; --m-pave:#243042; --m-pit:#3F362D; --m-concrete:#5D6875; --m-steel:#C95A3E;
+  --m-panel:#33435A; --m-glass:#274690; --m-lit:#FFD45A; --m-crane:#F2C200; --m-tree:#2F6B49;
+  --m-brick:#8C4E3A; --m-timber:#9A7446; --m-roof:#232C3A; --m-shed:#4F6073; --m-door:#121923;
+  --m-edge:rgba(231,236,242,.24);
+  color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(76px + env(safe-area-inset-top,0px))}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font:400 1rem/1.6 var(--f-body);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+h1,h2,h3,p,ul,ol,dl,dd,figure,fieldset{margin:0;padding:0}
+ul,ol{list-style:none}
+fieldset{border:0;min-width:0}
+a{color:var(--accent)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1180px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+@media (min-width:720px){.wrap{padding-left:max(28px,env(safe-area-inset-left,0px));padding-right:max(28px,env(safe-area-inset-right,0px))}}
+.mono{font-family:var(--f-mono)}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;padding:.78em 1.25em;border:2px solid transparent;border-radius:2px;font:600 1rem/1.2 var(--f-body);text-decoration:none;cursor:pointer;transition:transform .12s ease,background-color .12s ease,color .12s ease}
+.btn:active{transform:translateY(1px)}
+.btn--primary{background:var(--accent);color:var(--on-accent)}
+.btn--primary:hover{background:var(--ink);color:var(--bg)}
+.btn--hivis{background:var(--hivis);color:var(--on-hivis)}
+.btn--hivis:hover{background:var(--ink);color:var(--bg)}
+.btn--ghost{border-color:var(--ink);color:var(--ink);background:transparent}
+.btn--ghost:hover{background:var(--ink);color:var(--bg)}
+.btn--inv{background:var(--hivis);color:var(--on-hivis)}
+.btn--inv:hover{background:var(--inv-ink);color:var(--inv-bg)}
+.btn--sm{padding:.55em .9em;font-size:.9rem}
+
+/* top bar */
+.topbar{border-bottom:1px solid var(--line);font:400 .75rem/1.4 var(--f-mono);color:var(--muted)}
+.topbar__in{display:flex;justify-content:space-between;align-items:center;gap:6px 20px;flex-wrap:wrap;padding-block:7px}
+.demo-tag{text-transform:uppercase;letter-spacing:.07em}
+.office{display:inline-flex;align-items:center;gap:8px}
+.office__dot{width:9px;height:9px;border-radius:50%;border:2px solid var(--muted);flex:none}
+.office[data-open="true"] .office__dot{background:var(--hivis);border-color:var(--ink)}
+.office[data-open="true"]{color:var(--ink)}
+
+/* header */
+.site-head{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--bg);background:color-mix(in srgb,var(--bg) 90%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.site-head__in{display:flex;align-items:center;gap:20px;min-height:64px;position:relative}
+.brand{display:inline-flex;align-items:center;gap:10px;font:900 1.5rem/1 var(--f-display);letter-spacing:.03em;text-transform:uppercase;color:var(--ink);text-decoration:none;white-space:nowrap}
+.brand svg{width:30px;height:30px;flex:none}
+.bm-bg{fill:var(--hivis)} .bm-fg{fill:var(--on-hivis)}
+.nav{display:flex;align-items:center;gap:2px;margin-left:auto}
+.nav a{padding:8px 11px;color:var(--ink);text-decoration:none;font-weight:500;font-size:.95rem;border-radius:2px}
+.nav a:hover{background:var(--sunk)}
+.nav .nav__quote{display:none}
+.menu-btn{display:none;margin-left:auto;width:44px;height:44px;border:1px solid var(--line);background:transparent;border-radius:2px;cursor:pointer;align-items:center;justify-content:center}
+.menu-btn span{display:block;width:18px;height:2px;background:var(--ink);box-shadow:0 6px 0 var(--ink),0 -6px 0 var(--ink)}
+@media (max-width:980px){
+  .menu-btn{display:inline-flex}
+  .head-cta{display:none}
+  .nav{display:none;position:absolute;left:0;right:0;top:100%;flex-direction:column;align-items:stretch;gap:0;background:var(--bg);border-bottom:1px solid var(--line);border-top:1px solid var(--line);padding:6px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px))}
+  .site-head[data-open] .nav{display:flex}
+  .nav a{padding:13px 0;border-bottom:1px solid var(--line);border-radius:0;font-size:1.05rem}
+  .nav a:hover{background:transparent;color:var(--accent)}
+  .nav .nav__quote{display:block;border-bottom:0;color:var(--accent);font-weight:600}
+}
+
+/* hero */
+.hero{padding-block:clamp(28px,4.5vw,60px) clamp(36px,5vw,64px);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:56px 56px;background-position:center top;border-bottom:1px solid var(--line)}
+.hero__grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(24px,4vw,56px);align-items:center}
+.hero__copy{display:grid;gap:22px;justify-items:start;min-width:0}
+.kicker{font:500 .78rem/1.4 var(--f-mono);text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+h1{font:900 clamp(2.9rem,6.6vw,5.4rem)/.92 var(--f-display);text-transform:uppercase;letter-spacing:.006em;text-wrap:balance}
+.hl{background:var(--hivis);color:var(--on-hivis);padding:0 .12em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.lead{font-size:1.14rem;line-height:1.55;max-width:34em;color:var(--ink)}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--ink);margin-top:clamp(28px,4vw,48px)}
+.facts div{display:flex;flex-direction:column-reverse;gap:2px;padding:14px 16px 0 0;min-width:0}
+.facts dd{font:800 clamp(1.7rem,3vw,2.4rem)/1 var(--f-display);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.facts dt{font-size:.9rem;color:var(--muted);line-height:1.35}
+@media (max-width:900px){
+  .hero__grid{grid-template-columns:minmax(0,1fr)}
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:6px}
+}
+
+/* build panel */
+.build{border:1px solid var(--line);background:var(--surface);min-width:0}
+.build__bar{display:flex;justify-content:space-between;flex-wrap:wrap;gap:2px 16px;padding:10px 14px;border-bottom:1px solid var(--line);font:500 .72rem/1.4 var(--f-mono);text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.build__bar strong{color:var(--ink);font-weight:500}
+.build__canvas{display:block;width:100%;max-width:100%;aspect-ratio:13/12}
+.build__ctl{display:grid;gap:12px;padding:14px;border-top:1px solid var(--line)}
+.readout{display:flex;align-items:baseline;gap:6px 14px;flex-wrap:wrap}
+.readout__wk{font:800 1.9rem/1 var(--f-display);font-variant-numeric:tabular-nums;text-transform:uppercase;letter-spacing:.02em;white-space:nowrap}
+.readout__act{color:var(--muted);font-size:.95rem}
+.scrub{display:flex;align-items:center;gap:12px}
+.play{flex:none;width:44px;height:44px;border:2px solid var(--ink);border-radius:2px;background:var(--hivis);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0}
+.play svg{width:16px;height:16px;fill:var(--on-hivis)}
+.play:hover{background:var(--ink)} .play:hover svg{fill:var(--bg)}
+.range{-webkit-appearance:none;appearance:none;flex:1;min-width:0;width:100%;height:32px;margin:0;background:transparent;cursor:pointer}
+.range::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--accent) var(--fill,0%),var(--line) var(--fill,0%))}
+.range::-moz-range-track{height:6px;border-radius:3px;background:var(--line)}
+.range::-moz-range-progress{height:6px;border-radius:3px;background:var(--accent)}
+.range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;margin-top:-8px;background:var(--hivis);border:2px solid var(--ink);border-radius:2px}
+.range::-moz-range-thumb{width:18px;height:18px;background:var(--hivis);border:2px solid var(--ink);border-radius:2px}
+.stages{display:flex;flex-wrap:wrap;gap:4px}
+.stage{flex:1 1 auto;padding:8px 10px;border:1px solid var(--line);border-radius:2px;background:transparent;color:var(--muted);font:500 .72rem/1.2 var(--f-mono);text-transform:uppercase;letter-spacing:.06em;cursor:pointer}
+.stage:hover{border-color:var(--ink);color:var(--ink)}
+.stage[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+
+/* sections */
+.band{padding-block:clamp(52px,7.5vw,100px)}
+.band--surface{background:var(--surface);border-block:1px solid var(--line)}
+.sec-head{display:grid;gap:10px;margin-bottom:clamp(24px,3.5vw,40px);max-width:46rem}
+.eyebrow{font:500 .76rem/1.4 var(--f-mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+h2{font:800 clamp(2.1rem,4.4vw,3.4rem)/.98 var(--f-display);text-transform:uppercase;letter-spacing:.012em;text-wrap:balance}
+h3{font:800 1.5rem/1.05 var(--f-display);text-transform:uppercase;letter-spacing:.02em;text-wrap:balance}
+.sec-head p{color:var(--muted);font-size:1.06rem;max-width:38em}
+.note{font:400 .78rem/1.5 var(--f-mono);color:var(--muted)}
+
+/* services */
+.svc{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);border:1px solid var(--line);background:var(--surface)}
+.svc__tabs{display:flex;flex-direction:column;border-right:1px solid var(--line);min-width:0}
+.svc__tab{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:18px 20px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);text-align:left;cursor:pointer;font:800 1.4rem/1.05 var(--f-display);text-transform:uppercase;letter-spacing:.02em}
+.svc__tab:last-child{border-bottom:0}
+.svc__tab small{font:400 .74rem/1.2 var(--f-mono);text-transform:none;letter-spacing:0;color:var(--muted);white-space:nowrap}
+.svc__tab:hover{background:var(--sunk)}
+.svc__tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.svc__tab[aria-selected="true"] small{color:inherit;opacity:.72}
+.svc__tab:focus-visible{outline-offset:-3px}
+.svc__panel{display:grid;gap:20px;align-content:start;padding:clamp(20px,3vw,36px);min-width:0}
+.svc__panel p{max-width:38em}
+.inc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 24px}
+.inc li{position:relative;padding-left:20px;line-height:1.4}
+.inc li::before{content:"";position:absolute;left:0;top:.42em;width:9px;height:9px;background:var(--hivis);border:1px solid var(--ink)}
+.kv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line)}
+.kv div{padding:12px 16px 0 0;min-width:0}
+.kv dt{font:500 .72rem/1.4 var(--f-mono);text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.kv dd{font-weight:600}
+@media (max-width:860px){
+  .svc{grid-template-columns:minmax(0,1fr)}
+  .svc__tabs{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .svc__tab{flex:none;flex-direction:column;gap:4px;border-bottom:0;border-right:1px solid var(--line);padding:14px 16px;font-size:1.2rem;white-space:nowrap}
+  .inc{grid-template-columns:minmax(0,1fr)}
+  .kv{grid-template-columns:minmax(0,1fr)}
+}
+
+/* estimator */
+.est{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(20px,3vw,40px);align-items:start}
+.est__form{display:grid;gap:26px;min-width:0}
+.fs{display:grid;gap:10px}
+.fs legend,.lbl{font:500 .76rem/1.4 var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:0;margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative;display:block}
+.chip input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.chip span{display:block;padding:10px 14px;border:1px solid var(--line);border-radius:2px;background:var(--bg);font-weight:500;line-height:1.3}
+.chip small{display:block;font:400 .72rem/1.3 var(--f-mono);color:var(--muted)}
+.chip input:hover + span{border-color:var(--ink)}
+.chip input:checked + span{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.chip input:checked + span small{color:inherit;opacity:.8}
+.chip input:focus-visible + span{outline:3px solid var(--focus);outline-offset:2px}
+.area-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.area-row .range{flex:1 1 200px}
+.area-num{display:flex;align-items:stretch;border:1px solid var(--line);border-radius:2px;background:var(--bg)}
+.area-num input{width:6.2em;padding:9px 10px;border:0;background:transparent;font:500 1rem var(--f-mono);font-variant-numeric:tabular-nums;text-align:right}
+.unit{display:flex;border-left:1px solid var(--line)}
+.unit .chip span{border:0;border-radius:0;padding:10px 10px;font:500 .78rem/1.3 var(--f-mono);background:transparent}
+.est-out{position:sticky;top:calc(84px + env(safe-area-inset-top,0px));display:grid;gap:20px;padding:clamp(20px,3vw,32px);background:var(--inv-bg);color:var(--inv-ink);border:1px solid var(--inv-line);min-width:0}
+.est-out .lbl{color:var(--inv-muted);margin:0}
+.est-out__range{font:900 clamp(2.1rem,4.2vw,3.2rem)/1 var(--f-display);font-variant-numeric:tabular-nums;letter-spacing:.012em;text-transform:uppercase}
+.est-out__sub{color:var(--inv-muted);font-size:.95rem}
+.est-kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;border-block:1px solid var(--inv-line);padding-block:14px}
+.est-kv dt{font:500 .7rem/1.4 var(--f-mono);text-transform:uppercase;letter-spacing:.07em;color:var(--inv-muted)}
+.est-kv dd{font:800 1.5rem/1.1 var(--f-display);font-variant-numeric:tabular-nums;text-transform:uppercase;letter-spacing:.02em}
+.bars{display:grid;gap:10px}
+.bar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 12px;align-items:baseline;font-size:.9rem}
+.bar__v{font:500 .82rem var(--f-mono);font-variant-numeric:tabular-nums;color:var(--inv-muted);white-space:nowrap}
+.bar__t{grid-column:1 / -1;height:8px}
+.bar__f{display:block;height:100%;min-width:2px;background:var(--inv-accent);border-radius:0 4px 4px 0;transition:width .25s ease}
+.bar:hover .bar__f{background:var(--hivis)}
+.bar:hover .bar__v{color:var(--inv-ink)}
+.est-out .note{color:var(--inv-muted)}
+@media (max-width:900px){.est{grid-template-columns:minmax(0,1fr)}.est-out{position:static}}
+@media (prefers-reduced-motion:reduce){.bar__f{transition:none}}
+
+/* projects */
+.filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:20px}
+.filter{padding:8px 14px;border:1px solid var(--line);border-radius:2px;background:transparent;color:var(--ink);font-weight:500;cursor:pointer}
+.filter:hover{border-color:var(--ink)}
+.filter[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.filters .note{margin-left:auto}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:18px}
+.pcard{position:relative;display:flex;flex-direction:column;border:1px solid var(--line);background:var(--surface);min-width:0;transition:border-color .15s ease,transform .15s ease}
+.pcard:hover{border-color:var(--ink);transform:translateY(-3px)}
+.pcard canvas{display:block;width:100%;max-width:100%;aspect-ratio:4/3;background:var(--sunk);border-bottom:1px solid var(--line)}
+.pcard__body{display:grid;gap:8px;padding:16px}
+.tag{font:500 .7rem/1.4 var(--f-mono);text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+.pcard__open{all:unset;cursor:pointer;font:inherit;color:inherit}
+.pcard__open::after{content:"";position:absolute;inset:0}
+.pcard__open:focus-visible::after{outline:3px solid var(--focus);outline-offset:2px}
+.pcard p{color:var(--muted);font-size:.95rem;line-height:1.45}
+.pcard__meta{display:flex;flex-wrap:wrap;gap:4px 16px;font:400 .78rem/1.4 var(--f-mono);font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.pcard{transition:none}.pcard:hover{transform:none}}
+
+dialog.pd{width:min(900px,calc(100vw - 32px));max-height:calc(100dvh - 48px);padding:0;border:1px solid var(--line);border-radius:2px;background:var(--surface);color:var(--ink);overflow:auto}
+dialog.pd::backdrop{background:rgba(5,8,13,.62)}
+.pd__grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.pd canvas{display:block;width:100%;max-width:100%;aspect-ratio:1/1;background:var(--sunk)}
+.pd__body{display:grid;gap:16px;align-content:start;padding:clamp(18px,3vw,30px);min-width:0}
+.pd__close{justify-self:end}
+.pd dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;border-top:1px solid var(--line);padding-top:14px}
+.pd dt{font:500 .7rem/1.4 var(--f-mono);text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.pd dd{font-weight:600}
+@media (min-width:721px){.pd__grid{background:linear-gradient(90deg,var(--sunk) 50%,transparent 50%)}}
+@media (max-width:720px){.pd__grid{grid-template-columns:minmax(0,1fr)}.pd canvas{aspect-ratio:4/3}}
+
+/* live jobs */
+.jobs{border-top:2px solid var(--ink)}
+.job{display:grid;grid-template-columns:minmax(0,2.3fr) minmax(0,1fr) minmax(0,2.6fr) minmax(0,1.5fr);gap:8px 24px;align-items:center;padding:18px 0;border-bottom:1px solid var(--line)}
+.job__id strong{display:block;font:800 1.3rem/1.1 var(--f-display);text-transform:uppercase;letter-spacing:.02em}
+.job__id span,.job__next span{display:block;color:var(--muted);font-size:.9rem;line-height:1.4}
+.phase{display:inline-block;padding:4px 10px;border:1px solid var(--ink);border-radius:2px;font:500 .72rem/1.3 var(--f-mono);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap}
+.phase[data-late="true"]{background:var(--hivis);color:var(--on-hivis);border-color:var(--on-hivis)}
+.meter{position:relative;height:10px;background:var(--sunk);border:1px solid var(--line);border-radius:5px;overflow:hidden}
+.meter span{display:block;height:100%;background:var(--accent);border-radius:0 4px 4px 0}
+.job__nums{display:flex;justify-content:space-between;gap:12px;margin-top:6px;font:400 .78rem/1.4 var(--f-mono);font-variant-numeric:tabular-nums;color:var(--muted)}
+.job__nums b{color:var(--ink);font-weight:500}
+.job__next .lbl{margin:0;font-size:.68rem}
+.job__next b{font-weight:600;color:var(--ink)}
+.jobs-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;margin-top:14px}
+@media (max-width:860px){.job{grid-template-columns:minmax(0,1fr) auto}.job__meter,.job__next{grid-column:1 / -1}}
+
+/* process */
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));counter-reset:step}
+.step{position:relative;display:grid;gap:8px;align-content:start;padding:22px 20px 0 0;border-top:2px solid var(--ink);counter-increment:step;min-width:0}
+.step::before{content:"";position:absolute;left:0;top:-7px;width:12px;height:12px;background:var(--hivis);border:2px solid var(--ink)}
+.step__n{font:900 2.6rem/1 var(--f-display);color:var(--accent)}
+.step__n::before{content:counter(step)}
+.step p{color:var(--muted);font-size:.95rem;line-height:1.5}
+.step .note{color:var(--ink)}
+@media (max-width:980px){.steps{grid-template-columns:minmax(0,1fr)}.step{grid-template-columns:3rem minmax(0,1fr);column-gap:8px;padding:18px 0 22px;border-top:0;border-left:2px solid var(--ink);padding-left:22px}.step::before{left:-7px;top:22px}.step__n{grid-row:1 / span 3}.step > *:not(.step__n){grid-column:2}}
+
+/* faq */
+.faq{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:clamp(20px,4vw,56px);align-items:start}
+.faq .sec-head{margin-bottom:0}
+.faq__list{border-top:2px solid var(--ink)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 0;cursor:pointer;font-weight:600;font-size:1.08rem;list-style:none}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";flex:none;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--ink);border-radius:2px;font:500 1.1rem/1 var(--f-mono)}
+.faq details[open] summary::after{content:"\2212";background:var(--ink);color:var(--bg)}
+.faq details p{padding:0 44px 20px 0;color:var(--muted);max-width:40em}
+@media (max-width:860px){.faq{grid-template-columns:minmax(0,1fr)}}
+
+/* quote */
+.quote{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(24px,4vw,56px);align-items:start}
+.contact{display:grid;gap:18px;margin-top:8px}
+.contact__row{display:grid;gap:2px;padding-top:14px;border-top:1px solid var(--line)}
+.contact__val{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-weight:600;font-size:1.08rem;user-select:all;-webkit-user-select:all}
+.copy{user-select:none;-webkit-user-select:none;padding:4px 10px;border:1px solid var(--line);border-radius:2px;background:transparent;font:500 .72rem/1.4 var(--f-mono);text-transform:uppercase;letter-spacing:.06em;cursor:pointer}
+.copy:hover{border-color:var(--ink)}
+.qform{display:grid;gap:16px;padding:clamp(18px,3vw,32px);border:1px solid var(--line);background:var(--surface);min-width:0}
+.frow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.field{display:grid;gap:6px;min-width:0}
+.field label{font-weight:500;font-size:.92rem}
+.field input,.field select,.field textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:2px;background:var(--bg);color:var(--ink)}
+.field textarea{min-height:110px;resize:vertical}
+.field [aria-invalid="true"]{border-color:var(--bad);border-width:2px}
+.err{color:var(--bad);font-size:.86rem;font-weight:500}
+.attached{display:grid;gap:4px;padding:12px 14px;border:1px dashed var(--ink);background:var(--bg);font-size:.95rem}
+.attached .lbl{margin:0}
+.sent{display:grid;gap:14px}
+.sent dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 16px;padding:14px;background:var(--bg);border:1px solid var(--line);font-size:.95rem}
+.sent dt{color:var(--muted)}
+.sent dd{font-weight:500;overflow-wrap:anywhere}
+@media (max-width:860px){.quote{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){.frow{grid-template-columns:minmax(0,1fr)}}
+
+/* footer */
+.foot{background:var(--inv-bg);color:var(--inv-ink)}
+.foot::before{content:"";display:block;height:8px;background:repeating-linear-gradient(-45deg,var(--hivis) 0 14px,var(--on-hivis) 14px 28px)}
+.foot__in{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);gap:28px;padding-block:44px 28px}
+.foot .brand{color:var(--inv-ink)}
+.foot p,.foot li{color:var(--inv-muted);font-size:.93rem}
+.foot h3{font:500 .74rem/1.4 var(--f-mono);letter-spacing:.09em;color:var(--inv-muted);margin-bottom:10px}
+.foot a{color:var(--inv-ink);text-decoration:none}
+.foot a:hover{text-decoration:underline}
+.foot li{padding:3px 0}
+.foot__legal{border-top:1px solid var(--inv-line);padding-block:16px 26px;font:400 .76rem/1.5 var(--f-mono);color:var(--inv-muted)}
+@media (max-width:760px){.foot__in{grid-template-columns:minmax(0,1fr)}}
+</style>
+
+<div class="topbar">
+  <div class="wrap topbar__in">
+    <span class="demo-tag">Demo site. Halden Buildworks is a fictional company.</span>
+    <span class="office" id="office" data-open="false"><span class="office__dot" aria-hidden="true"></span><span id="office-text">Site office: Mon to Fri 07:30 to 17:30, Sat 08:00 to 13:00</span></span>
+  </div>
+</div>
+
+<header class="site-head" id="site-head">
+  <div class="wrap site-head__in">
+    <a class="brand" href="#top" aria-label="Halden Buildworks, back to top">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect class="bm-bg" width="32" height="32"/><path class="bm-fg" d="M7 6h5v8h8V6h5v20h-5v-8h-8v8H7z"/></svg>
+      Halden Buildworks
+    </a>
+    <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav" aria-label="Menu"><span></span></button>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="#services">Services</a>
+      <a href="#estimator">Estimator</a>
+      <a href="#projects">Projects</a>
+      <a href="#live">Live jobs</a>
+      <a href="#process">Process</a>
+      <a href="#faq">FAQ</a>
+      <a class="nav__quote" href="#quote">Get a quote</a>
+    </nav>
+    <a class="btn btn--hivis btn--sm head-cta" href="#quote">Get a quote</a>
+  </div>
+</header>
+
+<main id="top">
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero__grid">
+      <div class="hero__copy">
+        <p class="kicker">Main contractor. Homes, commercial, industrial.</p>
+        <h1>Built to the drawing. Handed over <span class="hl">on the date.</span></h1>
+        <p class="lead">Halden Buildworks agrees a fixed price before we break ground, keeps one site manager on your job from first dig to keys, and sends a photo report every Friday.</p>
+        <div class="cta-row">
+          <a class="btn btn--primary" href="#estimator">Price my project</a>
+          <a class="btn btn--ghost" href="#live">See live jobs</a>
+        </div>
+      </div>
+
+      <div class="build" aria-labelledby="build-title">
+        <div class="build__bar">
+          <strong id="build-title">Build sequence: Kiln Street Offices</strong>
+          <span>5 storeys, 52 week programme</span>
+        </div>
+        <canvas class="build__canvas" id="build-canvas" role="img" aria-label="Isometric drawing of a five storey office block being built. Use the slider below to move through the programme."></canvas>
+        <div class="build__ctl">
+          <div class="readout" aria-live="off">
+            <span class="readout__wk" id="build-week">Week 32 of 52</span>
+            <span class="readout__act" id="build-act">Facade panels, level 4</span>
+          </div>
+          <div class="scrub">
+            <button class="play" id="build-play" type="button" aria-label="Play the build from the start">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path id="build-play-icon" d="M3 1.5v13l11-6.5z"/></svg>
+            </button>
+            <input class="range" id="build-scrub" type="range" min="0" max="1000" step="1" value="620" aria-label="Programme progress">
+          </div>
+          <div class="stages" id="build-stages" role="group" aria-label="Jump to a stage">
+            <button class="stage" type="button" data-to="0.15" aria-pressed="false">Groundworks</button>
+            <button class="stage" type="button" data-to="0.5" aria-pressed="false">Structure</button>
+            <button class="stage" type="button" data-to="0.75" aria-pressed="false">Envelope</button>
+            <button class="stage" type="button" data-to="0.92" aria-pressed="false">Fit out</button>
+            <button class="stage" type="button" data-to="1" aria-pressed="false">Handover</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <dl class="facts">
+      <div><dt>Trading since 2009</dt><dd>17 years</dd></div>
+      <div><dt>Projects handed over</dt><dd>214</dd></div>
+      <div><dt>Finished on or before the programme date</dt><dd>96%</dd></div>
+      <div><dt>Defects cover on every job</dt><dd>12 months</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section class="band" id="services">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">What we build</p>
+      <h2>Five kinds of job, one site team</h2>
+      <p>Pick a service to see what is included, how long it usually takes and where the guide rate starts.</p>
+    </div>
+    <div class="svc">
+      <div class="svc__tabs" id="svc-tabs" role="tablist" aria-label="Services"></div>
+      <div class="svc__panel" id="svc-panel" role="tabpanel" tabindex="0"></div>
+    </div>
+  </div>
+</section>
+
+<section class="band band--surface" id="estimator">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Budget calculator</p>
+      <h2>Price your project in a minute</h2>
+      <p>Change any control and the guide price, programme and cost breakdown update straight away.</p>
+    </div>
+    <div class="est">
+      <form class="est__form" id="est-form" novalidate>
+        <fieldset class="fs">
+          <legend>Project type</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="type" id="est-type-home" value="home" checked><span>New build home</span></label>
+            <label class="chip"><input type="radio" name="type" id="est-type-ext" value="ext"><span>Extension or loft</span></label>
+            <label class="chip"><input type="radio" name="type" id="est-type-fitout" value="fitout"><span>Commercial fit out</span></label>
+            <label class="chip"><input type="radio" name="type" id="est-type-shed" value="shed"><span>Warehouse or industrial</span></label>
+            <label class="chip"><input type="radio" name="type" id="est-type-reno" value="reno"><span>Renovation</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="fs">
+          <legend>Floor area</legend>
+          <div class="area-row">
+            <input class="range" id="est-area" type="range" min="200" max="15000" step="50" value="2400" aria-label="Floor area">
+            <div class="area-num">
+              <input id="est-area-num" type="number" inputmode="numeric" min="20" max="15000" step="10" value="2400" aria-label="Floor area, exact figure">
+              <div class="unit" role="radiogroup" aria-label="Unit">
+                <label class="chip"><input type="radio" name="unit" id="est-unit-ft" value="ft" checked><span>sq ft</span></label>
+                <label class="chip"><input type="radio" name="unit" id="est-unit-m" value="m"><span>m²</span></label>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fs">
+          <legend>Storeys</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="storeys" id="est-st-1" value="1"><span>1</span></label>
+            <label class="chip"><input type="radio" name="storeys" id="est-st-2" value="2" checked><span>2</span></label>
+            <label class="chip"><input type="radio" name="storeys" id="est-st-3" value="3"><span>3</span></label>
+            <label class="chip"><input type="radio" name="storeys" id="est-st-4" value="4"><span>4 or more</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="fs">
+          <legend>Finish level</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="finish" id="est-fin-standard" value="standard" checked><span>Standard<small>Solid, durable, good value</small></span></label>
+            <label class="chip"><input type="radio" name="finish" id="est-fin-premium" value="premium"><span>Premium<small>Stone tops, hardwood, better glazing</small></span></label>
+            <label class="chip"><input type="radio" name="finish" id="est-fin-luxury" value="luxury"><span>Luxury<small>Bespoke joinery, full automation</small></span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="fs">
+          <legend>Extras</legend>
+          <div class="chips">
+            <label class="chip"><input type="checkbox" name="extra" id="est-x-demo" value="demo"><span>Demolish existing building<small>+ $24,000, 2 weeks</small></span></label>
+            <label class="chip"><input type="checkbox" name="extra" id="est-x-basement" value="basement"><span>Basement level<small>+ 16%, 5 weeks</small></span></label>
+            <label class="chip"><input type="checkbox" name="extra" id="est-x-solar" value="solar"><span>Solar panels and battery<small>+ $21,500</small></span></label>
+            <label class="chip"><input type="checkbox" name="extra" id="est-x-land" value="land"><span>Landscaping and driveway<small>+ $16,000, 1 week</small></span></label>
+            <label class="chip"><input type="checkbox" name="extra" id="est-x-fast" value="fast"><span>Fast track programme<small>20% quicker, + 9% cost</small></span></label>
+          </div>
+        </fieldset>
+      </form>
+
+      <div class="est-out" aria-live="polite">
+        <div>
+          <p class="lbl">Guide price</p>
+          <p class="est-out__range" id="est-range">$434,000 to $499,000</p>
+          <p class="est-out__sub" id="est-sub">New build home, 2,400 sq ft, 2 storeys, standard finish</p>
+        </div>
+        <dl class="est-kv">
+          <div><dt>Per area</dt><dd id="est-per">$192 / sq ft</dd></div>
+          <div><dt>Time on site</dt><dd id="est-weeks">37 weeks</dd></div>
+          <div><dt>Earliest start</dt><dd id="est-start">Jan 2027</dd></div>
+          <div><dt>Keys by</dt><dd id="est-keys">Sep 2027</dd></div>
+        </dl>
+        <div>
+          <p class="lbl" style="margin-bottom:12px">Where the money goes</p>
+          <div class="bars" id="est-bars"></div>
+        </div>
+        <button class="btn btn--inv" id="est-send" type="button">Request a fixed quote for this</button>
+        <p class="note">Sample rates for this demo. A fixed price follows a site visit and drawings.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="projects">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Recent work</p>
+      <h2>Handed over and in use</h2>
+      <p>Open a project for the scope, the numbers and the one problem that made it interesting.</p>
+    </div>
+    <div class="filters" id="filters" role="group" aria-label="Filter projects">
+      <button class="filter" type="button" data-cat="All" aria-pressed="true">All</button>
+      <button class="filter" type="button" data-cat="Residential" aria-pressed="false">Residential</button>
+      <button class="filter" type="button" data-cat="Commercial" aria-pressed="false">Commercial</button>
+      <button class="filter" type="button" data-cat="Industrial" aria-pressed="false">Industrial</button>
+      <button class="filter" type="button" data-cat="Renovation" aria-pressed="false">Renovation</button>
+      <span class="note" id="filter-count" aria-live="polite">Showing 6 of 6</span>
+    </div>
+    <div class="pgrid" id="pgrid"></div>
+    <p class="note" style="margin-top:16px">Drawings stand in for site photos in this demo. A real site would show your photographs here.</p>
+  </div>
+</section>
+
+<section class="band band--surface" id="live">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">On site today</p>
+      <h2>Where our crews are this week</h2>
+      <p>Progress is worked out from each job's programme dates and today's date, so this board changes every day.</p>
+    </div>
+    <ul class="jobs" id="jobs"></ul>
+    <div class="jobs-foot">
+      <p class="note" id="jobs-stamp">Sample jobs for this demo.</p>
+      <p class="note">Bar shows share of programme elapsed.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="process">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">How a job runs</p>
+      <h2>From first visit to keys</h2>
+    </div>
+    <ol class="steps">
+      <li class="step"><span class="step__n" aria-hidden="true"></span><h3>Site visit and brief</h3><p>We walk the site with you, measure up and listen to what you need the building to do.</p><p class="note">Free. Within 5 working days.</p></li>
+      <li class="step"><span class="step__n" aria-hidden="true"></span><h3>Fixed price proposal</h3><p>An itemised price, a week by week programme and a stage payment schedule.</p><p class="note">10 working days after drawings.</p></li>
+      <li class="step"><span class="step__n" aria-hidden="true"></span><h3>Permits and set up</h3><p>We handle building control, utilities and neighbour notices, and order long lead items early.</p><p class="note">4 to 8 weeks.</p></li>
+      <li class="step"><span class="step__n" aria-hidden="true"></span><h3>Build</h3><p>One site manager throughout. A photo report every Friday and a walk round with you at each milestone.</p><p class="note">Programme fixed in contract.</p></li>
+      <li class="step"><span class="step__n" aria-hidden="true"></span><h3>Handover and cover</h3><p>The snag list is closed before handover. You get keys, manuals and warranties in one pack.</p><p class="note">12 months of defects cover.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band band--surface" id="faq">
+  <div class="wrap faq">
+    <div class="sec-head">
+      <p class="eyebrow">Before you ask</p>
+      <h2>Straight answers</h2>
+      <p>The questions we hear on almost every first site visit.</p>
+    </div>
+    <div class="faq__list">
+      <details open>
+        <summary>Is the price really fixed?</summary>
+        <p>Yes, once the drawings and specification are agreed. It changes only if you change the scope, or if the ground hides something no survey could have shown, such as an unrecorded well. Either way you approve a written variation before any extra work starts.</p>
+      </details>
+      <details>
+        <summary>How do payments work?</summary>
+        <p>In stages tied to milestones you can see: 10% at contract, then ground slab, top out, weathertight and practical completion. We hold back 2.5% until the end of the defects period.</p>
+      </details>
+      <details>
+        <summary>Do you handle permits and building control?</summary>
+        <p>Yes. We prepare and submit building control applications, book every inspection and keep the sign off certificates for your handover pack. Planning permission itself stays with your architect, and we can introduce one if you need it.</p>
+      </details>
+      <details>
+        <summary>Can we stay open or live at home during the works?</summary>
+        <p>Usually. Fit outs are often built at night or in phases so you keep trading. For extensions we seal off the work area and keep one kitchen and one bathroom working for all but a few planned days.</p>
+      </details>
+      <details>
+        <summary>What insurance and warranties do you carry?</summary>
+        <p>Public liability of $10 million, employer's liability and contract works cover on every job. New homes carry a 10 year structural warranty. Certificates are sent with every proposal.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="quote">
+  <div class="wrap quote">
+    <div>
+      <div class="sec-head">
+        <p class="eyebrow">Start here</p>
+        <h2>Tell us about your site</h2>
+        <p>We reply within one working day and can usually visit within five.</p>
+      </div>
+      <div class="contact">
+        <div class="contact__row">
+          <span class="lbl">Phone</span>
+          <span class="contact__val"><span id="c-phone">(555) 014 2200</span><button class="copy" type="button" data-copy="c-phone">Copy</button></span>
+        </div>
+        <div class="contact__row">
+          <span class="lbl">Email</span>
+          <span class="contact__val"><span id="c-mail">estimating@haldenbuildworks.example</span><button class="copy" type="button" data-copy="c-mail">Copy</button></span>
+        </div>
+        <div class="contact__row">
+          <span class="lbl">Yard and office</span>
+          <span>Unit 4, Quarry Road Works, Halden</span>
+          <span class="note">Mon to Fri 07:30 to 17:30, Sat 08:00 to 13:00</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <form class="qform" id="qform" novalidate>
+        <div class="attached" id="q-attached" hidden>
+          <span class="lbl">Estimate attached</span>
+          <span id="q-attached-text"></span>
+        </div>
+        <div class="frow">
+          <div class="field"><label for="q-name">Your name</label><input id="q-name" name="name" type="text" autocomplete="name" required><span class="err" id="q-name-err" hidden></span></div>
+          <div class="field"><label for="q-phone">Phone</label><input id="q-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel"><span class="err" id="q-phone-err" hidden></span></div>
+        </div>
+        <div class="frow">
+          <div class="field"><label for="q-email">Email</label><input id="q-email" name="email" type="email" autocomplete="email" required><span class="err" id="q-email-err" hidden></span></div>
+          <div class="field"><label for="q-type">Type of project</label>
+            <select id="q-type" name="type">
+              <option value="home">New build home</option>
+              <option value="ext">Extension or loft</option>
+              <option value="fitout">Commercial fit out</option>
+              <option value="shed">Warehouse or industrial</option>
+              <option value="reno">Renovation</option>
+            </select>
+          </div>
+        </div>
+        <div class="frow">
+          <div class="field"><label for="q-where">Where is the site?</label><input id="q-where" name="where" type="text" autocomplete="address-level2" placeholder="Town or postcode"></div>
+          <div class="field"><label for="q-when">When do you want to start?</label>
+            <select id="q-when" name="when">
+              <option>As soon as possible</option>
+              <option>Within 3 months</option>
+              <option>In 3 to 6 months</option>
+              <option>Later, still planning</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label for="q-msg">Anything we should know?</label><textarea id="q-msg" name="msg" placeholder="Drawings ready, access limits, budget, deadlines"></textarea></div>
+        <button class="btn btn--primary" type="submit">Send request</button>
+        <p class="note">Demo form. Nothing leaves this page.</p>
+      </form>
+
+      <div class="qform sent" id="q-sent" hidden tabindex="-1">
+        <p class="eyebrow">Demo only</p>
+        <h3>Request ready. Nothing was sent.</h3>
+        <p>This is a sample site, so the form stops here. On a live site this request would reach the estimating team with these details:</p>
+        <dl id="q-sent-list"></dl>
+        <button class="btn btn--ghost" id="q-again" type="button">Start another request</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__in">
+    <div style="display:grid;gap:12px;justify-items:start">
+      <span class="brand"><svg viewBox="0 0 32 32" aria-hidden="true"><rect class="bm-bg" width="32" height="32"/><path class="bm-fg" d="M7 6h5v8h8V6h5v20h-5v-8h-8v8H7z"/></svg>Halden Buildworks</span>
+      <p style="max-width:30em">Main contractor for homes, shops and workplaces. Fixed price, one site manager, weekly reports.</p>
+    </div>
+    <div>
+      <h3>Site map</h3>
+      <ul>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#estimator">Estimator</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#live">Live jobs</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Talk to us</h3>
+      <ul>
+        <li>(555) 014 2200</li>
+        <li>Unit 4, Quarry Road Works, Halden</li>
+        <li><a href="#quote">Request a quote</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap foot__legal">Demo site built as a sample. Halden Buildworks, its projects, figures and contact details are fictional. <span id="year"></span></div>
+</footer>
+
+<dialog class="pd" id="pd" aria-labelledby="pd-title">
+  <div class="pd__grid">
+    <canvas id="pd-canvas" role="img" aria-label="Isometric drawing of the project"></canvas>
+    <div class="pd__body">
+      <button class="btn btn--ghost btn--sm pd__close" id="pd-close" type="button">Close</button>
+      <p class="tag" id="pd-tag"></p>
+      <h3 id="pd-title" style="font-size:2rem"></h3>
+      <p id="pd-line"></p>
+      <p id="pd-story" style="color:var(--muted)"></p>
+      <dl id="pd-facts"></dl>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; };
+
+/* ================= colour and drawing primitives ================= */
+const M = {};
+const shadeCache = new Map();
+function readMaterials() {
+  const cs = getComputedStyle(document.documentElement);
+  ['ground','pave','pit','concrete','steel','panel','glass','lit','crane','tree','brick','timber','roof','shed','door'].forEach(n => {
+    const v = cs.getPropertyValue('--m-' + n).trim();
+    M[n] = /^#[0-9a-f]{6}$/i.test(v) ? v : '#888888';
+  });
+  M.edge = cs.getPropertyValue('--m-edge').trim() || 'rgba(0,0,0,.3)';
+  M.ink = cs.getPropertyValue('--ink').trim() || '#111';
+  M.muted = cs.getPropertyValue('--muted').trim() || '#555';
+  shadeCache.clear();
+}
+function shade(hex, amt) {
+  const k = hex + amt;
+  let v = shadeCache.get(k);
+  if (v) return v;
+  const n = parseInt(hex.slice(1), 16), r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  const t = amt > 0 ? 255 : 0, a = Math.abs(amt);
+  v = 'rgb(' + Math.round(r + (t - r) * a) + ',' + Math.round(g + (t - g) * a) + ',' + Math.round(b + (t - b) * a) + ')';
+  shadeCache.set(k, v);
+  return v;
+}
+
+const C30 = Math.cos(Math.PI / 6);
+function makeView(canvas, b) {
+  const rect = canvas.getBoundingClientRect();
+  if (rect.width < 4 || rect.height < 4) return null;
+  const W = rect.width, H = rect.height;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const pw = Math.round(W * dpr), ph = Math.round(H * dpr);
+  if (canvas.width !== pw || canvas.height !== ph) { canvas.width = pw; canvas.height = ph; }
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+  ctx.globalAlpha = 1;
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  const sx0 = (b.x0 - b.y1) * C30, sx1 = (b.x1 - b.y0) * C30;
+  const sy0 = b.sy0, sy1 = (b.x1 + b.y1) / 2;
+  const pad = b.pad === undefined ? 10 : b.pad;
+  const s = Math.min((W - pad * 2) / (sx1 - sx0), (H - pad * 2) / (sy1 - sy0));
+  const ox = W / 2 - (sx0 + sx1) / 2 * s, oy = H / 2 - (sy0 + sy1) / 2 * s;
+  return { ctx, W, H, s, P: (x, y, z) => [ox + (x - y) * C30 * s, oy + ((x + y) / 2 - z) * s] };
+}
+function trace(v, pts) {
+  const c = v.ctx;
+  c.beginPath();
+  for (let i = 0; i < pts.length; i++) { const q = v.P(pts[i][0], pts[i][1], pts[i][2]); if (i) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); }
+  c.closePath();
+}
+function poly(v, pts, fill, stroke) {
+  const c = v.ctx;
+  trace(v, pts);
+  if (fill) { c.fillStyle = fill; c.fill(); }
+  if (stroke) { c.strokeStyle = stroke; c.lineWidth = 1; c.stroke(); }
+}
+function box(v, x, y, z, w, d, h, col) {
+  const e = M.edge;
+  poly(v, [[x,y,z+h],[x+w,y,z+h],[x+w,y+d,z+h],[x,y+d,z+h]], shade(col, .12), e);
+  poly(v, [[x,y+d,z],[x+w,y+d,z],[x+w,y+d,z+h],[x,y+d,z+h]], shade(col, -.03), e);
+  poly(v, [[x+w,y,z],[x+w,y+d,z],[x+w,y+d,z+h],[x+w,y,z+h]], shade(col, -.2), e);
+}
+/* face 'L' is the plane y = fixed (u runs along x); face 'R' is the plane x = fixed (u runs along y) */
+function faceRect(v, face, fixed, u0, u1, z0, z1, col) {
+  const pts = face === 'L' ? [[u0,fixed,z0],[u1,fixed,z0],[u1,fixed,z1],[u0,fixed,z1]] : [[fixed,u0,z0],[fixed,u1,z0],[fixed,u1,z1],[fixed,u0,z1]];
+  poly(v, pts, shade(col, face === 'L' ? -.03 : -.2), M.edge);
+}
+function windowsOn(v, face, fixed, a0, a1, z0, z1, cols, rows, o) {
+  o = o || {};
+  const cw = (a1 - a0) / cols, ch = (z1 - z0) / rows;
+  const mu = o.mu === undefined ? .2 : o.mu, mb = o.mb === undefined ? .3 : o.mb, mt = o.mt === undefined ? .18 : o.mt;
+  for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
+    const lit = o.lit ? o.lit(i, j) : false;
+    faceRect(v, face, fixed, a0 + i * cw + cw * mu, a0 + (i + 1) * cw - cw * mu, z0 + j * ch + ch * mb, z0 + (j + 1) * ch - ch * mt, lit ? M.lit : M.glass);
+  }
+}
+function gable(v, x, y, z, w, d, r, roofCol, wallCol, axis) {
+  const e = M.edge;
+  if (axis === 'y') {
+    const mx = x + w / 2;
+    poly(v, [[x,y,z],[x,y+d,z],[mx,y+d,z+r],[mx,y,z+r]], shade(roofCol, .16), e);
+    poly(v, [[x+w,y,z],[x+w,y+d,z],[mx,y+d,z+r],[mx,y,z+r]], shade(roofCol, -.12), e);
+    poly(v, [[x,y+d,z],[x+w,y+d,z],[mx,y+d,z+r]], shade(wallCol, -.03), e);
+  } else {
+    const my = y + d / 2;
+    poly(v, [[x,y,z],[x+w,y,z],[x+w,my,z+r],[x,my,z+r]], shade(roofCol, .16), e);
+    poly(v, [[x,y+d,z],[x+w,y+d,z],[x+w,my,z+r],[x,my,z+r]], shade(roofCol, .02), e);
+    poly(v, [[x+w,y,z],[x+w,y+d,z],[x+w,my,z+r]], shade(wallCol, -.2), e);
+  }
+}
+function line3(v, a, b, col, lw) {
+  const c = v.ctx, p = v.P(a[0], a[1], a[2]), q = v.P(b[0], b[1], b[2]);
+  c.beginPath(); c.moveTo(p[0], p[1]); c.lineTo(q[0], q[1]);
+  c.strokeStyle = col; c.lineWidth = lw || 1.5; c.stroke();
+}
+function tree(v, x, y, k) {
+  k = k === undefined ? 1 : k;
+  if (k <= 0.02) return;
+  const c = v.ctx, base = v.P(x, y, 0), top = v.P(x, y, .8 * k), mid = v.P(x, y, 1.2 * k), r = .56 * k * v.s;
+  c.beginPath(); c.moveTo(base[0], base[1]); c.lineTo(top[0], top[1]);
+  c.strokeStyle = shade(M.timber, -.4); c.lineWidth = Math.max(1.5, v.s * .09); c.stroke();
+  c.beginPath(); c.arc(mid[0], mid[1], r, 0, Math.PI * 2); c.fillStyle = shade(M.tree, -.12); c.fill();
+  c.beginPath(); c.arc(mid[0] - r * .2, mid[1] - r * .22, r * .68, 0, Math.PI * 2); c.fillStyle = shade(M.tree, .12); c.fill();
+  c.beginPath(); c.arc(mid[0], mid[1], r, 0, Math.PI * 2); c.strokeStyle = M.edge; c.lineWidth = 1; c.stroke();
+}
+
+/* ================= the hero building and its programme ================= */
+const B = { bx: 4, by: 3, bay: 2, H: 1.25, floors: 5, slab: .18, col: .24 };
+const FW = B.bx * B.bay, FD = B.by * B.bay;
+const HERO_BOUNDS = { x0: -2.6, x1: 10.4, y0: -2.2, y1: 8.4, sy0: -9.4, pad: 8 };
+const CR = { x: -1.5, y: 2.6, h: 8.6, jz: 8.1 };
+const seg = (p, t0, dt) => clamp((p - t0) / dt);
+const ease = q => 1 - Math.pow(1 - q, 3);
+function dropIn(v, q, lift, fn) {
+  if (q <= 0) return;
+  const c = v.ctx, prev = c.globalAlpha;
+  c.globalAlpha = prev * Math.min(1, q * 1.8);
+  fn((1 - ease(q)) * lift);
+  c.globalAlpha = prev;
+}
+const craneLevel = p => seg(p, .13, .03) * (1 - seg(p, .74, .03));
+
+function drawHero(v, p, time, opts) {
+  opts = opts || {};
+  const c = v.ctx, H = B.H, foot = [[0,0,0],[FW,0,0],[FW,FD,0],[0,FD,0]];
+
+  box(v, -2.4, -2, -.14, 12.6, 10.2, .14, M.ground);
+
+  const landQ = seg(p, .92, .04);
+  if (landQ > 0) {
+    c.globalAlpha = landQ;
+    poly(v, [[-.9,FD,0],[9.7,FD,0],[9.7,7.9,0],[-.9,7.9,0]], M.pave, M.edge);
+    poly(v, [[FW,-.9,0],[9.7,-.9,0],[9.7,FD,0],[FW,FD,0]], M.pave, M.edge);
+    c.globalAlpha = 1;
+  }
+
+  const pitQ = seg(p, .04, .03) * (1 - seg(p, .10, .04));
+  if (pitQ > 0) {
+    c.save();
+    c.globalAlpha = pitQ;
+    poly(v, foot, shade(M.pit, .08), null);
+    trace(v, foot); c.clip();
+    poly(v, foot.map(q => [q[0], q[1], -.55]), shade(M.pit, -.3), M.edge);
+    c.restore();
+    c.globalAlpha = pitQ; poly(v, foot, null, M.edge); c.globalAlpha = 1;
+  }
+
+  const hoardQ = seg(p, 0, .04) * (1 - seg(p, .88, .04));
+  const hh = .55 * ease(hoardQ);
+  if (hoardQ > 0) {
+    box(v, -2.4, -2, 0, .08, 10.2, hh, M.crane);
+    box(v, -2.4, -2, 0, 12.6, .08, hh, M.crane);
+  }
+
+  const cabinQ = seg(p, .02, .03) * (1 - seg(p, .88, .03));
+  if (cabinQ > 0) dropIn(v, cabinQ, .8, off => {
+    box(v, 8.5, -1.6, off, 1.5, .9, .62, M.glass);
+    faceRect(v, 'L', -.7, 8.7, 9.2, off + .28, off + .5, M.panel);
+  });
+
+  const cq = craneLevel(p);
+  if (cq > 0) {
+    const mh = CR.h * ease(Math.min(1, cq * 1.6));
+    box(v, CR.x - .45, CR.y - .45, 0, .9, .9, .22, M.concrete);
+    const lw = Math.max(1.6, v.s * .075);
+    line3(v, [CR.x - .17, CR.y, .22], [CR.x - .17, CR.y, mh], M.crane, lw);
+    line3(v, [CR.x + .17, CR.y, .22], [CR.x + .17, CR.y, mh], M.crane, lw);
+    for (let z = .22, i = 0; z + .5 <= mh; z += .5, i++) {
+      const a = i % 2 ? -.17 : .17;
+      line3(v, [CR.x + a, CR.y, z], [CR.x - a, CR.y, z + .5], M.crane, Math.max(1, lw * .6));
+    }
+  }
+
+  dropIn(v, seg(p, .09, .06), .5, off => box(v, 0, 0, off, FW, FD, .1, M.concrete));
+
+  const cx = i => i * (FW - B.col) / B.bx, cy = j => j * (FD - B.col) / B.by;
+  const order = [];
+  for (let i = 0; i <= B.bx; i++) for (let j = 0; j <= B.by; j++) order.push([i, j]);
+  order.sort((a, b) => (a[0] + a[1]) - (b[0] + b[1]));
+
+  for (let f = 0; f < B.floors; f++) {
+    const f0 = .15 + f * .07, z0 = f * H, zc = f === 0 ? .1 : z0;
+    if (p <= f0) break;
+    for (const [i, j] of order) {
+      const q = seg(p, f0 + (i + j) / (B.bx + B.by) * .03, .012);
+      dropIn(v, q, 1.3, off => box(v, cx(i), cy(j), zc + off, B.col, B.col, z0 + H - B.slab - zc, M.steel));
+    }
+    dropIn(v, seg(p, f0 + .045, .02), 1.1, off => box(v, 0, 0, z0 + H - B.slab + off, FW, FD, B.slab, M.concrete));
+
+    const e0 = .50 + f * .04;
+    if (p > e0) {
+      for (let k = 0; k < 7; k++) {
+        const q = seg(p, e0 + k * .0045, .012);
+        if (q <= 0) continue;
+        const n = f * 7 + k, rank = (n * 17 + 5) % 35;
+        const lit = rank < 22 && p >= .75 + rank / 22 * .14;
+        const face = k < 4 ? 'L' : 'R', fixed = k < 4 ? FD : FW;
+        const u0 = k < 4 ? k * B.bay : (6 - k) * B.bay;
+        dropIn(v, q, .9, off => {
+          faceRect(v, face, fixed, u0, u0 + B.bay, z0 + off, z0 + H + off, M.panel);
+          const door = opts.door !== false && f === 0 && k === 1 && p >= .9;
+          if (door) faceRect(v, face, fixed, u0 + .45, u0 + B.bay - .45, z0 + .1 + off, z0 + H - .28 + off, M.door);
+          else faceRect(v, face, fixed, u0 + .26, u0 + B.bay - .26, z0 + .36 + off, z0 + H - .28 + off, lit ? M.lit : M.glass);
+        });
+      }
+    }
+  }
+
+  const top = B.floors * H;
+  dropIn(v, seg(p, .70, .02), .9, off => box(v, -.06, -.06, top + off, FW + .12, FD + .12, .12, M.panel));
+  dropIn(v, seg(p, .715, .02), 1.2, off => box(v, 1.2, 1, top + .12 + off, 2.2, 1.4, .55, M.shed));
+  dropIn(v, seg(p, .728, .02), 1.2, off => box(v, 4.8, 2.8, top + .12 + off, 1.6, 1.2, .4, M.shed));
+
+  if (hoardQ > 0) {
+    box(v, 10.12, -2, 0, .08, 10.2, hh, M.crane);
+    box(v, -2.4, 8.12, 0, 12.6, .08, hh, M.crane);
+  }
+
+  if (p > .93) {
+    [[9.1,.4],[1,7.1],[3.6,7.1],[9.1,2.8],[6.2,7.1],[9.1,5.2]].forEach((t, i) => tree(v, t[0], t[1], ease(seg(p, .93 + i * .01, .03))));
+  }
+
+  if (cq > .6) {
+    const a = seg(cq, .6, .4);
+    const th = 28 * Math.sin(time * .32) * Math.PI / 180;
+    const jx = Math.cos(th), jy = Math.sin(th), z = CR.jz, L = 7.2, Lc = 2.4;
+    const tip = [CR.x + jx * L, CR.y + jy * L, z], tail = [CR.x - jx * Lc, CR.y - jy * Lc, z], apex = [CR.x, CR.y, CR.h + .9];
+    const lw = Math.max(1.5, v.s * .07);
+    c.globalAlpha = a;
+    line3(v, tail, tip, M.crane, lw);
+    line3(v, [CR.x, CR.y, z], apex, M.crane, lw);
+    line3(v, apex, [CR.x + jx * L * .62, CR.y + jy * L * .62, z], M.ink, 1);
+    line3(v, apex, tail, M.ink, 1);
+    line3(v, [tail[0] + jx * .7, tail[1] + jy * .7, z - .25], [tail[0], tail[1], z - .25], M.concrete, lw * 2.2);
+    const r = 3 + 2.6 * (.5 + .5 * Math.sin(time * .47 + 1));
+    const structTop = Math.min(B.floors, Math.max(0, Math.ceil((p - .15) / .07))) * H;
+    const hz = Math.min(z - .8, structTop + 1.1 + .25 * Math.sin(time * .9));
+    const hx = CR.x + jx * r, hy = CR.y + jy * r;
+    line3(v, [hx, hy, z], [hx, hy, hz], M.ink, 1);
+    if (p < .5) line3(v, [hx - .5, hy, hz], [hx + .5, hy, hz], M.steel, Math.max(2, v.s * .12));
+    else if (p < .72) line3(v, [hx, hy, hz], [hx, hy, hz - .5], M.panel, Math.max(3, v.s * .3));
+    c.globalAlpha = 1;
+  }
+
+  if (opts.labels !== false) {
+    const fs = clamp(v.s * .62, 9, 12), short = v.W < 430;
+    c.font = '500 ' + fs + 'px "IBM Plex Mono", ui-monospace, Menlo, monospace';
+    c.textAlign = 'right'; c.textBaseline = 'middle';
+    for (let k = 0; k <= B.floors; k++) {
+      const a = k === 0 ? seg(p, .14, .02) : seg(p, .15 + (k - 1) * .07 + .06, .02);
+      if (a <= 0) continue;
+      const q = v.P(0, FD, k * H);
+      const m = '+' + (k * 3.6).toFixed(2);
+      const txt = short ? m : (k === B.floors ? 'Roof ' : 'L' + (k + 1) + ' ') + m + ' m';
+      c.globalAlpha = a;
+      c.strokeStyle = M.ink; c.lineWidth = 1;
+      c.beginPath(); c.moveTo(q[0] - 6, q[1]); c.lineTo(q[0] - 22, q[1]); c.stroke();
+      c.fillStyle = M.ink;
+      c.fillText(txt, q[0] - 27, q[1]);
+    }
+    c.globalAlpha = 1;
+  }
+}
+
+/* ================= project models ================= */
+const MODELS = {
+  offices: { b: { x0: -2.6, x1: 10.4, y0: -2.2, y1: 8.4, sy0: -6.9 }, draw: v => drawHero(v, 1, 0, { labels: false }) },
+  house: { b: { x0: -1.2, x1: 9.2, y0: -1, y1: 7.2, sy0: -3.5 }, draw(v) {
+    box(v, -1.2, -1, -.12, 10.4, 8.2, .12, M.ground);
+    box(v, 0, 0, 0, 4, 4.6, 2.6, M.panel);
+    windowsOn(v, 'L', 4.6, 0, 4, 0, 2.6, 2, 2);
+    windowsOn(v, 'R', 4, 0, 4.6, 0, 2.6, 2, 2);
+    gable(v, 0, 0, 2.6, 4, 4.6, 1.5, M.roof, M.panel, 'y');
+    box(v, 4, 1.2, 0, 3.2, 3.4, 1.35, M.timber);
+    windowsOn(v, 'L', 4.6, 4, 7.2, 0, 1.35, 3, 1, { mu: .1, mb: .12, mt: .14 });
+    windowsOn(v, 'R', 7.2, 1.2, 4.6, 0, 1.35, 2, 1, { mu: .1, mb: .12, mt: .14 });
+    tree(v, 8.2, .1); tree(v, .7, 6.2); tree(v, 8.2, 5.8, .8);
+  } },
+  shed: { b: { x0: -1.4, x1: 12, y0: -1.2, y1: 8.4, sy0: -2.9 }, draw(v) {
+    box(v, -1.4, -1.2, -.12, 13.4, 9.6, .12, M.ground);
+    poly(v, [[-.6,6,0],[10.8,6,0],[10.8,8,0],[-.6,8,0]], M.pave, M.edge);
+    box(v, 0, 0, 0, 10, 6, 2.5, M.shed);
+    for (let i = 0; i < 3; i++) faceRect(v, 'L', 6, 1 + i * 3.1, 3 + i * 3.1, 0, 1.8, M.door);
+    faceRect(v, 'R', 10, 4.6, 5.4, 0, 1.25, M.door);
+    windowsOn(v, 'R', 10, .8, 4, 1.2, 2.2, 3, 1, { mu: .12, mb: .1, mt: .1 });
+    gable(v, 0, 0, 2.5, 10, 6, .8, M.shed, M.shed, 'x');
+    for (let i = 0; i < 4; i++) line3(v, [.5 + i * 3.1, 6.6, 0], [.5 + i * 3.1, 6.6, .5], M.crane, Math.max(2, v.s * .12));
+  } },
+  terrace: { b: { x0: -1.2, x1: 8.8, y0: -1.2, y1: 6.8, sy0: -4.3 }, draw(v) {
+    box(v, -1.2, -1.2, -.12, 10, 8, .12, M.ground);
+    const w = 2.4, d = 4.2, h = 3.5;
+    for (let i = 0; i < 3; i++) {
+      const x = i * w;
+      box(v, x, 0, 0, w, d, h, i === 1 ? M.panel : M.brick);
+      windowsOn(v, 'L', d, x, x + w, h / 3, h, 2, 2, { mu: .22 });
+      windowsOn(v, 'L', d, x + w / 2, x + w, 0, h / 3, 1, 1, { mu: .22 });
+      faceRect(v, 'L', d, x + .32, x + .98, 0, .98, M.door);
+    }
+    windowsOn(v, 'R', 3 * w, 0, d, 0, h, 2, 3, { mu: .28 });
+    gable(v, 0, 0, h, 3 * w, d, 1.5, M.roof, M.brick, 'x');
+    const lw = Math.max(1.2, v.s * .05), sy = d + .5;
+    for (let k = 1; k <= 3; k++) box(v, w, d + .08, k * h / 3 - .04, w, .42, .05, M.timber);
+    [w, w * 1.5, w * 2].forEach(x => line3(v, [x, sy, 0], [x, sy, h + .35], M.ink, lw));
+    for (let k = 1; k <= 3; k++) line3(v, [w, sy, k * h / 3 + .32], [w * 2, sy, k * h / 3 + .32], M.ink, lw);
+    line3(v, [w, sy, 0], [w * 1.5, sy, h / 3], M.ink, lw * .7);
+    line3(v, [w * 1.5, sy, h / 3], [w * 2, sy, 0], M.ink, lw * .7);
+  } },
+  shop: { b: { x0: -1.4, x1: 10, y0: -1.2, y1: 7, sy0: -3.7 }, draw(v) {
+    box(v, -1.4, -1.2, -.12, 11.4, 8.2, .12, M.ground);
+    poly(v, [[-1.4,4,0],[10,4,0],[10,5.7,0],[-1.4,5.7,0]], M.pave, M.edge);
+    box(v, 0, 0, 0, 2.8, 4, 1.7, M.concrete);
+    windowsOn(v, 'L', 4, 0, 2.8, 0, 1.7, 1, 1, { mu: .16, mb: .2, mt: .3 });
+    box(v, 2.8, 0, 0, 4.4, 4, 1.7, M.door);
+    windowsOn(v, 'L', 4, 2.8, 7.2, 0, 1.7, 2, 1, { mu: .08, mb: .1, mt: .4, lit: () => true });
+    faceRect(v, 'L', 4, 3.1, 6.9, 1.18, 1.56, M.panel);
+    box(v, 3, 4, .98, 4, .85, .07, M.crane);
+    box(v, 7.2, 0, 0, 1.6, 4, 1.7, M.concrete);
+    windowsOn(v, 'L', 4, 7.2, 8.8, 0, 1.7, 1, 1, { mu: .16, mb: .2, mt: .3 });
+    windowsOn(v, 'R', 8.8, 0, 4, 0, 1.7, 2, 1, { mu: .2, mb: .36, mt: .3 });
+    box(v, 0, 0, 1.7, 8.8, 4, 1.5, M.brick);
+    windowsOn(v, 'L', 4, 0, 8.8, 1.7, 3.2, 5, 1);
+    windowsOn(v, 'R', 8.8, 0, 4, 1.7, 3.2, 2, 1);
+    box(v, -.05, -.05, 3.2, 8.9, 4.1, .1, M.roof);
+    tree(v, 9.4, 5, .8); tree(v, 1, 5, .8);
+  } },
+  loft: { b: { x0: -1.2, x1: 8.8, y0: -1.2, y1: 6.8, sy0: -3.7 }, draw(v) {
+    box(v, -1.2, -1.2, -.12, 10, 8, .12, M.ground);
+    box(v, 0, 0, 0, 4.6, 4, 2.6, M.brick);
+    windowsOn(v, 'L', 4, 0, 4.6, 0, 2.6, 2, 2, { mu: .24 });
+    windowsOn(v, 'R', 4.6, 0, 4, 1.3, 2.6, 2, 1, { mu: .26 });
+    gable(v, 0, 0, 2.6, 4.6, 4, 1.7, M.roof, M.brick, 'x');
+    box(v, 1.2, 2.5, 2.95, 2.2, 1.15, .95, M.panel);
+    windowsOn(v, 'L', 3.65, 1.2, 3.4, 2.95, 3.9, 2, 1, { mu: .1, mb: .16, mt: .16 });
+    box(v, 4.6, .5, 0, 2.8, 3.5, 1.3, M.timber);
+    windowsOn(v, 'L', 4, 4.6, 7.4, 0, 1.3, 3, 1, { mu: .08, mb: .1, mt: .14 });
+    windowsOn(v, 'R', 7.4, .5, 4, 0, 1.3, 2, 1, { mu: .1, mb: .1, mt: .14 });
+    tree(v, 7.8, 5.6); tree(v, .4, 5.8, .85);
+  } }
+};
+function renderModel(canvas, key) {
+  const m = MODELS[key];
+  const v = makeView(canvas, m.b);
+  if (v) m.draw(v);
+}
+
+/* ================= hero controls ================= */
+const hero = { p: mqReduce.matches ? .62 : .2, target: mqReduce.matches ? null : .62, speed: .1, playing: false, last: 0, visible: true, raf: 0, dragging: false };
+const heroCanvas = $('#build-canvas'), scrub = $('#build-scrub'), weekEl = $('#build-week'), actEl = $('#build-act'), playBtn = $('#build-play'), playIcon = $('#build-play-icon');
+const stageBtns = $$('#build-stages .stage');
+const ICON_PLAY = 'M3 1.5v13l11-6.5z', ICON_PAUSE = 'M3 2h4v12H3zM9 2h4v12H9z';
+
+function activity(p) {
+  if (p < .04) return 'Site set up and hoarding';
+  if (p < .09) return 'Excavation to formation level';
+  if (p < .15) return 'Ground slab pour';
+  if (p < .50) return 'Steel frame and slab, level ' + (Math.min(4, Math.floor((p - .15) / .07)) + 1);
+  if (p < .70) return 'Facade panels, level ' + (Math.min(4, Math.floor((p - .50) / .04)) + 1);
+  if (p < .75) return 'Roof plant on, building weathertight';
+  if (p < .92) return 'Services, partitions and finishes';
+  if (p < 1) return 'Snagging and landscaping';
+  return 'Keys handed over';
+}
+const stageOf = p => p < .15 ? 0 : p < .5 ? 1 : p < .75 ? 2 : p < .92 ? 3 : 4;
+let uiCache = {};
+function syncHeroUI() {
+  const p = hero.p;
+  const wk = 'Week ' + Math.max(1, Math.round(p * 52)) + ' of 52', act = activity(p), st = stageOf(p), val = String(Math.round(p * 1000));
+  if (uiCache.wk !== wk) { weekEl.textContent = wk; uiCache.wk = wk; }
+  if (uiCache.act !== act) { actEl.textContent = act; uiCache.act = act; }
+  if (uiCache.st !== st) { stageBtns.forEach((b, i) => b.setAttribute('aria-pressed', String(i === st))); uiCache.st = st; }
+  if (!hero.dragging && scrub.value !== val) scrub.value = val;
+  scrub.style.setProperty('--fill', (p * 100).toFixed(1) + '%');
+  scrub.setAttribute('aria-valuetext', wk + ', ' + act);
+  const mode = hero.playing ? 'pause' : 'play';
+  if (uiCache.mode !== mode) {
+    playIcon.setAttribute('d', hero.playing ? ICON_PAUSE : ICON_PLAY);
+    playBtn.setAttribute('aria-label', hero.playing ? 'Pause the build' : 'Play the build');
+    uiCache.mode = mode;
+  }
+}
+function renderHero(time) {
+  const v = makeView(heroCanvas, HERO_BOUNDS);
+  if (v) drawHero(v, hero.p, mqReduce.matches ? 0 : time, {});
+}
+const heroBusy = () => hero.playing || hero.target !== null;
+const heroLoops = () => hero.visible && !document.hidden && (heroBusy() || (!mqReduce.matches && craneLevel(hero.p) > 0));
+function frame(ts) {
+  hero.raf = 0;
+  const dt = Math.min(.05, hero.last ? (ts - hero.last) / 1000 : 0);
+  hero.last = ts;
+  if (hero.playing) {
+    hero.p += dt / 15;
+    if (hero.p >= 1) { hero.p = 1; hero.playing = false; }
+  } else if (hero.target !== null) {
+    const dir = Math.sign(hero.target - hero.p);
+    hero.p += dir * dt * hero.speed;
+    if (dir === 0 || (dir > 0 && hero.p >= hero.target) || (dir < 0 && hero.p <= hero.target)) { hero.p = hero.target; hero.target = null; }
+  }
+  renderHero(ts / 1000);
+  syncHeroUI();
+  if (heroLoops()) kick(); else hero.last = 0;
+}
+function kick() { if (!hero.raf) hero.raf = requestAnimationFrame(frame); }
+
+scrub.addEventListener('input', () => { hero.playing = false; hero.target = null; hero.p = scrub.value / 1000; kick(); });
+scrub.addEventListener('pointerdown', () => { hero.dragging = true; });
+window.addEventListener('pointerup', () => { hero.dragging = false; });
+playBtn.addEventListener('click', () => {
+  hero.target = null;
+  if (hero.playing) hero.playing = false;
+  else { if (hero.p >= .995) hero.p = 0; hero.playing = true; }
+  kick();
+});
+stageBtns.forEach(b => b.addEventListener('click', () => {
+  const to = parseFloat(b.dataset.to);
+  hero.playing = false;
+  if (mqReduce.matches) { hero.p = to; hero.target = null; }
+  else { hero.target = to; hero.speed = Math.max(.22, Math.abs(to - hero.p) / 1.6); }
+  kick();
+}));
+if ('IntersectionObserver' in window) {
+  new IntersectionObserver(es => { hero.visible = es[0].isIntersecting; if (hero.visible) kick(); }, { threshold: .05 }).observe(heroCanvas);
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) kick(); });
+
+/* ================= services ================= */
+const SERVICES = [
+  { id: 'home', name: 'New build homes', from: 'from $185 / sq ft',
+    text: 'From a cleared plot to a finished house. Our own site team runs groundworks, frame, roof, services and finishes, with a fixed list of trade partners we have used for years.',
+    inc: ['Foundations and drainage', 'Frame, roof and envelope', 'Electrics, plumbing and heating', 'Kitchens, joinery and decoration', 'Driveways and garden walls', 'Building control sign off'],
+    facts: [['Typical programme', '28 to 44 weeks'], ['Guide rate', 'From $185 per sq ft'], ['Warranty', '10 year structural']] },
+  { id: 'ext', name: 'Extensions and lofts', from: 'from $210 / sq ft',
+    text: 'More room without moving. We seal the work area from the rest of the house, keep a kitchen and bathroom running, and tie new structure into old without cracks a year later.',
+    inc: ['Rear, side and wraparound extensions', 'Loft conversions with dormers', 'Steel beams and knock throughs', 'Party wall coordination', 'Matching brick and roof tiles', 'Dust screens and daily clean down'],
+    facts: [['Typical programme', '10 to 18 weeks'], ['Guide rate', 'From $210 per sq ft'], ['You can stay', 'In almost every case']] },
+  { id: 'fitout', name: 'Commercial fit out', from: 'from $95 / sq ft',
+    text: 'Shops, clinics, offices and restaurants fitted out inside an existing shell. We often work nights or in phases so you keep trading while we build.',
+    inc: ['Partitions, ceilings and flooring', 'Shopfronts and signage', 'Commercial kitchens and extraction', 'Power, data and lighting', 'Fire stopping and alarms', 'Landlord approvals'],
+    facts: [['Typical programme', '6 to 14 weeks'], ['Guide rate', 'From $95 per sq ft'], ['Working hours', 'Day, night or phased']] },
+  { id: 'shed', name: 'Warehouses and industrial', from: 'from $110 / sq ft',
+    text: 'Steel portal frames, flat floors that forklifts can trust, loading docks and yard works. We pour floor slabs to FM2 flatness and prove it with a survey before racking goes in.',
+    inc: ['Steel portal frames', 'Insulated cladding and roofing', 'Power floated floor slabs', 'Dock levellers and roller doors', 'Yards, drainage and fencing', 'Mezzanines and offices'],
+    facts: [['Typical programme', '20 to 36 weeks'], ['Guide rate', 'From $110 per sq ft'], ['Floor flatness', 'FM2, surveyed']] },
+  { id: 'reno', name: 'Renovation and repair', from: 'from $120 / sq ft',
+    text: 'Old buildings made sound and warm again. Underpinning, steel insertion, new roofs, damp treatment, then a full strip out and refit to modern standards.',
+    inc: ['Structural surveys and repair', 'Underpinning and steelwork', 'Roof replacement', 'Damp and timber treatment', 'Rewire and replumb', 'Insulation upgrades'],
+    facts: [['Typical programme', '8 to 30 weeks'], ['Guide rate', 'From $120 per sq ft'], ['Contingency', '10% recommended']] }
+];
+const svcTabs = $('#svc-tabs'), svcPanel = $('#svc-panel');
+function showService(id, focus) {
+  const s = SERVICES.find(x => x.id === id) || SERVICES[0];
+  $$('.svc__tab', svcTabs).forEach(t => { const on = t.dataset.id === s.id; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; if (on && focus) t.focus(); });
+  svcPanel.setAttribute('aria-labelledby', 'svc-tab-' + s.id);
+  svcPanel.textContent = '';
+  svcPanel.append(el('h3', '', s.name), el('p', '', s.text));
+  const ul = el('ul', 'inc'); s.inc.forEach(i => ul.append(el('li', '', i))); svcPanel.append(ul);
+  const dl = el('dl', 'kv'); s.facts.forEach(f => { const d = el('div'); d.append(el('dt', '', f[0]), el('dd', '', f[1])); dl.append(d); }); svcPanel.append(dl);
+  const row = el('div', 'cta-row');
+  const b = el('button', 'btn btn--primary', 'Estimate this kind of job'); b.type = 'button';
+  b.addEventListener('click', () => { setEstType(s.id); $('#estimator').scrollIntoView({ behavior: mqReduce.matches ? 'auto' : 'smooth', block: 'start' }); });
+  row.append(b); svcPanel.append(row);
+}
+SERVICES.forEach(s => {
+  const t = el('button', 'svc__tab'); t.type = 'button'; t.id = 'svc-tab-' + s.id; t.dataset.id = s.id;
+  t.setAttribute('role', 'tab'); t.setAttribute('aria-controls', 'svc-panel');
+  t.append(el('span', '', s.name), el('small', '', s.from));
+  t.addEventListener('click', () => showService(s.id));
+  svcTabs.append(t);
+});
+svcTabs.addEventListener('keydown', e => {
+  const keys = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 };
+  if (!(e.key in keys)) return;
+  e.preventDefault();
+  const i = SERVICES.findIndex(s => s.id === document.activeElement.dataset.id);
+  showService(SERVICES[(i + keys[e.key] + SERVICES.length) % SERVICES.length].id, true);
+});
+showService('home');
+
+/* ================= estimator ================= */
+const SQFT_PER_M2 = 10.7639;
+const EST = {
+  types: {
+    home:   { label: 'New build home', rate: 185, wBase: 18, wPerK: 7, split: [.30,.18,.17,.23,.05,.07], area: 2400 },
+    ext:    { label: 'Extension or loft', rate: 210, wBase: 8, wPerK: 6, split: [.32,.20,.15,.21,.05,.07], area: 450 },
+    fitout: { label: 'Commercial fit out', rate: 95, wBase: 4, wPerK: 1.8, split: [.08,.04,.33,.40,.06,.09], area: 3000 },
+    shed:   { label: 'Warehouse or industrial', rate: 110, wBase: 14, wPerK: .9, split: [.42,.24,.14,.08,.05,.07], area: 12000 },
+    reno:   { label: 'Renovation', rate: 120, wBase: 6, wPerK: 5, split: [.22,.14,.20,.29,.05,.10], area: 1800 }
+  },
+  finish: { standard: { m: 1, w: 1 }, premium: { m: 1.22, w: 1.06 }, luxury: { m: 1.55, w: 1.15 } },
+  storeys: { 1: 1, 2: 1.04, 3: 1.08, 4: 1.13 },
+  parts: ['Groundworks and structure', 'Roof and envelope', 'Electrics, plumbing, heating', 'Internal finishes', 'Design, permits, fees', 'Contingency']
+};
+function estimate(o) {
+  const t = EST.types[o.type], f = EST.finish[o.finish];
+  const build = o.area * t.rate * EST.storeys[o.storeys] * f.m;
+  const wts = t.split.map((s, i) => s * (i === 3 ? Math.pow(f.m, 1.6) : i === 2 ? Math.pow(f.m, .6) : 1));
+  const wsum = wts.reduce((a, b) => a + b, 0);
+  let extras = 0, weeks = (t.wBase + t.wPerK * o.area / 1000 + (o.storeys - 1) * 2) * f.w;
+  if (o.extras.demo) { extras += 24000; weeks += 2; }
+  if (o.extras.basement) { extras += build * .16; weeks += 5; }
+  if (o.extras.solar) extras += 21500;
+  if (o.extras.land) { extras += 16000; weeks += 1; }
+  const k = o.extras.fast ? 1.09 : 1;
+  if (o.extras.fast) weeks *= .8;
+  const rows = wts.map((w, i) => ({ label: EST.parts[i], amount: build * w / wsum * k }));
+  if (extras > 0) rows.push({ label: 'Selected extras', amount: extras * k });
+  const mid = (build + extras) * k;
+  const r = n => Math.round(n / 1000) * 1000;
+  return { mid, low: r(mid * .94), high: r(mid * 1.08), weeks: Math.max(3, Math.round(weeks)), rows };
+}
+const money = n => '$' + Math.round(n).toLocaleString('en-US');
+const estForm = $('#est-form'), areaRange = $('#est-area'), areaNum = $('#est-area-num');
+const est = { areaTouched: false, storeysTouched: false, last: null };
+const TYPICAL_STOREYS = { home: 2, ext: 1, fitout: 1, shed: 1, reno: 2 };
+const estUnit = () => estForm.elements.unit.value;
+function readEst() {
+  const extras = {};
+  $$('input[name="extra"]', estForm).forEach(c => { extras[c.value] = c.checked; });
+  return { type: estForm.elements.type.value, area: Number(areaRange.value), storeys: Number(estForm.elements.storeys.value), finish: estForm.elements.finish.value, extras };
+}
+function areaText(a) { return estUnit() === 'm' ? Math.round(a / SQFT_PER_M2).toLocaleString('en-US') + ' m²' : Math.round(a).toLocaleString('en-US') + ' sq ft'; }
+function renderEst() {
+  const o = readEst(), r = estimate(o);
+  areaRange.style.setProperty('--fill', ((o.area - 200) / (15000 - 200) * 100).toFixed(1) + '%');
+  if (document.activeElement !== areaNum) areaNum.value = estUnit() === 'm' ? Math.round(o.area / SQFT_PER_M2) : o.area;
+  const sub = EST.types[o.type].label + ', ' + areaText(o.area) + ', ' + (o.storeys === 4 ? '4 or more storeys' : o.storeys + (o.storeys === 1 ? ' storey' : ' storeys')) + ', ' + o.finish + ' finish';
+  const range = money(r.low) + ' to ' + money(r.high);
+  $('#est-range').textContent = range;
+  $('#est-sub').textContent = sub;
+  $('#est-per').textContent = estUnit() === 'm' ? money(r.mid / (o.area / SQFT_PER_M2)) + ' / m²' : money(r.mid / o.area) + ' / sq ft';
+  $('#est-weeks').textContent = r.weeks + ' weeks';
+  const start = new Date(); start.setDate(start.getDate() + 56);
+  const keys = new Date(start); keys.setDate(keys.getDate() + r.weeks * 7);
+  const my = d => d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
+  $('#est-start').textContent = my(start);
+  $('#est-keys').textContent = my(keys);
+  const bars = $('#est-bars'), max = Math.max.apply(null, r.rows.map(x => x.amount));
+  while (bars.children.length > r.rows.length) bars.lastChild.remove();
+  r.rows.forEach((row, i) => {
+    let b = bars.children[i];
+    if (!b) {
+      b = el('div', 'bar');
+      const t = el('span', 'bar__t'); t.append(el('span', 'bar__f'));
+      b.append(el('span', 'bar__l'), el('span', 'bar__v'), t);
+      bars.append(b);
+    }
+    b.children[0].textContent = row.label;
+    b.children[1].textContent = money(Math.round(row.amount / 100) * 100) + '  ' + Math.round(row.amount / r.mid * 100) + '%';
+    b.children[2].firstChild.style.width = (row.amount / max * 100).toFixed(1) + '%';
+  });
+  est.last = { type: o.type, text: sub + '. Guide price ' + range + ', ' + r.weeks + ' weeks on site.' };
+}
+function setEstType(id) {
+  const radio = $('#est-type-' + id);
+  if (!radio) return;
+  radio.checked = true;
+  if (!est.areaTouched) areaRange.value = EST.types[id].area;
+  if (!est.storeysTouched) $('#est-st-' + TYPICAL_STOREYS[id]).checked = true;
+  renderEst();
+}
+estForm.addEventListener('submit', e => e.preventDefault());
+estForm.addEventListener('input', e => {
+  if (e.target === areaRange) est.areaTouched = true;
+  if (e.target === areaNum) {
+    est.areaTouched = true;
+    const raw = Number(areaNum.value);
+    if (raw > 0) areaRange.value = clamp(estUnit() === 'm' ? raw * SQFT_PER_M2 : raw, 200, 15000);
+  }
+  if (e.target.name === 'storeys') est.storeysTouched = true;
+  if (e.target.name === 'type' && !est.areaTouched) areaRange.value = EST.types[e.target.value].area;
+  if (e.target.name === 'type' && !est.storeysTouched) $('#est-st-' + TYPICAL_STOREYS[e.target.value]).checked = true;
+  renderEst();
+});
+areaNum.addEventListener('blur', renderEst);
+$('#est-send').addEventListener('click', () => {
+  if (!est.last) return;
+  $('#q-attached-text').textContent = est.last.text;
+  $('#q-attached').hidden = false;
+  $('#q-type').value = est.last.type;
+  showQuoteForm();
+  $('#quote').scrollIntoView({ behavior: mqReduce.matches ? 'auto' : 'smooth', block: 'start' });
+});
+renderEst();
+
+/* ================= projects ================= */
+const PROJECTS = [
+  { id: 'offices', model: 'offices', cat: 'Commercial', name: 'Kiln Street Offices', line: 'Five storey steel frame office block on a tight town centre plot.',
+    story: 'A live road ran along two sides and a party wall along the third, so every steel delivery was booked to a 20 minute slot and lifted straight off the lorry. The frame topped out in week 26, two days ahead of programme.',
+    facts: [['Size', '38,000 sq ft'], ['Contract value', '$9.4M'], ['On site', '52 weeks'], ['Handed over', 'March 2026']] },
+  { id: 'larch', model: 'house', cat: 'Residential', name: 'The Larch House', line: 'Four bedroom family home with a timber clad garden room.',
+    story: 'The plot sat on shrinkable clay beside two mature oaks, so the house stands on piled foundations with a suspended slab. The garden room frame was cut off site and stood up in three days.',
+    facts: [['Size', '3,100 sq ft'], ['Contract value', '$690,000'], ['On site', '34 weeks'], ['Handed over', 'August 2025']] },
+  { id: 'portside', model: 'shed', cat: 'Industrial', name: 'Portside Unit 7', line: 'Distribution warehouse with three dock doors and a service yard.',
+    story: 'The tenant needed narrow aisle racking, which only works on a very flat floor. We poured the 24,000 sq ft slab in two overnight sessions and the flatness survey passed first time.',
+    facts: [['Size', '24,000 sq ft'], ['Contract value', '$2.9M'], ['On site', '26 weeks'], ['Handed over', 'November 2024']] },
+  { id: 'alder', model: 'terrace', cat: 'Renovation', name: 'Alder Row', line: 'Three Victorian terraced houses made sound, dry and warm.',
+    story: 'The middle house had dropped 40 mm on a failed drain. We underpinned in 1 metre bays, stitched the cracked brickwork, then took all three back to brick and refitted them.',
+    facts: [['Size', '3 houses, 4,500 sq ft'], ['Contract value', '$1.1M'], ['On site', '30 weeks'], ['Handed over', 'June 2024']] },
+  { id: 'bakery', model: 'shop', cat: 'Commercial', name: 'Fennel and Rye Bakery', line: 'High street bakery and cafe fitted out in seven weeks.',
+    story: 'The flats above are occupied, so the oven extraction duct runs through an old chimney instead of up the back wall. Noisy work stopped at 6 pm every day and nobody upstairs complained once.',
+    facts: [['Size', '2,200 sq ft'], ['Contract value', '$240,000'], ['On site', '7 weeks'], ['Handed over', 'February 2026']] },
+  { id: 'quarry', model: 'loft', cat: 'Residential', name: '9 Quarry Bank', line: 'Loft conversion with a dormer and a glazed side extension.',
+    story: 'The family stayed in the house throughout. We built the dormer from scaffold outside and only broke through the ceiling for the new stair in week 9, once the loft was already watertight.',
+    facts: [['Size', '640 sq ft added'], ['Contract value', '$148,000'], ['On site', '14 weeks'], ['Handed over', 'October 2025']] }
+];
+const pgrid = $('#pgrid'), pd = $('#pd');
+const thumbs = [];
+PROJECTS.forEach(p => {
+  const card = el('article', 'pcard'); card.dataset.cat = p.cat;
+  const cv = el('canvas'); cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'Isometric drawing of ' + p.name);
+  const body = el('div', 'pcard__body');
+  const h = el('h3'); const open = el('button', 'pcard__open', p.name); open.type = 'button'; h.append(open);
+  const meta = el('div', 'pcard__meta'); meta.append(el('span', '', p.facts[1][1]), el('span', '', p.facts[2][1]), el('span', '', p.facts[3][1]));
+  body.append(el('p', 'tag', p.cat), h, el('p', '', p.line), meta);
+  card.append(cv, body);
+  open.addEventListener('click', () => openProject(p));
+  pgrid.append(card);
+  thumbs.push({ canvas: cv, key: p.model, card });
+});
+function renderThumbs() { thumbs.forEach(t => { if (!t.card.hidden) renderModel(t.canvas, t.key); }); }
+$$('#filters .filter').forEach(b => b.addEventListener('click', () => {
+  const cat = b.dataset.cat;
+  $$('#filters .filter').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  let n = 0;
+  thumbs.forEach(t => { const show = cat === 'All' || t.card.dataset.cat === cat; t.card.hidden = !show; if (show) n++; });
+  $('#filter-count').textContent = 'Showing ' + n + ' of ' + thumbs.length;
+  renderThumbs();
+}));
+let pdKey = null;
+function openProject(p) {
+  pdKey = p.model;
+  $('#pd-tag').textContent = p.cat;
+  $('#pd-title').textContent = p.name;
+  $('#pd-line').textContent = p.line;
+  $('#pd-story').textContent = p.story;
+  const dl = $('#pd-facts'); dl.textContent = '';
+  p.facts.forEach(f => { const d = el('div'); d.append(el('dt', '', f[0]), el('dd', '', f[1])); dl.append(d); });
+  if (typeof pd.showModal === 'function') pd.showModal(); else pd.setAttribute('open', '');
+  requestAnimationFrame(() => renderModel($('#pd-canvas'), pdKey));
+}
+function closeProject() { if (typeof pd.close === 'function') pd.close(); else pd.removeAttribute('open'); }
+$('#pd-close').addEventListener('click', closeProject);
+pd.addEventListener('click', e => { if (e.target === pd) closeProject(); });
+
+/* ================= live jobs and office hours ================= */
+const JOBS = [
+  { name: 'Marsh Lane townhouses', kind: 'Six new build homes', dur: 406, off: 171 },
+  { name: 'Corran Works, Unit 3', kind: 'Steel frame warehouse, 18,000 sq ft', dur: 182, off: 40 },
+  { name: 'Tolland Dental', kind: 'Clinic fit out, open throughout', dur: 63, off: 22, fit: true },
+  { name: 'Hobbs Wharf, Block C', kind: 'Four storey offices', dur: 364, off: 300 },
+  { name: '14 Ember Close', kind: 'Rear extension and loft', dur: 98, off: 77 }
+];
+const PHASES = [[.15, 'Groundworks'], [.45, 'Structure'], [.65, 'Envelope'], [.92, 'Fit out'], [1.01, 'Snagging']];
+const MILESTONES = [[.15, 'Ground slab complete'], [.45, 'Top out'], [.65, 'Weathertight'], [.92, 'Practical completion'], [1, 'Handover']];
+const PHASES_FIT = [[.15, 'Strip out'], [.45, 'First fix'], [.65, 'Partitions'], [.92, 'Finishes'], [1.01, 'Snagging']];
+const MILESTONES_FIT = [[.15, 'Strip out complete'], [.45, 'First fix signed off'], [.65, 'Ceilings closed'], [.92, 'Practical completion'], [1, 'Handover']];
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+function jobState(job, now) {
+  const day = Math.floor((now.getTime() - now.getTimezoneOffset() * 6e4) / 864e5);
+  const elapsed = (day + job.off) % job.dur, pct = elapsed / job.dur;
+  const at = d => { const x = new Date(now); x.setHours(12, 0, 0, 0); x.setDate(x.getDate() - elapsed + d); if (x.getDay() === 6) x.setDate(x.getDate() + 2); else if (x.getDay() === 0) x.setDate(x.getDate() + 1); return x; };
+  const next = (job.fit ? MILESTONES_FIT : MILESTONES).find(m => m[0] > pct);
+  return { pct, week: Math.floor(elapsed / 7) + 1, weeks: Math.ceil(job.dur / 7), phase: (job.fit ? PHASES_FIT : PHASES).find(ph => pct < ph[0])[1], nextName: next[1], nextDate: at(Math.round(next[0] * job.dur)), handover: at(job.dur) };
+}
+function renderJobs(now) {
+  const list = $('#jobs');
+  const dm = d => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  JOBS.forEach((job, i) => {
+    const s = jobState(job, now), pc = Math.round(s.pct * 100);
+    let li = list.children[i];
+    if (!li) {
+      li = el('li', 'job');
+      const id = el('div', 'job__id'); id.append(el('strong', '', job.name), el('span', '', job.kind));
+      const ph = el('div', 'job__phase'); ph.append(el('span', 'phase'));
+      const mt = el('div', 'job__meter'); const meter = el('div', 'meter'); meter.setAttribute('role', 'progressbar'); meter.setAttribute('aria-valuemin', '0'); meter.setAttribute('aria-valuemax', '100'); meter.setAttribute('aria-label', job.name + ' programme elapsed'); meter.append(el('span'));
+      const nums = el('div', 'job__nums'); nums.append(el('span'), el('b'));
+      mt.append(meter, nums);
+      const nx = el('div', 'job__next'); nx.append(el('span', 'lbl', 'Next milestone'), el('b'), el('span'));
+      li.append(id, ph, mt, nx);
+      list.append(li);
+    }
+    $('.phase', li).textContent = s.phase;
+    const meter = $('.meter', li); meter.setAttribute('aria-valuenow', String(pc)); meter.firstChild.style.width = Math.max(1, pc) + '%';
+    const nums = $('.job__nums', li); nums.children[0].textContent = 'Week ' + s.week + ' of ' + s.weeks; nums.children[1].textContent = pc + '%';
+    const nx = $('.job__next', li); nx.children[1].textContent = s.nextName + ', ' + dm(s.nextDate); nx.children[2].textContent = 'Handover ' + s.handover.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  });
+  $('#jobs-stamp').textContent = 'Sample jobs. Calculated ' + now.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) + ' at ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }) + ', your local time.';
+}
+function officeStatus(now) {
+  const hours = { 1: [450, 1050], 2: [450, 1050], 3: [450, 1050], 4: [450, 1050], 5: [450, 1050], 6: [480, 780] };
+  const fmt = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+  const d = now.getDay(), m = now.getHours() * 60 + now.getMinutes(), h = hours[d];
+  if (h && m >= h[0] && m < h[1]) return { open: true, text: 'Site office open now, closes ' + fmt(h[1]) };
+  if (h && m < h[0]) return { open: false, text: 'Site office closed, opens ' + fmt(h[0]) + ' today' };
+  for (let i = 1; i <= 7; i++) { const dd = (d + i) % 7; if (hours[dd]) return { open: false, text: 'Site office closed, opens ' + (i === 1 ? 'tomorrow' : DAYS[dd]) + ' ' + fmt(hours[dd][0]) }; }
+  return { open: false, text: 'Site office closed' };
+}
+function tick() {
+  const now = new Date(), o = officeStatus(now);
+  $('#office').dataset.open = String(o.open);
+  $('#office-text').textContent = o.text;
+  renderJobs(now);
+}
+tick();
+setInterval(tick, 30000);
+
+/* ================= quote form ================= */
+const qform = $('#qform'), qsent = $('#q-sent');
+function showQuoteForm() { qform.hidden = false; qsent.hidden = true; }
+function setErr(id, msg) {
+  const input = $('#' + id), err = $('#' + id + '-err');
+  if (msg) { input.setAttribute('aria-invalid', 'true'); input.setAttribute('aria-describedby', id + '-err'); err.textContent = msg; err.hidden = false; }
+  else { input.removeAttribute('aria-invalid'); input.removeAttribute('aria-describedby'); err.hidden = true; }
+  return !msg;
+}
+qform.addEventListener('submit', e => {
+  e.preventDefault();
+  const name = $('#q-name').value.trim(), email = $('#q-email').value.trim(), phone = $('#q-phone').value.trim();
+  const ok = [
+    setErr('q-name', name ? '' : 'Add your name so we know who to ask for.'),
+    setErr('q-email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? '' : 'Enter an email address like name@example.com.'),
+    setErr('q-phone', !phone || phone.replace(/\D/g, '').length >= 7 ? '' : 'That number looks too short. Check it or leave it blank.')
+  ];
+  if (ok.includes(false)) { const bad = $('[aria-invalid="true"]', qform); if (bad) bad.focus(); return; }
+  const rows = [['Name', name], ['Email', email]];
+  if (phone) rows.push(['Phone', phone]);
+  rows.push(['Project', $('#q-type').selectedOptions[0].textContent]);
+  if ($('#q-where').value.trim()) rows.push(['Site', $('#q-where').value.trim()]);
+  rows.push(['Start', $('#q-when').value]);
+  if (!$('#q-attached').hidden) rows.push(['Estimate', $('#q-attached-text').textContent]);
+  if ($('#q-msg').value.trim()) rows.push(['Notes', $('#q-msg').value.trim()]);
+  const dl = $('#q-sent-list'); dl.textContent = '';
+  rows.forEach(r => dl.append(el('dt', '', r[0]), el('dd', '', r[1])));
+  qform.hidden = true; qsent.hidden = false; qsent.focus();
+});
+$('#q-again').addEventListener('click', () => { qform.reset(); $('#q-attached').hidden = true; ['q-name', 'q-email', 'q-phone'].forEach(id => setErr(id, '')); showQuoteForm(); $('#q-name').focus(); });
+
+$$('.copy').forEach(b => b.addEventListener('click', () => {
+  const node = $('#' + b.dataset.copy), text = node.textContent;
+  const done = () => { b.textContent = 'Copied'; setTimeout(() => { b.textContent = 'Copy'; }, 1600); };
+  const select = () => { const r = document.createRange(); r.selectNodeContents(node); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent = 'Selected'; setTimeout(() => { b.textContent = 'Copy'; }, 1600); };
+  try { navigator.clipboard.writeText(text).then(done, select); } catch (err) { select(); }
+}));
+
+/* ================= header menu ================= */
+const head = $('#site-head'), menuBtn = $('#menu-btn');
+function setMenu(open) { if (open) head.setAttribute('data-open', ''); else head.removeAttribute('data-open'); menuBtn.setAttribute('aria-expanded', String(open)); }
+menuBtn.addEventListener('click', () => setMenu(!head.hasAttribute('data-open')));
+$$('#nav a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
+$('#year').textContent = String(new Date().getFullYear());
+
+/* ================= redraw on theme, size and font changes ================= */
+let redrawQueued = false;
+function redrawAll() {
+  if (redrawQueued) return;
+  redrawQueued = true;
+  requestAnimationFrame(() => {
+    redrawQueued = false;
+    readMaterials();
+    renderThumbs();
+    if (pd.open && pdKey) renderModel($('#pd-canvas'), pdKey);
+    if (!hero.raf) { renderHero(0); syncHeroUI(); if (heroLoops()) kick(); }
+  });
+}
+new MutationObserver(redrawAll).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class', 'style'] });
+const mqDark = window.matchMedia('(prefers-color-scheme: dark)');
+if (mqDark.addEventListener) mqDark.addEventListener('change', redrawAll);
+if ('ResizeObserver' in window) {
+  const ro = new ResizeObserver(redrawAll);
+  ro.observe(heroCanvas); ro.observe(pgrid);
+} else window.addEventListener('resize', redrawAll);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(redrawAll);
+
+readMaterials();
+renderHero(0);
+syncHeroUI();
+renderThumbs();
+kick();
+})();
+</script>

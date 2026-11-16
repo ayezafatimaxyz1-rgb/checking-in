@@ -23,7 +23,7 @@ N.append(dict(
         dict(ayah=ayah(20, 82), note=[
             "Notice the four things attached to this forgiveness: he repented, believed, did good, and stayed on the guidance. The door is open, but it is a door for someone who actually walks through it. Allah's mercy toward the one who returns is vast, and He calls that very person to keep going.",
             "And remember the ayah from Ar-Raheem, Qur'an 39:53: *\"Do not despair of the mercy of Allah.\"* The Name Al-Ghaffar is the reason that despair has no place in the believer."])],
-    hadith=[dict(ar="يَا ابْنَ آدَمَ إِنَّكَ مَا دَعَوْتَنِي وَرَجَوْتَنِي غَفَرْتُ لَكَ عَلَى مَا كَانَ مِنْكَ وَلَا أُبَالِي... يَا ابْنَ آدَمَ لَوْ أَتَيْتَنِي بِقُرَابِ الْأَرْضِ خَطَايَا ثُمَّ لَقِيتَنِي لَا تُشْرِكُ بِي شَيْئًا لَأَتَيْتُكَ بِقُرَابِهَا مَغْفِرَةً",
+    hadith=[dict(ar="يَا ابْنَ آدَمَ إِنَّكَ مَا دَعَوْتَنِي وَرَجَوْتَنِي غَفَرْتُ لَكَ عَلَى مَا كَانَ مِنْكَ وَلَا أُبَالِي... يَا ابْنَ آدَمَ إِنَّكَ لَوْ أَتَيْتَنِي بِقُرَابِ الْأَرْضِ خَطَايَا ثُمَّ لَقِيتَنِي لَا تُشْرِكُ بِي شَيْئًا لَأَتَيْتُكَ بِقُرَابِهَا مَغْفِرَةً",
                  en="In a hadith qudsi, Allah says: \"O son of Adam, as long as you call upon Me and hope in Me, I forgive you for what you have done, and I do not mind. O son of Adam, if you came to Me with an earth-full of sins and then met Me without associating anything with Me, I would meet you with an earth-full of forgiveness.\"",
                  ref="Jami' at-Tirmidhi 3540 — hasan")],
     essence="Al-Ghaffar is the One who forgives again and again, who covers the sins of His servants and protects them from their consequences, however often they return.",
@@ -41,7 +41,7 @@ N.append(dict(
     root_en="— to overcome and subdue completely, from a position of height.",
     pattern=dict(ar="فَعَّال", bullets=[
         "The intensive pattern again: not only does He overcome, He overcomes everything, continuously.",
-        "Compare it with its close neighbour in the Qur'an, **الْقَاهِر** (6:18), which describes the act, while Al-Qahhar describes that this is an unceasing, complete reality.",
+        "Compare it with its close neighbour in the Qur'an, **الْقَاهِر** (6:18), which names the act, while Al-Qahhar says that this overcoming is unceasing and complete.",
         "The Name Al-Jabbar spoke of power that mends and restores. Al-Qahhar speaks of power that no creature can stand against."]),
     defbox="الْقَهَّارُ → The One who subdues everything beneath His power, and whom nothing can overcome.",
     related="قَاهِر — the Overcomer · قَهْر — overpowering · مَقْهُور — one who is overcome · قُهِرَ — was subdued",

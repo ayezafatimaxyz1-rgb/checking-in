@@ -2,6 +2,7 @@
 import sys, os, re, subprocess, tempfile, copy
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lib import *
+import lib
 import original, content_a, content_b, content_c, front
 from pypdf import PdfReader, PdfWriter
 
@@ -53,20 +54,28 @@ TOC_ROWS = [  # key, label, title, arabic
 ]
 
 
-def find_pages(body_pdf):
-    """Return {key: 1-based page index within body}."""
+SEARCH = {"N1": "The Vastly & Abundantly Merciful", "N2": "The Especially & Continually Merciful",
+          "T12": "Differences, Equalities & What the Scholars Say", "N3": "The Absolute King & Sovereign",
+          "T1113": "Three Names, One Ayah, One Complete Picture of Creation",
+          "T2025": "Al-Qabid & Al-Basit \u00b7 Al-Khafid & Ar-Rafi' \u00b7 Al-Mu'izz & Al-Mudhill"}
+
+
+def find_pages(body_pdf, allnames):
+    """Sequential search of each chapter's cover line; returns {key: 1-based page in body}."""
+    for n, d in allnames.items():
+        SEARCH[f"N{n}"] = d["en"]
+    order = [k for k, _, _, _ in TOC_ROWS]
     r = PdfReader(body_pdf)
-    found = {}
-    for i, pg in enumerate(r.pages, start=1):
-        t = re.sub(r"\s+", "", pg.extract_text() or "")
-        for m in re.finditer(r"NAME(\d+)OF99", t):
-            found.setdefault(f"N{m.group(1)}", i)
-        if "NAMES1&2—TOGETHER" in t or "NAMES1&2—TOGETHER" in t:
-            found.setdefault("T12", i)
-        if "NAMES11,12&13—TOGETHER" in t:
-            found.setdefault("T1113", i)
-        if "NAMES20TO25—TOGETHER" in t:
-            found.setdefault("T2025", i)
+    texts = [re.sub(r"\s+", "", (pg.extract_text() or "")) for pg in r.pages]
+    found, i = {}, 0
+    for k in order:
+        key = re.sub(r"\s+", "", lib.deai(SEARCH[k]))
+        while i < len(texts) and key not in texts[i]:
+            i += 1
+        if i >= len(texts):
+            raise SystemExit("cover not found for " + k)
+        found[k] = i + 1
+        i += 1
     return found
 
 
@@ -88,12 +97,15 @@ def bg_pdf(tmp):
     return out
 
 
-def main(out_pdf):
+def main(out_pdf, lang="en"):
+    global TITLE
+    lib.set_lang(lang)
+    TITLE = "اسماءُ اللہ الحسنیٰ، حصہ اول: نام 1 تا 33" if lang == "ur" else "The 99 Names of Allah, Part One: Names 1 to 33"
     tmp = tempfile.mkdtemp(prefix="book_")
     seq, allnames = name_pages()
     body_html = "\n".join(h for _, h in seq)
     body_pdf = render(body_html, os.path.join(tmp, "body.pdf"), tmp, "body")
-    pages = find_pages(body_pdf)
+    pages = find_pages(body_pdf, allnames)
     nbody = len(PdfReader(body_pdf).pages)
 
     # build glance rows
@@ -145,12 +157,13 @@ def main(out_pdf):
             base.merge_page(nr.pages[idx])
             w.add_page(base)
             idx += 1
-    w.add_metadata({"/Title": "The 99 Names of Allah, Part One: Names 1 to 33", "/Author": ""})
+    w.add_metadata({"/Title": TITLE, "/Author": "", "/Producer": "", "/Creator": ""})
     w.write(out_pdf)
     print("pages:", idx, "front:", nf, "body:", nbody, "tail:", len(tr_.pages), "glance:", glance_pages)
+    for k in lib.MISSING: print("MISSING:", k[:120])
     print("toc keys found:", len(pages), "of", len(TOC_ROWS))
     return tmp
 
 
 if __name__ == "__main__":
-    print(main(sys.argv[1]))
+    print(main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else "en"))

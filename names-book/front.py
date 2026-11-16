@@ -1,8 +1,20 @@
 """Title page, introduction, contents, 33-at-a-glance summary and sources page."""
 from lib import *
+import lib, html
 
 
 def title_page():
+    r = lambda s: html.escape(raw(s))
+    if lib.LANG == "ur":
+        return ('<section class="chapter title-page"><div class="eyebrow" style="margin-top:0">اسماءُ اللہ الحسنیٰ</div>'
+                '<div class="ar-title" dir="rtl" style="font-size:44pt;margin-top:22pt">أَسْمَاءُ اللَّهِ الْحُسْنَىٰ</div>'
+                '<div class="tr">Asma\' Allah al-Husna</div>'
+                '<div class="en urmain">اللہ تعالیٰ کے ننانوے ناموں کی تفہیم</div>'
+                '<div class="subm">حصہ اول: نام 1 تا 33</div>'
+                '<div class="rule"></div>'
+                '<p style="text-align:center;color:var(--maroon);margin:0 0 4pt 0">مادہ اور معنی &nbsp;·&nbsp; قرآنی تعلق</p>'
+                '<p style="text-align:center;color:var(--maroon);margin:0">خلاصہ &nbsp;·&nbsp; بندے کے لیے پیغام</p>'
+                '</section>')
     return ('<section class="chapter title-page"><div class="eyebrow" style="margin-top:0">THE 99 NAMES OF ALLAH</div>'
             '<div class="ar-title" dir="rtl" style="font-size:40pt;margin-top:22pt">أَسْمَاءُ اللَّهِ الْحُسْنَىٰ</div>'
             '<div class="tr">Asma\' Allah al-Husna</div>'
@@ -15,7 +27,7 @@ def title_page():
 
 
 def intro_page():
-    o = ['<section class="chapter"><div class="eyebrow" style="margin-top:6pt">BEFORE YOU BEGIN</div>']
+    o = [f'<section class="chapter"><div class="eyebrow" style="margin-top:6pt">{raw("BEFORE YOU BEGIN")}</div>']
     o.append(h2("The Beautiful Names"))
     o.append(ayah_box(ayah(7, 180, words=(0, 5), tr="\"And to Allah belong the best names, so invoke Him by them.\"")))
     o.append(hadith_box("إِنَّ لِلَّهِ تِسْعَةً وَتِسْعِينَ اسْمًا، مِائَةً إِلَّا وَاحِدًا، مَنْ أَحْصَاهَا دَخَلَ الْجَنَّةَ",
@@ -35,7 +47,7 @@ def intro_page():
 
 def contents_page(items):
     """items: list of (num_label, title, arabic, page) ; page may be '' on first pass."""
-    o = ['<section class="chapter"><div class="eyebrow" style="margin-top:6pt">CONTENTS</div>']
+    o = [f'<section class="chapter"><div class="eyebrow" style="margin-top:6pt">{raw("CONTENTS")}</div>']
     o.append('<ul class="toc" style="margin-top:14pt">')
     for num, title, ar, page in items:
         o.append(f'<li><span class="tn">{num}</span><span class="tt">{md(title)}</span><span class="dots"></span>'
@@ -45,10 +57,10 @@ def contents_page(items):
 
 
 def glance_page(rows):
-    o = ['<section class="chapter"><div class="eyebrow" style="margin-top:6pt">REVIEW</div>']
+    o = [f'<section class="chapter"><div class="eyebrow" style="margin-top:6pt">{raw("REVIEW")}</div>']
     o.append(h2("The First 33 at a Glance"))
     o.append(p("A quick page to revise. Say each Name, recall its meaning, and recall the one ayah that holds it.", "note"))
-    o.append('<table class="tbl glance"><thead><tr><th>#</th><th>Name</th><th>Meaning</th></tr></thead><tbody>')
+    o.append(f'<table class="tbl glance"><thead><tr><th>#</th><th>{raw('Name')}</th><th>{raw('Meaning')}</th></tr></thead><tbody>')
     for n, ar, tr, en in rows:
         o.append(f'<tr><td class="k" style="width:9%">{n}</td><td style="width:40%"><i>{md(tr)}</i> &nbsp; <span class="a" dir="rtl">{ar}</span></td><td>{md(en)}</td></tr>')
     o.append("</tbody></table></section>")
@@ -56,7 +68,7 @@ def glance_page(rows):
 
 
 def sources_page():
-    o = ['<section class="chapter"><div class="eyebrow" style="margin-top:6pt">NOTES</div>']
+    o = [f'<section class="chapter"><div class="eyebrow" style="margin-top:6pt">{raw("NOTES")}</div>']
     o.append(h2("Sources & Notes"))
     o.append(h3("The Qur'an"))
     o.append(p("Arabic text: the Uthmani script from The Noble Qur'an Encyclopedia (quranenc.com), as distributed in the open-source quran-json dataset (CC BY-SA 4.0). English: the Saheeh International translation, as distributed by Tanzil.net, with light edits for flow where an ayah is quoted in part. Every verse in this book is set from that source, not typed from memory.", "note"))

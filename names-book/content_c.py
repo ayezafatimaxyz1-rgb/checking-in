@@ -138,7 +138,7 @@ N.append(dict(
         dict(ayah=ayah(40, 48, words=(6, 12), tr="\"Indeed, Allah has judged between the servants.\""), note=[
             "On the Day when the arrogant and the weak who followed them are talking to each other in the Fire, this is the end of the conversation. The ruling has been given."])],
     hadith=[dict(ar="إِنَّ اللَّهَ هُوَ الْحَكَمُ وَإِلَيْهِ الْحُكْمُ",
-                 en="A man named Hani was called Abu al-Hakam, because his people would come to him to settle their disputes. The Prophet ﷺ said to him: \"Indeed Allah is Al-Hakam, and to Him belongs the judgement.\" He asked why he had that name, and when he explained, the Prophet ﷺ said it was good, and changed his name to Abu Shurayh.",
+                 en="A man named Hani was called Abu al-Hakam, because his people would come to him to settle their disputes. The Prophet ﷺ said to him: \"Indeed Allah is Al-Hakam, and to Him belongs the judgement.\" He asked why he had that name, and when he explained, the Prophet ﷺ said it was good, and changed his kunya to Abu Shurayh.",
                  ref="Sunan Abi Dawud 4955; Sunan an-Nasa'i 5387")],
     essence="Al-Hakam is the One whose judgement is final and perfect, who decides between all His servants, and whose ruling can never be overturned.",
     essence_ur=["الْحَكَم وہ ذات ہے جس کا فیصلہ حتمی اور کامل ہے،", "جو اپنے تمام بندوں کے درمیان فیصلہ کرتی ہے اور", "جس کے حکم کو کوئی بدل نہیں سکتا۔"],

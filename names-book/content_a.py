@@ -108,7 +108,7 @@ N.append(dict(
     related="رَقِيب — watchful observer · شَهِيد — witness · حَفِيظ — preserver · وَكِيل — disposer of affairs",
     quran=[
         dict(ayah=ayah(4, 1, words=(23, 28), tr="\"Indeed, Allah is ever, over you, an Observer.\""), note=[
-            "**رَقِيبًا** — the same meaning as Al-Muhaymin. Notice that this reminder comes in the very ayah where the Qur'an speaks of family ties and the womb. The One who watches over you is the One who also watches how you treat your relatives."]),
+            "**رَقِيبًا** carries the same meaning as Al-Muhaymin. Notice that this reminder comes in the very ayah where the Qur'an speaks of family ties and the womb. The One who watches over you is the One who also watches how you treat your relatives."]),
         dict(ayah=ayah(50, 16), note=[
             "Closer than the jugular vein. Al-Muhaymin is not watching from a great distance; His knowledge is nearer to you than your own pulse. Scholars explain this nearness as His knowledge and encompassing oversight, in a way that befits Him."])],
     hadith=[dict(ar="احْفَظِ اللَّهَ يَحْفَظْكَ، احْفَظِ اللَّهَ تَجِدْهُ تُجَاهَكَ",
@@ -171,7 +171,7 @@ N.append(dict(
             "Look at the neighbours of this Name: Al-'Aziz before it, Al-Mutakabbir after it. This is the side of Allah that stops tyrants. Nothing He decides can be resisted."]),
         dict(ayah=ayah(94, 5, 6), note=[
             "And this is the other face of the same Name. The One who has overwhelming power is the One who sets right a heart that has been broken by difficulty. Ease does not come after hardship by accident; it comes with it, by His mending."])],
-    hadith=[dict(ar="اللَّهُمَّ رَبَّ النَّاسِ أَذْهِبِ الْبَأْسَ، اشْفِ أَنْتَ الشَّافِي، لَا شِفَاءَ إِلَّا شِفَاؤُكَ، شِفَاءً لَا يُغَادِرُ سَقَمًا",
+    hadith=[dict(ar="اللَّهُمَّ رَبَّ النَّاسِ أَذْهِبِ الْبَأْسَ، اشْفِ وَأَنْتَ الشَّافِي، لَا شِفَاءَ إِلَّا شِفَاؤُكَ، شِفَاءً لَا يُغَادِرُ سَقَمًا",
                  en="\"O Allah, Lord of mankind, remove the hardship. Heal, for You are the Healer; there is no healing except Your healing — a healing that leaves no illness behind.\" The Prophet ﷺ would say this over the sick.",
                  ref="Sahih al-Bukhari 5675; Sahih Muslim 2191")],
     essence="Al-Jabbar is the One who mends the broken and restores the wounded, whose will cannot be resisted, and who is high above every creature.",
@@ -277,7 +277,7 @@ N.append(dict(
         "Al-Musawwir is the One who gives each creature its specific form, its features, its proportions and its look, exactly as He wills.",
         "Where Al-Bari' brings the creature out as a distinct being, Al-Musawwir gives that being its particular face."]),
     defbox="الْمُصَوِّرُ → The One who fashions every creature in its own specific form, exactly as He wills.",
-    related="صُورَة — form, image · تَصْوِير — shaping · صُوَر — forms (plural) · مُصَوَّر — that which is shaped",
+    related="صُورَة — form, image · تَصْوِير — shaping · صُوَر — plural of form · مُصَوَّر — that which is shaped",
     quran=[
         dict(ayah=ayah(3, 6), note=[
             "**يُصَوِّرُكُمْ فِي الْأَرْحَامِ** — He shapes you in the wombs. The same word رَحِم that we met in Ar-Rahman and Ar-Raheem. In the darkest place, where no human hand can reach and no eye can see, Al-Musawwir is shaping a face. And the ayah says **كَيْفَ يَشَاءُ**: however He wills. No one chose their own face."]),
@@ -296,7 +296,7 @@ N.append(dict(
 
 
 def trio_1113():
-    o = [chapter_open("NAMES 11, 12 &amp; 13 — TOGETHER", "الْخَالِقُ الْبَارِئُ الْمُصَوِّرُ", "Al-Khaliq, Al-Bari' & Al-Musawwir",
+    o = [chapter_open("NAMES 11, 12 & 13 — TOGETHER", "الْخَالِقُ الْبَارِئُ الْمُصَوِّرُ", "Al-Khaliq, Al-Bari' & Al-Musawwir",
                       "Three Names, One Ayah, One Complete Picture of Creation", None)]
     o.append(h2("1. Why They Come Together"))
     o.append(p("The Qur'an places these three Names side by side in one breath: *\"He is Allah, the Creator, the Inventor, the Fashioner; to Him belong the best names.\"* (Qur'an 59:24). They are not three repetitions. Each shows one side of the act of creating, and when you read them in order, you can follow a creature from its first measure to its final form."))

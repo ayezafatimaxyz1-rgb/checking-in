@@ -18,14 +18,14 @@ def name1():
     o.append(p("This mercy is **general and worldly** — it reaches every creature in this life, believer or disbeliever alike. Rain, provision, breath and health fall on both without distinction. That is the vastness of Ar-Rahman: mercy that does not first ask who deserves it."))
     o.append(related("رَحْمَة — mercy · رَحِيم — merciful · رَحِم — the womb · أَرْحَام — wombs, kinship · تَرَاحُم — mutual mercy"))
     o.append(h2("2. Qur'anic Connection"))
-    o.append(ayah_box({"ar": ["الرَّحْمٰنُ", "عَلَّمَ الْقُرْآنَ"], "en": "\"The Most Merciful — He taught the Qur'an.\"", "ref": "Qur'an 55:1–2"}))
+    o.append(ayah_box(ayah(55, 1, 2, tr="\"The Most Merciful, He taught the Qur'an.\"")))
     o.append(p("Remember what Ar-Rahman means — mercy at its most abundant, its most intense, its most overflowing. This is not a modest mercy. It is mercy carried by a Name built for vastness itself. And it is this very Ar-Rahman who says **عَلَّمَ الْقُرْآنَ** — He taught the Qur'an. He loved us with a love as immense as His own Name, and that love is what gave us the Qur'an."))
     o.append(p("His greatest blessing is that He taught us the Qur'an — before mentioning any other favour. His mercy did not merely give us life and provision; it gave us guidance and the path back to Him."))
     o.append(p("We so easily complain about what we lack in this world — a delay, a loss, a plan that didn't work out — while rarely pausing to weep with gratitude over the one gift that outweighs all of them: that Allah did not leave us to wander blindly, but gave us deen and the Qur'an to guide us. Seen through this lens, it is a strange thing indeed to grieve endlessly over what is temporary while remaining almost unmoved by the greatest mercy we have already been given."))
     o.append(hadith_box("الرَّاحِمُونَ يَرْحَمُهُمُ الرَّحْمٰنُ، ارْحَمُوا مَنْ فِي الْأَرْضِ",
                         "\"Those who show mercy will be shown mercy by Ar-Rahman. Show mercy to those on earth.\"",
                         "Jami' at-Tirmidhi 1924 — hasan sahih"))
-    o.append(p("Know Ar-Rahman → receive His mercy → become merciful to others."))
+    o.append(p("Know Ar-Rahman, receive His mercy, become merciful to others."))
     o.append(chapter_close())
     return "\n".join(o)
 
@@ -57,14 +57,14 @@ def name2():
 
 
 def together12():
-    o = [chapter_open("NAMES 1 &amp; 2 — TOGETHER", "الرَّحْمٰنِ الرَّحِيمِ", "Ar-Rahman & Ar-Raheem",
+    o = [chapter_open("NAMES 1 & 2 — TOGETHER", "الرَّحْمٰنِ الرَّحِيمِ", "Ar-Rahman & Ar-Raheem",
                       "Differences, Equalities & What the Scholars Say", None)]
     o.append(h2("1. The Beautiful Connection: رَحِم — The Womb"))
     o.append(p("One of the most meaningful words from ر ح م is **رَحِم** — the womb, shared by both Names since both come from the same root. The womb is where a completely helpless and dependent child is surrounded by care before it can do anything for itself."))
     o.append(bullets(["The child cannot provide its own food.", "It cannot protect itself.", "It cannot ask for what it needs.",
                       "It cannot earn anything, or give anything in return.", "Yet it is continually nourished, protected, carried and sustained."]))
     o.append(p("This gives us the fundamental meaning behind ر ح م: **mercy is caring for, protecting, nourishing and providing for one who is dependent upon you.** We too are completely dependent upon Allah — unable to sustain our own existence, control our future, or guarantee the next moment. Yet He surrounds us with provision, protection, care and countless blessings."))
-    o.append(p("But the picture deepens differently for each Name. Ar-Rahman's mercy is not merely an abstract quality — with Ar-Raheem, it is mercy that **reaches** the one being shown mercy. As Ibn al-Qayyim explains: *\"Ar-Rahman indicates the attribute established in Him, while Ar-Raheem indicates its connection to the one who receives mercy.\"*"))
+    o.append(p("But the picture deepens differently for each Name. Ar-Rahman's mercy is not merely an abstract quality; with Ar-Raheem, it is mercy that **reaches** the one being shown mercy. As Ibn al-Qayyim explains: *\"Ar-Rahman indicates the attribute established in Him, while Ar-Raheem indicates its connection to the one who receives mercy.\"*"))
     o.append(box("Ar-Rahman → His vast attribute of mercy.  |  Ar-Raheem → His mercy reaching His servant."))
     o.append(h2("2. What They Share"))
     o.append(p("Both Names come from the same root, ر ح م, and both carry the same seed meaning: tenderness, compassion, affection and mercy. Neither Name is mercy as a passing feeling — both describe mercy as Allah's enduring, active nature toward His creation."))
@@ -74,27 +74,26 @@ def together12():
         ["Scope", "Vast, general — reaches all creation, believer or not", "Particular, personal — especially the believers"],
         ["Nature", "The attribute of mercy itself", "That mercy reaching the one who receives it"],
         ["Best seen in", "Worldly provision — life, sustenance, guidance", "Personal return — forgiveness, repentance"]]))
-    o.append(box("\"Ar-Rahman [is merciful] to all creation, while Ar-Raheem [is merciful] to the believers.\" — Al-'Arzami, the clearest statement of the general vs. particular distinction."))
+    o.append(box("\"Ar-Rahman [is merciful] to all creation, while Ar-Raheem [is merciful] to the believers.\" These words of Al-'Arzami are the clearest statement of the general and particular distinction."))
     o.append(h2("4. What the Scholars Explain"))
     o.append(scholar("Ibn Faris", None, "Identifies the fundamental meaning of ر ح م as tenderness, compassion and mercy (الرِّقَّةُ وَالْعَطْفُ وَالرَّأْفَةُ) — the shared root beneath both Names."))
     o.append(scholar("Al-'Arzami", "الرحمن بجميع الخلق، الرحيم بالمؤمنين",
-                     "\"Ar-Rahman [is merciful] to all creation, while Ar-Raheem [is merciful] to the believers.\" — the clearest statement of the general vs. particular distinction."))
+                     "\"Ar-Rahman [is merciful] to all creation, while Ar-Raheem [is merciful] to the believers.\" This is the clearest statement of the general and particular distinction."))
     o.append(scholar("Al-Qurtubi", "ذو الرحمة الذي لا نظير له فيها",
                      "\"The possessor of mercy for which there is no equal.\" He explains Ar-Raheem as the One who possesses mercy and bestows it upon those who receive it."))
     o.append(scholar("Al-Tabari", None, "Stresses that the two Names are not simply repetitions — each conveys a meaning the other does not fully convey."))
     o.append(scholar("Ibn al-Qayyim", "الرَّحْمٰنُ دَالٌّ عَلَى الصِّفَةِ الْقَائِمَةِ بِهِ سُبْحَانَهُ، وَالرَّحِيمُ دَالٌّ عَلَى تَعَلُّقِهَا بِالْمَرْحُومِ",
-                     "\"Ar-Rahman indicates the attribute established in Him, while Ar-Raheem indicates its connection to the one who receives mercy.\" The clearest scholarly summary: Ar-Rahman → the attribute itself. Ar-Raheem → that mercy reaching the recipient."))
+                     "\"Ar-Rahman indicates the attribute established in Him, while Ar-Raheem indicates its connection to the one who receives mercy.\" In short: Ar-Rahman is the attribute itself; Ar-Raheem is that mercy reaching the recipient."))
     o.append(h2("5. Why Both Names Appear Together"))
     o.append(p("This is why we say both Names in every rak'ah of salah, in Surah al-Fatiha — الرَّحْمٰنِ الرَّحِيمِ. Together they form a complete picture that neither gives alone: the vastness of His mercy, and its personal arrival to the one who seeks it."))
     o.append(h2("6. A Tadabbur of Surah al-Fatiha"))
-    o.append(ayah_box({"ar": ["رَبِّ الْعَالَمِينَ", "الرَّحْمٰنِ الرَّحِيمِ", "مَالِكِ يَوْمِ الدِّينِ"],
-                       "en": "\"Lord of the Worlds — the Most Merciful, the Especially Merciful — Master of the Day of Judgement.\"", "ref": ""}))
+    o.append(ayah_box(ayah(1, 2, 4, tr="\"Lord of the Worlds, the Most Merciful, the Especially Merciful, Master of the Day of Judgement.\"")))
     o.append(p("Look at these four descriptions together. They are not four separate, unrelated attributes listed one after another — notice how they naturally split into two pairs, each pair speaking to the same reality from two angles."))
-    o.append('<div class="pair"><div class="m"><div class="pa" dir="rtl">رَبِّ الْعَالَمِينَ</div><div class="pl">LORD OF THE WORLDS</div></div><div class="g"><div class="pa" dir="rtl">الرَّحْمٰنِ</div><div class="pl">AR-RAHMAN</div></div></div>')
+    o.append(f'<div class="pair"><div class="m"><div class="pa" dir="rtl">رَبِّ الْعَالَمِينَ</div><div class="pl">{raw("LORD OF THE WORLDS")}</div></div><div class="g"><div class="pa" dir="rtl">الرَّحْمٰنِ</div><div class="pl">{raw("AR-RAHMAN")}</div></div></div>')
     o.append('<div class="card">' + p("**Rabb al-'Alameen** means Allah sustains every world, every realm, every creature that exists — nothing is outside His care.") +
              p("This is the pairing to notice closely: **'Alameen** (the worlds) carries the same worldly, all-encompassing reach as **Ar-Rahman**. Both terms describe the same scope from two directions. 'Alameen names *everyone who exists in this dunya* — believer and non-believer alike, every realm, every creature. Ar-Rahman names *the mercy that reaches all of them* — rain, food, breath, health, opportunity, given without first asking who deserves it. One tells you who receives; the other tells you what they receive. Neither excludes anyone in this worldly life, and each explains why the other is worded the way it is.") +
              p("So the pairing is: the One who is Lord over *all the worlds* is the same One whose mercy is *abundant and encompassing* — reaching every one of those worlds, in this life, right now.") + "</div>")
-    o.append('<div class="pair" style="margin-top:12pt"><div class="g"><div class="pa" dir="rtl">الرَّحِيمِ</div><div class="pl">AR-RAHEEM</div></div><div class="m"><div class="pa" dir="rtl">مَالِكِ يَوْمِ الدِّينِ</div><div class="pl">MASTER OF THE DAY OF JUDGEMENT</div></div></div>')
+    o.append(f'<div class="pair" style="margin-top:12pt"><div class="g"><div class="pa" dir="rtl">الرَّحِيمِ</div><div class="pl">{raw("AR-RAHEEM")}</div></div><div class="m"><div class="pa" dir="rtl">مَالِكِ يَوْمِ الدِّينِ</div><div class="pl">{raw("MASTER OF THE DAY OF JUDGEMENT")}</div></div></div>')
     o.append('<div class="card">' + p("**Malik Yawm ad-Din** moves the scene from this world to the akhirah — the Day when everyone stands before Him.") +
              p("This matches Ar-Raheem, because Ar-Raheem's mercy is not the general mercy shown to all creation — it is the **continuing, particular** mercy shown to believers. And on the Day of Judgement, this distinction becomes final: it is **only the believers** who will be recipients of His mercy on that Day. The general mercy of the dunya (Ar-Rahman) does not carry over to everyone in the akhirah — but the special mercy of Ar-Raheem does, for those who believed.") +
              p("So the pairing is: the One who is Master of the Day *when mercy is no longer shown to all* is the same One whose Name, Ar-Raheem, was already telling you — in every rak'ah — that His continuing mercy was always reserved for those who turn to Him.") + "</div>")

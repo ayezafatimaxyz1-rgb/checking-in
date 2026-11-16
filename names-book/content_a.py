@@ -14,7 +14,7 @@ N.append(dict(
         "So قُدُّوس does not simply mean \"pure\" — it means purity at its absolute height, with no trace of defect anywhere in it.",
         "Another word on this same pattern is سُبُّوح — utterly free of every fault. The Prophet ﷺ joined the two together in his ruku' and sujud (see below)."]),
     defbox="الْقُدُّوسُ → The One who is absolutely pure, free of every defect, flaw and imperfection, and far above anything unworthy of Him.",
-    after_def=["The mufassirun, such as al-Tabari and Ibn Kathir, explain Al-Quddus as the One who is perfectly pure and far above every deficiency. Nothing about Allah, His Names, His attributes or His actions carries any fault."],
+    after_def=["Classical commentators explain Al-Quddus as the One who is perfectly pure and far above every deficiency. Nothing about Allah, His Names, His attributes or His actions carries any fault."],
     related="قُدْس — holiness, purity · مُقَدَّس — sanctified · تَقْدِيس — declaring holy · سُبُّوح — utterly free of fault · تَسْبِيح — glorifying",
     quran=[
         dict(ayah=ayah(59, 23), note=[
@@ -52,7 +52,7 @@ N.append(dict(
             "Even Paradise is named after this Name: **دَارُ السَّلَامِ**. The final home of the believer is a home named after Allah Himself. And the first thing its people will hear is peace:"]),
         dict(ayah=ayah(36, 58, tr="\"Peace,\" a word from a Merciful Lord.\""), note=[
             "Imagine the moment: after every hardship, a greeting of peace spoken to you directly, from the Lord who is both As-Salam and Ar-Raheem."])],
-    hadith=[dict(ar="اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ",
+    hadith=[dict(ar="اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ، تَبَارَكْتَ ذَا الْجَلَالِ وَالْإِكْرَامِ",
                  en="\"O Allah, You are As-Salam, and from You is all peace. Blessed are You, O Possessor of Majesty and Honour.\" The Prophet ﷺ said this after finishing the prayer, after asking forgiveness three times.",
                  ref="Sahih Muslim 591")],
     essence="As-Salam is the One who is perfect and free of all fault, and the source from whom all peace, safety and wellbeing come to His creation.",
@@ -74,7 +74,7 @@ N.append(dict(
         "When this word is used for the servant, it means the one who believes. When it is used for Allah, the scholars explain that it carries two meanings that fit His majesty: He is the One who grants security, and He is the One who confirms the truth.",
         "It never means that Allah believes in something above Him. Nothing is above Him."]),
     defbox="الْمُؤْمِنُ → The One who gives security to His creation and confirms the truth of His promises and His messengers.",
-    after_def=["Ibn Kathir, in his tafsir of Surah al-Hashr, relates from Ibn 'Abbas that Al-Mu'min means the One who gave His creation security from being wronged by Him. The second meaning is that He affirms His own word: what He has promised is true, and the messengers He sent were truthful."],
+    after_def=["The commentators on Surah al-Hashr report from Ibn 'Abbas that Al-Mu'min means the One who gave His creation security from being wronged by Him. The second meaning is that He affirms His own word: what He has promised is true, and the messengers He sent were truthful."],
     related="أَمْن — security · أَمَان — safety · أَمَانَة — a trust · إِيمَان — faith · مُؤْمِن — believer",
     quran=[
         dict(ayah=ayah(106, 4, tr="\"Who has fed them, [saving them] from hunger, and made them safe, [saving them] from fear.\""), note=[
@@ -102,7 +102,7 @@ N.append(dict(
     intro=["This is one of the few Names built on a four-letter root. Its sense is of one who stands over something completely: watching it, protecting it and bearing witness to it, so that nothing escapes his oversight."],
     pattern=dict(ar="مُفَيْعِل", bullets=[
         "The pattern gives the sense of active, constant oversight, not a one-time act.",
-        "Among the early scholars, Ibn 'Abbas explained the word as \"trustworthy guardian\" (أَمِين), and Mujahid as \"witness\" (شَاهِد). Both are about the same reality: complete knowledge together with complete care.",
+        "The early commentators are reported to have explained the word as \"trustworthy guardian\" (أَمِين) and as \"witness\" (شَاهِد). Both are about the same reality: complete knowledge together with complete care.",
         "The Qur'an uses the same word of itself: it is **مُهَيْمِنًا عَلَيْهِ**, a guardian and standard over the earlier scriptures (Qur'an 5:48)."]),
     defbox="الْمُهَيْمِنُ → The One who watches over everything, bears witness to everything, and preserves everything.",
     related="رَقِيب — watchful observer · شَهِيد — witness · حَفِيظ — preserver · وَكِيل — disposer of affairs",
@@ -144,7 +144,7 @@ N.append(dict(
             "And see how generously He shares what is His: the honour that belongs to Him He gives to His Messenger and to the believers. Honour is borrowed from Al-'Aziz by those who stay with Him."])],
     hadith=[dict(ar="أَعُوذُ بِعِزَّتِكَ الَّذِي لَا إِلَٰهَ إِلَّا أَنْتَ الَّذِي لَا يَمُوتُ وَالْجِنُّ وَالْإِنْسُ يَمُوتُونَ",
                  en="\"I seek refuge in Your 'Izzah — there is no god but You — who does not die, while the jinn and mankind die.\" From the du'a of the Prophet ﷺ.",
-                 ref="Sahih al-Bukhari 7383; Sahih Muslim 2717")],
+                 ref="Sahih al-Bukhari 7383; see also Sahih Muslim 2717")],
     essence="Al-'Aziz is the One of complete might, beyond reach, who overcomes all things and is overcome by nothing, and who gives honour to whomever He wills.",
     essence_ur=["الْعَزِیز وہ ذات ہے جو کامل قوت اور غلبے والی ہے،", "جس تک کوئی نہیں پہنچ سکتا، جو سب پر غالب ہے", "اور جسے چاہے عزت عطا کرتی ہے۔"],
     servant=[
@@ -171,9 +171,9 @@ N.append(dict(
             "Look at the neighbours of this Name: Al-'Aziz before it, Al-Mutakabbir after it. This is the side of Allah that stops tyrants. Nothing He decides can be resisted."]),
         dict(ayah=ayah(94, 5, 6), note=[
             "And this is the other face of the same Name. The One who has overwhelming power is the One who sets right a heart that has been broken by difficulty. Ease does not come after hardship by accident; it comes with it, by His mending."])],
-    hadith=[dict(ar="اللَّهُمَّ رَبَّ النَّاسِ أَذْهِبِ الْبَأْسَ، اشْفِ وَأَنْتَ الشَّافِي، لَا شِفَاءَ إِلَّا شِفَاؤُكَ، شِفَاءً لَا يُغَادِرُ سَقَمًا",
-                 en="\"O Allah, Lord of mankind, remove the hardship. Heal, for You are the Healer; there is no healing except Your healing — a healing that leaves no illness behind.\" The Prophet ﷺ would say this over the sick.",
-                 ref="Sahih al-Bukhari 5675; Sahih Muslim 2191")],
+    hadith=[dict(ar="أَذْهِبِ الْبَأْسَ رَبَّ النَّاسِ، اشْفِ وَأَنْتَ الشَّافِي، لَا شِفَاءَ إِلَّا شِفَاؤُكَ، شِفَاءً لَا يُغَادِرُ سَقَمًا",
+                 en="\"Take away the hardship, O Lord of mankind. Heal, for You are the Healer; there is no healing except Your healing, a healing that leaves no illness behind.\" The Prophet ﷺ would say this when he visited the sick.",
+                 ref="Sahih al-Bukhari 5675; see also Sahih Muslim 2191")],
     essence="Al-Jabbar is the One who mends the broken and restores the wounded, whose will cannot be resisted, and who is high above every creature.",
     essence_ur=["الْجَبَّار وہ ذات ہے جو ٹوٹی ہوئی چیز کو جوڑنے اور", "سنوارنے والی ہے، جس کی مرضی کو کوئی روک نہیں سکتا", "اور جو ہر مخلوق سے بلند ہے۔"],
     servant=[
@@ -302,7 +302,7 @@ def trio_1113():
     o.append(p("The Qur'an places these three Names side by side in one breath: *\"He is Allah, the Creator, the Inventor, the Fashioner; to Him belong the best names.\"* (Qur'an 59:24). They are not three repetitions. Each shows one side of the act of creating, and when you read them in order, you can follow a creature from its first measure to its final form."))
     o.append(box("الْخَالِقُ → He plans and brings into being.  |  الْبَارِئُ → He originates each one distinct.  |  الْمُصَوِّرُ → He gives each its form."))
     o.append(h2("2. What the Scholars Explain"))
-    o.append(scholar("Ibn Kathir (tafsir of Surah al-Hashr)", None,
+    o.append(scholar("Commentators on Surah al-Hashr", None,
                      "Explains the three Names as stages of one act: Al-Khaliq is the One who plans and decrees what He wishes to bring into being; Al-Bari' is the One who brings it into existence according to that plan; Al-Musawwir is the One who gives it the form and shape He wills."))
     o.append(scholar("Al-Raghib al-Isfahani", None,
                      "Explains that the root of khalq is exact measuring and proportioning, which is why Al-Khaliq carries the sense of planning before bringing into being."))

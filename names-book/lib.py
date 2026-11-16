@@ -124,7 +124,7 @@ def ref_ur(ref):
     s = deai(ref)
     for k in sorted(COLL_NAMES, key=len, reverse=True):
         s = s.replace(k, COLL_NAMES[k])
-    s = s.replace(";", "؛").replace(" and ", " اور ")
+    s = s.replace(";", "؛").replace(" and ", " اور ").replace("see also", "مزید دیکھیے")
     return s
 
 

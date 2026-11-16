@@ -80,9 +80,9 @@ N.append(dict(
             "Zakariyya was old and his wife was barren, and he asked for a child. He did not ask as someone who deserved one; he asked as someone who knows Al-Wahhab. And he was answered. Whatever the situation looks like, the Name is the answer."]),
         dict(ayah=ayah(38, 35), note=[
             "Even Sulayman, who was given a kingdom unlike any other, called the whole kingdom a gift, with the very Name Al-Wahhab."])],
-    hadith=[dict(ar="يَمِينُ اللَّهِ مَلْأَى لَا يَغِيضُهَا نَفَقَةٌ، سَحَّاءُ اللَّيْلَ وَالنَّهَارَ",
-                 en="The Prophet ﷺ said: \"The right hand of Allah is full. Spending does not diminish it. It pours out night and day.\"",
-                 ref="Sahih al-Bukhari 4684; Sahih Muslim 993")],
+    hadith=[dict(ar="يَمِينُ اللَّهِ مَلْأَى لَا يَغِيضُهَا سَحَّاءُ اللَّيْلَ وَالنَّهَارَ",
+                 en="The Prophet ﷺ said: \"The right hand of Allah is full; it is not diminished by pouring out night and day.\"",
+                 ref="Sahih Muslim 993; see also Sahih al-Bukhari 4684")],
     essence="Al-Wahhab is the One who gives and gives without end, freely and without need of any return, and whose giving never decreases.",
     essence_ur=["الْوَهَّاب وہ ذات ہے جو بغیر کسی عوض اور ضرورت کے", "مسلسل عطا کرتی ہے، اور جس کے خزانوں میں", "دینے سے کبھی کمی نہیں آتی۔"],
     servant=[
@@ -110,7 +110,7 @@ N.append(dict(
             "**إِلَّا عَلَى اللَّهِ رِزْقُهَا** — He has taken it upon Himself. Every ant, every bird, every fish in the deep. He knows where it lives and what it needs."]),
         dict(ayah=ayah(29, 60), note=[
             "And the ayah includes you in it: **وَإِيَّاكُمْ**, \"and you as well.\" Some animals cannot even carry their own food, and Allah provides them. How would He forget you?"])],
-    hadith=[dict(ar="لَوْ أَنَّكُمْ كُنْتُمْ تَوَكَّلُونَ عَلَى اللَّهِ حَقَّ تَوَكُّلِهِ لَرُزِقْتُمْ كَمَا يُرْزَقُ الطَّيْرُ، تَغْدُو خِمَاصًا وَتَرُوحُ بِطَانًا",
+    hadith=[dict(ar="لَوْ أَنَّكُمْ كُنْتُمْ تَوَكَّلُونَ عَلَى اللَّهِ حَقَّ تَوَكُّلِهِ لَرُزِقْتُمْ كَمَا تُرْزَقُ الطَّيْرُ، تَغْدُو خِمَاصًا وَتَرُوحُ بِطَانًا",
                  en="The Prophet ﷺ said: \"If you relied upon Allah as He should be relied upon, He would provide for you as He provides for the birds: they go out in the morning hungry, and return in the evening full.\"",
                  ref="Jami' at-Tirmidhi 2344 — hasan sahih")],
     essence="Ar-Razzaq is the One who provides every living thing with all it needs, continually, from sources it never expected and could never have produced itself.",
@@ -171,7 +171,7 @@ N.append(dict(
             "A single question, and its answer is another two Names: Al-Latif and Al-Khabir, which you will meet in this book."])],
     hadith=[dict(ar="فَإِنَّكَ تَقْدِرُ وَلَا أَقْدِرُ، وَتَعْلَمُ وَلَا أَعْلَمُ، وَأَنْتَ عَلَّامُ الْغُيُوبِ",
                  en="From the du'a of istikhara taught by the Prophet ﷺ: \"For You have power and I have none; You know and I do not know; and You are the Knower of the unseen.\"",
-                 ref="Sahih al-Bukhari 1162")],
+                 ref="Sahih al-Bukhari 1166")],
     essence="Al-'Alim is the One whose knowledge has no limit and no beginning: He knows all that was, all that is, and all that will be, the hidden and the open alike.",
     essence_ur=["الْعَلِیم وہ ذات ہے جس کا علم ہر چیز کو گھیرے ہوئے", "ہے؛ جو کچھ تھا، ہے اور ہوگا، ظاہر ہو یا پوشیدہ،", "سب کچھ اسے معلوم ہے اور اس کے علم کی کوئی حد نہیں۔"],
     servant=[
@@ -229,7 +229,7 @@ N.append(dict(
             "The very next words in the ayah: *\"And they rejoice in the worldly life, but the worldly life, compared to the Hereafter, is nothing but [brief] enjoyment.\"* Expansion is a gift, but it is a small and temporary one. Do not mistake it for the destination."])],
     hadith=[dict(ar="مَنْ أَحَبَّ أَنْ يُبْسَطَ لَهُ فِي رِزْقِهِ وَيُنْسَأَ لَهُ فِي أَثَرِهِ فَلْيَصِلْ رَحِمَهُ",
                  en="The Prophet ﷺ said: \"Whoever loves to have his provision expanded and his life extended, let him keep his family ties.\"",
-                 ref="Sahih al-Bukhari 5985; Sahih Muslim 2557",
+                 ref="Sahih Muslim 2557; see also Sahih al-Bukhari 5985",
                  note=["Notice the word used for \"expanded\": **يُبْسَطَ**, from this very Name. And notice the cause: **رَحِمَهُ**, the same word رَحِم, the womb and kinship, from Ar-Rahman and Ar-Raheem. Whoever protects the ties of mercy is met by Al-Basit."])],
     essence="Al-Basit is the One who extends provision, mercy and ease to His servants as He wills, who opens hands and hearts, and whose expansion has no limit but His wisdom.",
     essence_ur=["الْبَاسِط وہ ذات ہے جو اپنی حکمت کے مطابق بندوں", "کو رزق، رحمت اور آسانی کی کشادگی عطا کرتی ہے،", "دلوں اور ہاتھوں کو کھول دیتی ہے۔"],

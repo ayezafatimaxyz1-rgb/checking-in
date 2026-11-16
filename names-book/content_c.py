@@ -73,7 +73,7 @@ N.append(dict(
     related="سَمْع — hearing · مَسْمُوع — what is heard · اسْتِمَاع — listening · اسْتَجَابَ — to answer",
     quran=[
         dict(ayah=ayah(58, 1), note=[
-            "This ayah was revealed about a woman who came to the Prophet ﷺ in distress, speaking about her husband. Aisha said: *\"Blessed is He whose hearing encompasses all sounds. I was in the corner of the room and could not hear some of what she said, and Allah revealed: Allah has heard the speech of the one who argues with you...\"* (Sunan Ibn Majah 188). A woman's private complaint, spoken quietly, was heard from above the seven heavens and a revelation came down because of it."]),
+            "This ayah was revealed about a woman who came to the Prophet ﷺ in distress, speaking about her husband. Aisha said: *\"Praise be to Allah, whose hearing encompasses all voices. I was in a corner of the house and could not hear what she said, and Allah revealed: Allah has heard the speech of the one who argues with you...\"* (Sunan Ibn Majah 188). A woman's private complaint, spoken quietly, was heard from above the seven heavens and a revelation came down because of it."]),
         dict(ayah=ayah(20, 46), note=[
             "Musa and Harun are being sent to Pharaoh, the most powerful man alive. They are afraid. And the answer is two words of presence: **أَسْمَعُ وَأَرَى**, \"I hear and I see.\" That was enough for them to go."]),
         dict(ayah=ayah(2, 127, words=(7, 14), tr="\"Our Lord, accept [this] from us. Indeed You are the Hearing, the Knowing.\""), note=[
@@ -290,7 +290,7 @@ N.append(dict(
             "The earth, with all its mountains and oceans, will be in His grip. This is the one that we have been treating as the entire world."])],
     hadith=[dict(ar="كَلِمَتَانِ خَفِيفَتَانِ عَلَى اللِّسَانِ، ثَقِيلَتَانِ فِي الْمِيزَانِ، حَبِيبَتَانِ إِلَى الرَّحْمَٰنِ: سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحَانَ اللَّهِ الْعَظِيمِ",
                  en="The Prophet ﷺ said: \"There are two words that are light on the tongue, heavy on the scale, and beloved to Ar-Rahman: Subhan Allahi wa bihamdihi, Subhan Allahil-'Azim.\"",
-                 ref="Sahih al-Bukhari 6406; Sahih Muslim 2694",
+                 ref="Sahih Muslim 2694; see also Sahih al-Bukhari 6406",
                  note=["Notice the last Name in this hadith: **الرَّحْمَٰن**. The book began with Ar-Rahman, and here is Al-'Azim beside it. The One of unbounded greatness is the One of unbounded mercy. The greatest is also the most merciful."]),
             dict(ar="لَا إِلَٰهَ إِلَّا اللَّهُ الْعَظِيمُ الْحَلِيمُ، لَا إِلَٰهَ إِلَّا اللَّهُ رَبُّ الْعَرْشِ الْعَظِيمِ، لَا إِلَٰهَ إِلَّا اللَّهُ رَبُّ السَّمَاوَاتِ وَرَبُّ الْأَرْضِ وَرَبُّ الْعَرْشِ الْكَرِيمِ",
                  en="The du'a that the Prophet ﷺ used to say in times of distress: \"There is no god but Allah, the Magnificent, the Forbearing. There is no god but Allah, Lord of the Mighty Throne. There is no god but Allah, Lord of the heavens, Lord of the earth, and Lord of the Noble Throne.\"",

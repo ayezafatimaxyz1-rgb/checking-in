@@ -12,7 +12,7 @@ v.head('1. Two Kinds of Comparison Words')
 v.row([dict(t='Comparison', w=150, cap=f'two ways to say {q("more than")}')])
 v.split([CX + LX, CX + RX])
 v.row([dict(t='Comparative DEGREE', w=170, x=LX, c=NAVY, cap=['built by us: adjective + er', 'old + er = older']),
-       dict(t='Comparative WORD', w=170, x=RX, c=GREEN, cap=['already built into the word:', 'junior, senior, superior, inferior,', 'prefer, preferable, elder'])])
+       dict(t='Comparative WORD', w=170, x=RX, c=GREEN, cap=['already built into the word:', 'junior, senior, superior, inferior, prior,', 'prefer, preferable, elder'])])
 v.arrow(xs=(CX + LX, CX + RX))
 v.row([dict(t='than  /  of', w=110, x=LX, c=GOLD, cap=f'the comparison is still OPEN: more old than WHAT?'),
        dict(t='to', w=110, x=RX, c=GOLD, cap='the comparison is already COMPLETE')])
@@ -67,7 +67,7 @@ d13 = v.build()
 story += error(13, f'Comparative Words: Take {q("To")}, Not {q("Than")}',
     [('He prefers coffee than tea.', 'He prefers coffee to tea.'), ('She is junior than I.', 'She is junior to me.')],
     f'You learn that every comparison finishes with {q("than")} (older than, taller than, wiser than) and you carry that one rule to every comparison word you meet. That works for ordinary comparatives, but it\'s usually handed to you as a single rule for everything, with no explanation of why some words flatly refuse {q("than")}.',
-    f'There are two different kinds of comparison words. A comparative DEGREE is built by us: adjective + {q("er")} (old becomes older). {q("Older")} only says {q("more old")}, so the comparison is still OPEN (more old than WHAT?) and {q("than")} (or {q("of")} for a pair) must close it. A comparative WORD (the -ior words junior, senior, superior, inferior, and prefer, preferable, elder) already carries the comparison inside itself. There is nothing left to close, so it can\'t take {q("than")} and borrows {q("to")} instead. And since {q("to")} is a preposition, a pronoun after it takes the OBJECT case: {q("to me")}, never {q("to I")}.',
+    f'There are two different kinds of comparison words. A comparative DEGREE is built by us: adjective + {q("er")} (old becomes older). {q("Older")} only says {q("more old")}, so the comparison is still OPEN (more old than WHAT?) and {q("than")} (or {q("of")} for a pair) must close it. A comparative WORD (the Latin comparatives junior, senior, superior, inferior, prior, and also prefer, preferable, elder) already carries the comparison inside itself. There is nothing left to close, so it can\'t take {q("than")} and borrows {q("to")} instead. And since {q("to")} is a preposition, a pronoun after it takes the OBJECT case: {q("to me")}, never {q("to I")}.',
     [a13]) + [Spacer(0, 2), kt(b13), Spacer(0, 8), kt(c13), Spacer(0, 8), kt(d13), PageBreak()]
 
 # =============================================================== ERROR 14
@@ -78,7 +78,9 @@ v.row([dict(t='more', w=80, c=RED, cap='builds a comparison'), dict(t='preferabl
 v.arrow(color=RED, w=1)
 v.text('the same comparison, built TWICE', 9.5, RED)
 v.cap(f'the same double-up as {q("more taller")} in Error 8')
-v.sep()
+v.cap(f'and the same for {q("more superior")} and {q("most superior")}: superior is already comparative')
+a14a = v.build()
+v = VB()
 v.text('THE REAL CATCH', 10, GREEN)
 v.text(f'{q("preferable")} is a comparative WORD, not a plain adjective', 9.5, DARK)
 v.row([dict(t='preferable', w=130, c=GREEN, cap=f'already means {q("more wanted than")}')])
@@ -86,12 +88,12 @@ v.arrow(color=GREEN, w=1)
 v.text(f'one word, one comparison: {q("more")} is not needed', 9.5, PURPLE)
 v.row([dict(t='preferable', w=110, c=GREEN), dict(t='to', w=50, c=GOLD, cap=f'the word borrows {q("to")} (Error 13)'), dict(t='yours', w=80)])
 v.result('This book is preferable to yours.')
-a14 = v.build()
+b14 = v.build()
 story += error(14, f'Comparative Words: Never Add {q("More")}',
-    [('This book is more preferable than yours.', 'This book is preferable to yours.')],
+    [('This book is more preferable than yours.', 'This book is preferable to yours.'), ('This plan is more superior to that one.', 'This plan is superior to that one.')],
     f'You learn that long words take {q("more")} (beautiful becomes more beautiful, Error 8), and {q("preferable")} is a long word, so {q("more")} goes in front of it automatically. That rule is real, but it\'s usually handed to you without the question that has to come first: does this word still need a comparison built for it?',
     f'{q("More")} is a tool for BUILDING a comparison out of a plain adjective. {q("Preferable")} is not a plain adjective. It is a comparative WORD (Error 13), so the comparison is already built into it: {q("preferable to")} already means {q("more wanted than")}. Adding {q("more")} builds the same comparison a second time, the same double-up as {q("more taller")} in Error 8, and {q("than")} then tries to close it again. One word, one comparison: {q("preferable")} does the whole job, and {q("to")} completes it.',
-    [a14]) + [PageBreak()]
+    [a14a]) + [Spacer(0, 10), kt(b14), PageBreak()]
 
 # =============================================================== ERROR 15
 v = VB()
@@ -140,11 +142,20 @@ v.arrow(color=GREEN, w=1)
 v.text(f'{q("most of")} = the majority of the people', 9.5, GREEN)
 v.result('Most of the people are coming.')
 a16 = v.build()
+v = VB()
+v.head('A Related Twist: General or Specific?')
+v.row([dict(t='Most people', w=130, x=LX, c=NAVY, cap=['GENERAL: people anywhere', 'no group is named']),
+       dict(t='Most of the people in the city', w=210, x=RX + 30, c=GREEN, cap=['SPECIFIC: this one group', f'{q("of the")} names it'])])
+v.bad('Most of people like tea.')
+v.text(f'no group is named, so {q("of")} has nothing to point to', 9.5, RED)
+v.arrow(color=GREEN, w=1)
+v.result('Most people like tea.')
+d16 = v.build()
 story += error(16, f'{q("Most")} vs {q("The Most")}: Majority or Superlative?',
     [('The most of the people are coming.', 'Most of the people are coming.')],
     f'You learn that {q("most")} is the superlative of {q("many")} and that a superlative takes {q("the")}, so {q("the most")} gets used every time {q("most")} appears. But that treats every {q("most")} as a superlative, and nobody explains that some aren\'t.',
     f'{q("The most")} is a true superlative: it ranks and picks out ONE winner (the most excited candidate). But in {q("most of the people")} nobody is being ranked. {q("Most")} simply means the MAJORITY, a quantity of the group. With no winner to pick out, there is nothing to specify, so there is no {q("the")}.',
-    [a16]) + [PageBreak()]
+    [a16]) + [Spacer(0, 8), kt(d16), PageBreak()]
 
 # =============================================================== ERROR 17
 v = VB()
